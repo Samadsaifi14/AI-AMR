@@ -66,3 +66,7 @@ Cached BioSample XML and redundant input copies are retained in `downloads/AMR_D
 ## Full-cohort validation update
 
 See [audit and ordered team tasks](docs/AUDIT_V03.md). Run `python -m amr_discovery validate --data <observations.csv> --config <reviewed.json> --out <new-folder>` to audit every source without subsampling. The website now provides **Validate all sources** and simple split controls. Complete wide CSV files can be normalized with `import-wide`; see the reviewed-mapping instructions. India accuracy is still unestablished.
+
+## Independent India challenge
+
+See [complete India acquisition and frozen-model challenge](docs/INDIA_VALIDATION_V04.md). All 266 rows of a newly acquired Indian supplement were audited; categorical AST cannot substitute for numeric MICs. The unchanged source model missed the sole eligible India BioSample isolate. `freeze-external` and `external` now evaluate a complete fresh compatible cohort without refitting, with artifact hashes, overlap checks, exact intervals, cluster bootstrap and source/species strata. These commands operate on trusted local fitted models. India accuracy remains unestablished.

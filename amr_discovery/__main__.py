@@ -44,6 +44,11 @@ def run(args, audit_only=False):
 def main():
     parser=argparse.ArgumentParser(description="Free local phenotype-only AMR research pipeline")
     sub=parser.add_subparsers(dest="command",required=True)
+    p=sub.add_parser('freeze-external', help='Freeze trusted local model artifacts before acquiring external results')
+    p.add_argument('--run', required=True);p.add_argument('--out', required=True)
+    p=sub.add_parser('external', help='Evaluate every eligible external isolate without refitting')
+    p.add_argument('--protocol', required=True);p.add_argument('--data', required=True)
+    p.add_argument('--out', required=True);p.add_argument('--breakpoints')
     for name in ["audit","run","validate"]:
         p=sub.add_parser(name);p.add_argument("--data",required=True);p.add_argument("--config",required=True)
         p.add_argument("--out",required=True);p.add_argument("--breakpoints")
@@ -55,6 +60,13 @@ def main():
     p=sub.add_parser("topology",help="Exploratory networks using an existing run's training partition only")
     p.add_argument("--run",required=True);p.add_argument("--genes");p.add_argument("--geography");p.add_argument("--out",required=True)
     args=parser.parse_args()
+    if args.command=='freeze-external':
+        from .external import freeze_external
+        print(json.dumps(freeze_external(args.run,args.out),indent=2));return 0
+    if args.command=='external':
+        from .external import evaluate_external
+        result=evaluate_external(args.protocol,args.data,args.out,args.breakpoints)
+        print(json.dumps(result,indent=2));return 2 if result['status']=='BLOCKED' else 0
     if args.command=="import-wide":
         from .importer import import_wide
         print(json.dumps(import_wide(args.data,args.mapping,args.out),indent=2));return 0

@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "run": "../results/india_external_v04/frozen_model",
+  "sha256": {
+    "research_model.joblib": "14090b7121a94b97fd1d9d2f09e969de18d4c55013d5be61dd52dec7e5905b24",
+    "model_lock.json": "ba1a8b23085cbf305ccb6fa4aaaae2ba07943095673b64b6f768da8382f13dcc",
+    "cohort_with_splits.csv": "b9ca754b23b31b77dcccd2fe198a4b9c2eadf86845fdf9b0574ff32c1805fd1c"
+  },
+  "configuration": {
+    "target": "meropenem",
+    "species": [
+      "Escherichia coli",
+      "Klebsiella pneumoniae"
+    ],
+    "features": [
+      "cefepime",
+      "ceftazidime",
+      "ciprofloxacin",
+      "gentamicin",
+      "amikacin"
+    ],
+    "min_observed_features": 3,
+    "human_only": true,
+    "label_mode": "reported",
+    "endpoint": "R_vs_S",
+    "standard": "CLSI",
+    "allow_unversioned_reported": true,
+    "seed": 42,
+    "bootstrap_repeats": 200,
+    "sensitivity_target": 0.95,
+    "deferral_halfwidth": 0.1,
+    "split": {
+      "mode": "source",
+      "heldout": [
+        "PRJNA278886"
+      ]
+    }
+  },
+  "threshold": 0.7820232701098387,
+  "country": "India",
+  "sensitivity_lower_95_required": 0.95,
+  "specificity_lower_95_required": 0.5,
+  "interpretation": "External cohort evidence only; no national or clinical certification.",
+  "trusted_local_model_only": true
+}

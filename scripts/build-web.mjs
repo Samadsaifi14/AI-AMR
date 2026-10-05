@@ -24,6 +24,8 @@ const files = {
   'data/india.csv':'data/raw/ncbi_india/observations.csv',
   'data_dictionary.md':'docs/DATA_DICTIONARY.md',
   'audit_v03.md':'docs/AUDIT_V03.md',
+  'india_validation_v04.md':'docs/INDIA_VALIDATION_V04.md',
+  'india_external_result_v04.json':'docs/INDIA_EXTERNAL_RESULT_V04.json',
   'implementation_plan.md':'docs/ORIGINAL_IMPLEMENTATION_PLAN.md',
   'AMR_Discovery_Source.zip':'downloads/AMR_Discovery_Source.zip'
 };

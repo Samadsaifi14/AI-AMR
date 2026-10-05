@@ -1,0 +1,48 @@
+{
+  "selected_model": "logistic_C0.1",
+  "selection": "lowest equally weighted development-fold log loss; worst-fold tie break",
+  "selection_cv": "leave_one_development_source_out",
+  "threshold": 0.7820232701098387,
+  "deferral_low": 0.6820232701098388,
+  "deferral_high": 0.8820232701098387,
+  "configuration": {
+    "target": "meropenem",
+    "species": [
+      "Escherichia coli",
+      "Klebsiella pneumoniae"
+    ],
+    "features": [
+      "cefepime",
+      "ceftazidime",
+      "ciprofloxacin",
+      "gentamicin",
+      "amikacin"
+    ],
+    "min_observed_features": 3,
+    "human_only": true,
+    "label_mode": "reported",
+    "endpoint": "R_vs_S",
+    "standard": "CLSI",
+    "allow_unversioned_reported": true,
+    "seed": 42,
+    "bootstrap_repeats": 200,
+    "sensitivity_target": 0.95,
+    "deferral_halfwidth": 0.1,
+    "split": {
+      "mode": "source",
+      "heldout": [
+        "PRJNA278886"
+      ]
+    }
+  },
+  "input_sha256": "39d07642ac4f1e123eb57c3d8989c87c85e91785b51fa86abde8fb901e203eb9",
+  "split_sha256": "3b4143b65be222566aa60273bbb5db6636da2f7c3d22c308ed9204f1cb3c6236",
+  "calibration": "held-out sigmoid",
+  "evidence_status": "EXPLORATORY_MEASURED_DATA",
+  "environment": {
+    "python": "3.12.14",
+    "sklearn": "1.8.0",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3"
+  }
+}

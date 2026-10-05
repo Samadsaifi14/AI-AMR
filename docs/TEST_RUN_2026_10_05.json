@@ -18,7 +18,8 @@
   "browser_visual_click_qa": "NOT_VERIFIED",
   "live_http_smoke": "BLOCKED_BY_CLOUDFLARE_403_1010; deployment is publicly configured according to Sites connector",
   "github_remote": "https://github.com/Samadsaifi14/AI-AMR",
-  "vercel_deployment": "PENDING_GITHUB_REMOTE",
+  "vercel_deployment": "BLOCKED: Vercel GitHub integration is not installed/authorized for AI-AMR; no successful Vercel deployment.",
   "clinical_validation": false,
-  "github_push": "PENDING"
+  "github_push": "COMPLETE",
+  "published_source_commit": "c7aeeb68991d0626286f10d3da4c961de74d1923"
 }

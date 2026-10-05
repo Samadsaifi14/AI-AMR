@@ -53,7 +53,7 @@ Do not reuse a test set to tune model selection or thresholds. A new independent
 
 ## GitHub and Vercel
 
-GitHub repository: https://github.com/Samadsaifi14/AI-AMR. The public repository was supplied by the project owner. Vercel deployment is being connected after the tested source is pushed.
+GitHub repository: https://github.com/Samadsaifi14/AI-AMR. The public repository was supplied by the project owner. The tested source has been pushed. Vercel deployment is currently blocked because Vercel’s GitHub integration is not installed/authorized for this repository. Connect the Vercel GitHub app with access to AI-AMR, then retry deployment.
 
 After the tested source has been pushed, link that repository in the existing Vercel Hobby workspace, with repository root as the project root. The build and output settings are already in `vercel.json`. Do not select paid add-ons or change the account's plan. A production deployment should only be reported as live after Vercel returns READY and the final URL is verified.
 

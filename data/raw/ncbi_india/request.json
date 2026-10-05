@@ -1,0 +1,1 @@
+{"query": "((Klebsiella pneumoniae[Organism]) OR (Escherichia coli[Organism])) AND antibiogram[filter] AND India[All Fields] AND (Homo sapiens[All Fields] OR human[All Fields])", "limit": 1000}

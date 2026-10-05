@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-05",
+  "test_suite": {
+    "passed": 34
+  },
+  "static_build": "PASS",
+  "generated_source_consistency": "PASS",
+  "browser_python_runtime": "Pyodide 0.29.3 under Node; training, reports, export, prediction, topology and sample gates passed",
+  "public_source_holdout": {
+    "n": 165,
+    "resistant": 29,
+    "nonresistant": 136,
+    "auroc": 0.7359279918864098,
+    "sensitivity": 0,
+    "false_negatives": 29,
+    "operating_point": "FAILED"
+  },
+  "browser_visual_click_qa": "NOT_VERIFIED",
+  "live_http_smoke": "BLOCKED_BY_CLOUDFLARE_403_1010; deployment is publicly configured according to Sites connector",
+  "github_remote": "https://github.com/Samadsaifi14/AI-AMR",
+  "vercel_deployment": "PENDING_GITHUB_REMOTE",
+  "clinical_validation": false,
+  "github_push": "PENDING"
+}

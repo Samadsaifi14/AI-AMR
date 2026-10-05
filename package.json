@@ -1,0 +1,12 @@
+{
+  "name": "amr-research-lab",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Browser-local AMR research with auditable data and held-out evaluation",
+  "scripts": {
+    "build": "node scripts/build-web.mjs",
+    "test:web": "node scripts/verify-web.mjs",
+    "test:runtime": "node verify-runtime.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

@@ -1,0 +1,28 @@
+{
+  "article": "https://www.nature.com/articles/s41467-026-74764-9",
+  "ast_patient_rows": 122,
+  "exact_wgs_taxonomy_matches": 114,
+  "raw_meropenem_sir_counts": {
+    "R": 115,
+    "S": 6,
+    "I": 1
+  },
+  "observation_rows": 854,
+  "positive_gene_calls": 0,
+  "unique_gene_annotated_isolates": 0,
+  "raw_positive_gene_calls": 2162,
+  "proposed_unverified_identity_matches": 114,
+  "status": "QUARANTINED",
+  "training_admissible": false,
+  "reasons": [
+    "Resistance-selected single-hospital cohort; not representative of India.",
+    "Interpretation standard/version and MIC units not documented in examined tables/methods; independent review needed.",
+    "No negative gene calls inferred from missing AMRFinder hits.",
+    "No complete calendar collection dates or patient locations inferred.",
+    "Exact sample matches only; no speculative identity normalization."
+  ],
+  "input_hashes": {
+    "41467_2026_74764_MOESM4_ESM.xlsx": "cf96f94bdb31dd9f65ec503950691b1b3c4ae212a8bcd9a81dc21d4ddc25b61d",
+    "41467_2026_74764_MOESM5_ESM.xlsx": "a92a16d41c3ea2de84896707737a1b95e2b16dc746cefe55a702848691e7173c"
+  }
+}

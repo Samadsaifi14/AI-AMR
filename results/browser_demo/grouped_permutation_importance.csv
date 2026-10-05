@@ -1,0 +1,6 @@
+drug,mean_log_loss_increase,repeat_sd,meaning
+cefepime,0.055119271435939046,0.03567674710244184,"predictive reliance, not causal mechanism"
+ceftazidime,0.07912211999593866,0.036546477239299074,"predictive reliance, not causal mechanism"
+ciprofloxacin,0.05614914710846484,0.012630814597931932,"predictive reliance, not causal mechanism"
+gentamicin,0.021073924848945057,0.010693018242719602,"predictive reliance, not causal mechanism"
+amikacin,-0.0019148666552267323,0.008927702701797147,"predictive reliance, not causal mechanism"

@@ -1,0 +1,1 @@
+{"query": "Klebsiella pneumoniae[Organism] AND antibiogram[filter] AND (Homo sapiens[All Fields] OR human[All Fields])", "limit": 2500}

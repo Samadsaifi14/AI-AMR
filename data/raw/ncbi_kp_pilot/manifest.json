@@ -1,0 +1,23 @@
+{
+  "retrieved_at_utc": "2026-10-04T16:20:58.762053+00:00",
+  "query": "Klebsiella pneumoniae[Organism] AND antibiogram[filter] AND (Homo sapiens[All Fields] OR human[All Fields])",
+  "available_biosamples": 1804,
+  "requested_limit": 200,
+  "retrieved_biosamples": 200,
+  "ast_rows": 1318,
+  "files": [
+    {
+      "file": "biosamples_00000.xml",
+      "sha256": "75f8bb14d7b0d8adc139e400629caf3b6e5efdd054f29b807e3c5ef8a3346140"
+    },
+    {
+      "file": "biosamples_00100.xml",
+      "sha256": "e0d7f5423f0afca1bd1a1e9321cfbd907ba5d26a8b2220cb7c41202c183f5ad1"
+    }
+  ],
+  "cost_usd": 0,
+  "access": "public NCBI E-utilities; no paid API",
+  "selection": "NCBI default order; convenience pilot, not representative sampling",
+  "mechanisms": "unknown until independent annotation is curated",
+  "patient_identity": "unavailable; patient independence not established"
+}

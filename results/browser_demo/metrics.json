@@ -1,0 +1,72 @@
+{
+  "n": 70,
+  "resistant": 31,
+  "nonresistant": 39,
+  "prevalence": 0.44285714285714284,
+  "threshold": 0.13499366296581247,
+  "auroc": 0.8225806451612903,
+  "average_precision": 0.8049317593485892,
+  "brier": 0.18002301569855486,
+  "log_loss": 0.541564848640764,
+  "sensitivity": 0.9032258064516129,
+  "specificity": 0.5128205128205128,
+  "balanced_accuracy": 0.7080231596360629,
+  "ppv": 0.5957446808510638,
+  "npv": 0.8695652173913043,
+  "accuracy": 0.6857142857142857,
+  "false_negative_fraction_R": 0.0967741935483871,
+  "tn": 20,
+  "fp": 19,
+  "fn": 3,
+  "tp": 28,
+  "confidence_intervals": {
+    "auroc": {
+      "low": 0.7148885323171038,
+      "high": 0.9096901135005974,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "average_precision": {
+      "low": 0.6884133504102852,
+      "high": 0.8993613244201938,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "brier": {
+      "low": 0.12905890588209643,
+      "high": 0.24824043704629625,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "sensitivity": {
+      "low": 0.7916118421052631,
+      "high": 0.9721428571428573,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "specificity": {
+      "low": 0.3232536764705883,
+      "high": 0.6501785714285715,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "false_negative_fraction_R": {
+      "low": 0.027857142857142872,
+      "high": 0.20838815789473686,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    }
+  },
+  "selected_model": "logistic_C0.1",
+  "split_mode": "source",
+  "evidence_status": "SOFTWARE_DEMONSTRATION",
+  "calibration_note": "Calibration and operating threshold share a held-out development subset; holdout is untouched.",
+  "small_sample_warning": true,
+  "source_holdout": true,
+  "independently_verified_external_validation": false,
+  "clinical_validation": false,
+  "causal_discovery": false,
+  "development_sensitivity_target": 0.95,
+  "holdout_operating_target_met": false,
+  "interpretation_status": "OPERATING_POINT_FAILED"
+}

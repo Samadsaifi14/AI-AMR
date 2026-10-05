@@ -1,0 +1,19 @@
+{
+  "retrieved_at_utc": "2026-10-05T05:54:16.580311+00:00",
+  "query": "((Klebsiella pneumoniae[Organism]) OR (Escherichia coli[Organism])) AND antibiogram[filter] AND India[All Fields] AND (Homo sapiens[All Fields] OR human[All Fields])",
+  "available_biosamples": 2,
+  "requested_limit": 1000,
+  "retrieved_biosamples": 2,
+  "ast_rows": 29,
+  "files": [
+    {
+      "file": "biosamples_00000.xml",
+      "sha256": "ee7a31a538b1ee552ddfd68fb5be75473d1da3ef872b5f0d627a5350aee7960c"
+    }
+  ],
+  "cost_usd": 0,
+  "access": "public NCBI E-utilities; no paid API",
+  "selection": "NCBI default order; convenience pilot, not representative sampling",
+  "mechanisms": "unknown until independent annotation is curated",
+  "patient_identity": "unavailable; patient independence not established"
+}

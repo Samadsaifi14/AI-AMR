@@ -1,0 +1,12 @@
+{
+  "metadata": {"isolate_id":"Isolate ID","species":"Species","country":"Country"},
+  "constants": {"source_id":"REPLACE_WITH_REVIEWED_SOURCE","units":"","method":"","standard":"","standard_version":"","evidence_class":"","host":""},
+  "drugs": {
+    "meropenem":{"measurement":"Meropenem MIC","reported_sir":"Meropenem interpretation"},
+    "cefepime":{"measurement":"Cefepime MIC"},
+    "ceftazidime":{"measurement":"Ceftazidime MIC"},
+    "ciprofloxacin":{"measurement":"Ciprofloxacin MIC"},
+    "gentamicin":{"measurement":"Gentamicin MIC"},
+    "amikacin":{"measurement":"Amikacin MIC"}
+  }
+}

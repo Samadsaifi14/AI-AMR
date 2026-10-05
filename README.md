@@ -53,7 +53,7 @@ Do not reuse a test set to tune model selection or thresholds. A new independent
 
 ## GitHub and Vercel
 
-GitHub repository: https://github.com/Samadsaifi14/AI-AMR. The public repository was supplied by the project owner. The tested source has been pushed. Vercel deployment is currently blocked because Vercel’s GitHub integration is not installed/authorized for this repository. Connect the Vercel GitHub app with access to AI-AMR, then retry deployment.
+GitHub repository: https://github.com/Samadsaifi14/AI-AMR. The public repository was supplied by the project owner. The tested source has been pushed. The Vercel project is connected at https://ai-amr.vercel.app/.
 
 After the tested source has been pushed, link that repository in the existing Vercel Hobby workspace, with repository root as the project root. The build and output settings are already in `vercel.json`. Do not select paid add-ons or change the account's plan. A production deployment should only be reported as live after Vercel returns READY and the final URL is verified.
 
@@ -62,3 +62,7 @@ After the tested source has been pushed, link that repository in the existing Ve
 `data/raw/` contains publicly retrieved BioSample records and Indian study supplements with request details and SHA-256 manifests. Original user-uploaded source documents and account credentials are not included. The Indian ICU candidates remain quarantined pending interpretation-standard/units and identity-link review; see their curation summary. No gene absence, patient coordinates or collection dates were invented.
 
 Cached BioSample XML and redundant input copies are retained in `downloads/AMR_Discovery_Source.zip`. The main AST table is committed once as deterministic gzip; the web build expands it without modifying its contents. The original query and SHA-256 manifests remain in the repository.
+
+## Full-cohort validation update
+
+See [audit and ordered team tasks](docs/AUDIT_V03.md). Run `python -m amr_discovery validate --data <observations.csv> --config <reviewed.json> --out <new-folder>` to audit every source without subsampling. The website now provides **Validate all sources** and simple split controls. Complete wide CSV files can be normalized with `import-wide`; see the reviewed-mapping instructions. India accuracy is still unestablished.

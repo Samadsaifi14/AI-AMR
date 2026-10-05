@@ -23,6 +23,10 @@ def run(args, audit_only=False):
         if audit_only:
             write_report(out,audit)
             print(json.dumps(audit,indent=2));return 0
+        if args.command == "validate":
+            from .validation import validation_suite
+            summary = validation_suite(cohort,features,cfg,audit,out)
+            print(json.dumps(summary,indent=2));return 0
         try:
             result,_=fit_and_evaluate(cohort,features,cfg,audit,out)
         except IntegrityError as e:
@@ -40,15 +44,20 @@ def run(args, audit_only=False):
 def main():
     parser=argparse.ArgumentParser(description="Free local phenotype-only AMR research pipeline")
     sub=parser.add_subparsers(dest="command",required=True)
-    for name in ["audit","run"]:
+    for name in ["audit","run","validate"]:
         p=sub.add_parser(name);p.add_argument("--data",required=True);p.add_argument("--config",required=True)
         p.add_argument("--out",required=True);p.add_argument("--breakpoints")
+    p=sub.add_parser("import-wide",help="Chunked full-file import using an explicitly reviewed column mapping")
+    p.add_argument("--data",required=True);p.add_argument("--mapping",required=True);p.add_argument("--out",required=True)
     p=sub.add_parser("fetch-ncbi");p.add_argument("--query",required=True);p.add_argument("--out",required=True)
     p.add_argument("--limit",type=int,default=200);p.add_argument("--email",default="");p.add_argument("--resume",action="store_true")
     p=sub.add_parser("demo");p.add_argument("--out",required=True);p.add_argument("--n",type=int,default=800)
     p=sub.add_parser("topology",help="Exploratory networks using an existing run's training partition only")
     p.add_argument("--run",required=True);p.add_argument("--genes");p.add_argument("--geography");p.add_argument("--out",required=True)
     args=parser.parse_args()
+    if args.command=="import-wide":
+        from .importer import import_wide
+        print(json.dumps(import_wide(args.data,args.mapping,args.out),indent=2));return 0
     if args.command=="fetch-ncbi":
         print(json.dumps(fetch_biosamples(args.out,args.query,args.limit,args.email,args.resume),indent=2));return 0
     if args.command=="demo":

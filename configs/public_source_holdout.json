@@ -1,10 +1,32 @@
 {
-  "target": "meropenem", "species": ["Klebsiella pneumoniae"],
-  "features": ["cefepime", "ceftazidime", "ciprofloxacin", "gentamicin", "amikacin"],
-  "min_observed_features": 3, "human_only": true, "require_known_source": true,
-  "label_mode": "reported", "endpoint": "R_vs_S", "standard": "CLSI",
-  "allow_unversioned_reported": true, "seed": 42, "bootstrap_repeats": 200,
-  "sensitivity_target": 0.95, "deferral_halfwidth": 0.1,
-  "split": {"mode": "source", "heldout": ["PRJNA278886"]},
-  "study_note": "Exploratory project holdout selected for class coverage after feasibility audit; no independent recruitment or patient audit established."
+  "target": "meropenem",
+  "species": [
+    "Klebsiella pneumoniae"
+  ],
+  "features": [
+    "cefepime",
+    "ceftazidime",
+    "ciprofloxacin",
+    "gentamicin",
+    "amikacin"
+  ],
+  "min_observed_features": 3,
+  "human_only": true,
+  "require_known_source": true,
+  "label_mode": "reported",
+  "endpoint": "R_vs_S",
+  "standard": "CLSI",
+  "allow_unversioned_reported": true,
+  "seed": 42,
+  "bootstrap_repeats": 200,
+  "sensitivity_target": 0.95,
+  "deferral_halfwidth": 0.1,
+  "split": {
+    "mode": "source",
+    "heldout": [
+      "PRJNA278886"
+    ]
+  },
+  "study_note": "Exploratory project holdout selected for class coverage after feasibility audit; no independent recruitment or patient audit established.",
+  "specificity_target": 0.5
 }

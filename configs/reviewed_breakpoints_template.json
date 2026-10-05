@@ -1,8 +1,22 @@
 {
-  "standard": "EUCAST", "version": "REPLACE_WITH_REVIEWED_RELEASE", "reviewed": false,
-  "synthetic_only": true, "citation": "ILLUSTRATIVE ONLY NOT CLINICAL BREAKPOINTS",
+  "standard": "EUCAST",
+  "version": "REPLACE_WITH_REVIEWED_RELEASE",
+  "reviewed": false,
+  "synthetic_only": true,
+  "citation": "ILLUSTRATIVE ONLY NOT CLINICAL BREAKPOINTS",
   "rules": [
-    {"species": "Escherichia coli", "drug": "meropenem", "s_max": 1, "r_min": 4},
-    {"species": "Klebsiella pneumoniae", "drug": "meropenem", "s_max": 1, "r_min": 4}
-  ]
+    {
+      "species": "Escherichia coli",
+      "drug": "meropenem",
+      "s_max": 1,
+      "r_min": 4
+    },
+    {
+      "species": "Klebsiella pneumoniae",
+      "drug": "meropenem",
+      "s_max": 1,
+      "r_min": 4
+    }
+  ],
+  "specificity_target": 0.5
 }

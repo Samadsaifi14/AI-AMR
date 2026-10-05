@@ -23,6 +23,7 @@ const files = {
   'data/demo.csv':'data/fixtures/browser_demo.csv',
   'data/india.csv':'data/raw/ncbi_india/observations.csv',
   'data_dictionary.md':'docs/DATA_DICTIONARY.md',
+  'audit_v03.md':'docs/AUDIT_V03.md',
   'implementation_plan.md':'docs/ORIGINAL_IMPLEMENTATION_PLAN.md',
   'AMR_Discovery_Source.zip':'downloads/AMR_Discovery_Source.zip'
 };

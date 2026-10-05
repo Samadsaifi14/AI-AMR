@@ -91,8 +91,12 @@ def execute(payload):
     (folder/'configuration.json').write_text(json.dumps(cfg,indent=2))
     answer = {'action':action,'audit':audit,'preview':json.loads(cohort.head(15).to_json(orient='records')),
               'countries':json.loads(cohort.groupby('country').size().rename('isolates').reset_index().to_json(orient='records')) if len(cohort) else []}
+    answer['sources'] = json.loads(cohort.groupby('source_id').size().rename('isolates').reset_index().to_json(orient='records')) if len(cohort) else []
     result = None
     blocked = None
+    if action == 'validate':
+        from amr_discovery.validation import validation_suite
+        answer['suite'] = validation_suite(cohort,columns,cfg,audit,folder/'validation')
     if action == 'train':
         try:
             result,_ = fit_and_evaluate(cohort,columns,cfg,audit,folder)

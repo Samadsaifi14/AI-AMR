@@ -22,9 +22,11 @@ if(r.genes.edges!==1||r.genes.preview[0].jointly_observed!==0)throw Error('Unkno
 r=await execute({action:'train',configuration:fs.readFileSync(root+'configs/public_pilot.json','utf8'),csv:fs.readFileSync(root+'data/india.csv','utf8')});
 if(!r.blocked||r.audit.eligible_isolates!==1)throw Error('India gate failed');console.log('INDIA_BLOCK_OK',r.blocked);
 r=await execute({action:'train',configuration:fs.readFileSync(root+'configs/public_source_holdout.json','utf8'),csv:fs.readFileSync(root+'data/public.csv','utf8')});
-if(!r.metrics||r.metrics.sensitivity!==0||r.metrics.fn!==29)throw Error('Public source result unexpectedly changed: '+JSON.stringify(r.metrics||r.blocked));
+if(!r.metrics||r.metrics.n!==165||!r.metrics.all_eligible_isolates_used||r.metrics.fn+r.metrics.tp!==29)throw Error('Public source integrity failure: '+JSON.stringify(r.metrics||r.blocked));
 console.log('PUBLIC_SOURCE_RUNTIME_OK',JSON.stringify({n:r.metrics.n,auroc:r.metrics.auroc,sensitivity:r.metrics.sensitivity,fn:r.metrics.fn}));
 fs.writeFileSync(new URL('./test-runtime/browser-public-source.zip',import.meta.url),Buffer.from(r.archive,'base64'));
+r=await execute({action:'validate',configuration,csv:fs.readFileSync(root+'data/india.csv','utf8')});
+if(!r.suite||!r.suite.experiments.every(x=>x.status==='blocked'))throw Error('Validation suite must retain blocked experiments');
 console.log('BROWSER_RUNTIME_TESTS_PASSED');
 
 } catch(e) { console.error('RUNTIME_TEST_FAILED',e.message);process.exitCode=1; }

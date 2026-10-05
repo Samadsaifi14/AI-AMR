@@ -15,7 +15,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (average_precision_score, brier_score_loss, log_loss,
                              roc_auc_score, confusion_matrix)
-from sklearn.model_selection import StratifiedGroupKFold
+from sklearn.model_selection import StratifiedGroupKFold, LeaveOneGroupOut
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from threadpoolctl import threadpool_limits
@@ -76,6 +76,29 @@ def partitions(df, cfg):
         frame["partition"] = part
         result.append(frame)
     return pd.concat(result, ignore_index=True)
+
+
+def development_folds(train, cfg):
+    """Match model selection to source transport, never inspecting final test data."""
+    mode = cfg.get("selection_cv", "auto")
+    if mode not in {"auto", "source", "grouped"}:
+        raise IntegrityError("selection_cv must be auto, source or grouped.")
+    use_source = mode == "source" or (mode == "auto" and train.source_id.nunique() >= 3)
+    if use_source:
+        if train.source_id.nunique() < 3:
+            raise IntegrityError("Source selection needs at least three development sources.")
+        if train.groupby("group_id").source_id.nunique().max() > 1:
+            raise IntegrityError("A patient/duplicate group crosses development sources.")
+        folds = list(LeaveOneGroupOut().split(train, train.y, train.source_id))
+        for a, b in folds:
+            class_gate(train.iloc[a], 2, "Source CV training")
+        return folds, "leave_one_development_source_out"
+    folds = list(StratifiedGroupKFold(3, shuffle=True, random_state=cfg.get("seed",42)+2)
+                 .split(train, train.y, train.group_id))
+    for a, b in folds:
+        class_gate(train.iloc[a], 2, "Inner training fold")
+        class_gate(train.iloc[b], 2, "Inner validation fold")
+    return folds, "patient_duplicate_grouped; insufficient source diversity or explicitly requested"
 
 
 def metrics(y, p, threshold=.5):
@@ -191,23 +214,22 @@ def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
     if absent:
         raise IntegrityError(f"Feature(s) never measured in training: {absent}; revise the panel before evaluation.")
     seed = cfg.get("seed", 42)
-    cv = list(StratifiedGroupKFold(3, shuffle=True, random_state=seed+2).split(train, train.y, train.group_id))
-    for a, b in cv:
-        class_gate(train.iloc[a], 2, "Inner training fold")
-        class_gate(train.iloc[b], 2, "Inner validation fold")
+    cv, cv_design = development_folds(train, cfg)
     scores, fitted = [], {}
     with threadpool_limits(limits=2):
         for name, model, columns in candidates(feature_columns, seed):
             oof = np.zeros(len(train))
+            fold_losses = []
             for tr, va in cv:
                 estimator = clone(model).fit(train.iloc[tr][columns], train.iloc[tr].y)
                 oof[va] = estimator.predict_proba(train.iloc[va][columns])[:, 1]
-            score = {"model": name, **metrics(train.y, oof), "phase": "training_grouped_OOF"}
+                fold_losses.append(log_loss(train.iloc[va].y, oof[va], labels=[0,1]))
+            score = {"model": name, **metrics(train.y, oof), "phase": cv_design, "mean_fold_log_loss": float(np.mean(fold_losses)), "worst_fold_log_loss": float(max(fold_losses))}
             scores.append(score)
             fitted[name] = (clone(model).fit(train[columns], train.y), columns)
             print(f"Development CV completed: {name}", flush=True)
         eligible = [s for s in scores if s["model"] not in {"species_only", "missingness_only"}]
-        best = min(eligible, key=lambda m: (m["log_loss"], m["model"]))["model"]
+        best = min(eligible, key=lambda m: (m["mean_fold_log_loss"], m["worst_fold_log_loss"], m["model"]))["model"]
         estimator, columns = fitted[best]
         cal_raw = estimator.predict_proba(cal[columns])[:, 1]
         calibrator = LogisticRegression(C=1., max_iter=1000).fit(logit(cal_raw), cal.y)
@@ -220,8 +242,8 @@ def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
                                max(0., threshold-halfwidth), min(1., threshold+halfwidth),
                                best, audit["evidence_status"], cfg["species"])
         # Persist selection and thresholds BEFORE evaluating holdout outcomes.
-        lock = {"selected_model": best, "selection": "lowest grouped development OOF log loss",
-                "threshold": threshold, "deferral_low": bundle.low, "deferral_high": bundle.high,
+        lock = {"selected_model": best, "selection": "lowest equally weighted development-fold log loss; worst-fold tie break",
+                "selection_cv": cv_design, "threshold": threshold, "deferral_low": bundle.low, "deferral_high": bundle.high,
                 "configuration": cfg, "input_sha256": audit["input_sha256"],
                 "split_sha256": sha256(folder / "split_manifest.csv"), "calibration": "held-out sigmoid",
                 "evidence_status": audit["evidence_status"],
@@ -289,8 +311,18 @@ def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
                   source_holdout=cfg["split"]["mode"] == "source",
                   independently_verified_external_validation=False,
                   clinical_validation=False, causal_discovery=False)
+    report["partition_counts"] = split.groupby("partition").size().to_dict()
+    report["all_eligible_isolates_used"] = len(split) == len(cohort)
+    report["selection_cv"] = cv_design
+    report["india_test_isolates"] = int(test.country.str.strip().str.casefold().eq("india").sum())
+    report["india_validation_status"] = "NOT_ESTABLISHED"
     report["development_sensitivity_target"] = cfg.get("sensitivity_target", .95)
-    report["holdout_operating_target_met"] = report["sensitivity"] >= report["development_sensitivity_target"]
+    report["development_specificity_target"] = cfg.get("specificity_target", .5)
+    if not 0 <= report["development_specificity_target"] <= 1:
+        raise IntegrityError("specificity_target must be between 0 and 1.")
+    report["holdout_sensitivity_target_met"] = report["sensitivity"] >= report["development_sensitivity_target"]
+    report["holdout_specificity_target_met"] = report["specificity"] >= report["development_specificity_target"]
+    report["holdout_operating_target_met"] = report["holdout_sensitivity_target_met"] and report["holdout_specificity_target_met"]
     report["interpretation_status"] = ("OPERATING_POINT_FAILED" if not report["holdout_operating_target_met"]
                                        else "EXPLORATORY_OPERATING_POINT_ONLY")
     (folder / "metrics.json").write_text(json.dumps(report, indent=2, allow_nan=False), encoding="utf-8")

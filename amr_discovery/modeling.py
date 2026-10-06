@@ -42,15 +42,16 @@ def partitions(df, cfg):
         sg = StratifiedGroupKFold(5, shuffle=True, random_state=seed)
         dev_idx, test_idx = next(sg.split(df, df.y, df.group_id))
         dev, test = df.iloc[dev_idx].copy(), df.iloc[test_idx].copy()
-    elif mode in {"source", "country", "region", "temporal"}:
+    elif mode in {"source", "country", "region", "lab", "temporal"}:
         if mode == "temporal":
             dates = pd.to_datetime(df.collection_date, errors="coerce", format="mixed")
             if dates.isna().any():
                 raise IntegrityError("Temporal splitting requires valid dates for every eligible isolate.")
             mask = dates.ge(pd.Timestamp(split["cutoff"]))
         else:
-            col = {"source": "source_id", "country": "country", "region": "region"}[mode]
-            if df[col].isin(["", "NCBI_SOURCE_UNKNOWN"]).any():
+            col = {"source": "source_id", "country": "country", "region": "region", "lab": "lab_id"}[mode]
+            from .harmonization import known
+            if (mode == "lab" and not df[col].map(known).all()) or df[col].isin(["", "NCBI_SOURCE_UNKNOWN"]).any():
                 raise IntegrityError(f"{mode} split cannot use unknown {col}.")
             heldout = split.get("heldout", [])
             if not heldout or not set(heldout) <= set(df[col]):
@@ -60,7 +61,7 @@ def partitions(df, cfg):
         if set(dev.group_id) & set(test.group_id):
             raise IntegrityError("A patient/duplicate group crosses the external boundary; curate it explicitly.")
     else:
-        raise IntegrityError("Split mode must be internal, source, country, region or temporal.")
+        raise IntegrityError("Split mode must be internal, source, country, region, lab or temporal.")
     class_gate(dev, 20, "Development")
     class_gate(test, 5, "Holdout (software minimum, not adequate research precision)")
     sg = StratifiedGroupKFold(4, shuffle=True, random_state=seed+1)
@@ -205,7 +206,7 @@ def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
         raise IntegrityError("No eligible isolates; inspect exclusions before training.")
     split = partitions(cohort, cfg)
     split.to_csv(folder / "cohort_with_splits.csv", index=False)
-    split[["isolate_id", "group_id", "source_id", "country", "partition"]].to_csv(folder / "split_manifest.csv", index=False)
+    split[["isolate_id", "group_id", "source_id", "lab_id", "country", "partition"]].to_csv(folder / "split_manifest.csv", index=False)
     train = split.loc[split.partition.eq("train")]
     cal = split.loc[split.partition.eq("calibration")]
     test = split.loc[split.partition.eq("test")]
@@ -257,7 +258,7 @@ def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
         report = metrics(test.y, p, threshold)
         report["confidence_intervals"] = cluster_intervals(test.y, p, test.group_id, threshold,
                                                            seed, cfg.get("bootstrap_repeats", 200))
-        predictions = test[["isolate_id", "source_id", "country", "region", "species", "mechanism", "group_id", "y", "target_sir"]].copy()
+        predictions = test[["isolate_id", "source_id", "lab_id", "country", "region", "species", "mechanism", "group_id", "y", "target_sir"]].copy()
         predictions["p_resistant"] = p
         predictions["binary_prediction"] = (p >= threshold).astype(int)
         predictions["decision"] = bundle.decisions(p)
@@ -273,7 +274,7 @@ def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
             baseline_reports.append({"model": name, **metrics(test.y, bp, bt)})
         pd.DataFrame(baseline_reports).to_csv(folder / "holdout_baselines.csv", index=False)
         subgroups = []
-        for column in ["source_id", "country", "region", "species", "mechanism"]:
+        for column in ["source_id", "lab_id", "country", "region", "species", "mechanism"]:
             for value, part in predictions.groupby(column, dropna=False):
                 subgroups.append({"grouping": column, "group": value,
                                   "interpretation": "exploratory; no multiplicity correction",

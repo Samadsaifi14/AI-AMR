@@ -22,6 +22,13 @@ def write_report(out, audit, metrics=None, blocked=None):
           ["raw_rows", "raw_isolates", "eligible_isolates", "evidence_status", "label_mode", "endpoint", "patient_ids_available"]]))
     table("Exclusion events", pd.DataFrame([{"reason": k, "events": v} for k,v in audit["excluded_event_counts"].items()]))
     sections.append("<p>Exclusion events may include feature-level events; they are not a count of unique excluded isolates.</p>")
+    if audit.get("comparability"):
+        comp = audit["comparability"]
+        sections.append("<h2>Laboratory comparability</h2><p>" + html.escape(comp["status"]) +
+                        "</p><p>" + html.escape(comp["interpretation"]) + "</p>")
+        table("Missing provenance (relevant observation rows)", pd.DataFrame([
+            {"field": k, "missing_rows": v} for k, v in comp["missing_provenance_rows"].items()]))
+        table("Lab / method / drug inventory", pd.DataFrame(comp["lab_method_drug_groups"]))
     cohort_path = out / "cohort.csv"
     if cohort_path.exists():
         df = pd.read_csv(cohort_path)

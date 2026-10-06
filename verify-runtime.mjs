@@ -5,12 +5,15 @@ import {createHash} from 'node:crypto';
 try {
 const root=fileURLToPath(new URL('./dist/',import.meta.url));
 const py=await loadPyodide({indexURL:fileURLToPath(new URL('./test-runtime/node_modules/pyodide/',import.meta.url)),packageBaseUrl:'https://cdn.jsdelivr.net/pyodide/v0.29.3/full/',stdout:console.log});
-const scipy=JSON.parse(fs.readFileSync(new URL('./test-runtime/node_modules/pyodide/pyodide-lock.json',import.meta.url))).packages.scipy;
-const cachedScipy=new URL('./test-runtime/node_modules/pyodide/'+scipy.file_name,import.meta.url);
-if(fs.existsSync(cachedScipy)){
-  if(createHash('sha256').update(fs.readFileSync(cachedScipy)).digest('hex')!==scipy.sha256)throw Error('Cached SciPy checksum mismatch');
-  await py.loadPackage(scipy.depends,{checkIntegrity:true});
-  await py.loadPackage(fileURLToPath(cachedScipy));
+const lock=JSON.parse(fs.readFileSync(new URL('./test-runtime/node_modules/pyodide/pyodide-lock.json',import.meta.url)));
+for(const packageName of ['scipy','pandas']){
+  const entry=lock.packages[packageName];
+  const cached=new URL('./test-runtime/node_modules/pyodide/'+entry.file_name,import.meta.url);
+  if(fs.existsSync(cached)){
+    if(createHash('sha256').update(fs.readFileSync(cached)).digest('hex')!==entry.sha256)throw Error('Cached '+packageName+' checksum mismatch');
+    await py.loadPackage(entry.depends,{checkIntegrity:true});
+    await py.loadPackage(fileURLToPath(cached));
+  }
 }
 await py.loadPackage(['numpy','pandas','scikit-learn','matplotlib','joblib','threadpoolctl'],{checkIntegrity:true});
 py.FS.mkdirTree('/app/amr_discovery');
@@ -41,7 +44,12 @@ r=await execute({action:'audit',configuration:catConfig,csv:catCsv});
 if(r.audit.raw_isolates!==266||r.audit.eligible_isolates!==213||r.audit.representation!=='categorical_ast')throw Error('Full categorical India audit mismatch');
 r=await execute({action:'validate',configuration:catConfig,csv:catCsv});
 if(r.suite.experiments.filter(x=>x.kind==='region').length!==2||!r.suite.experiments.every(x=>x.status==='blocked'))throw Error('Categorical regional validation gates failed');
+if(r.audit.comparability.missing_provenance_rows.lab_id!==1862)throw Error('Lab audit missed undocumented Indian labs');
+const strict=JSON.parse(catConfig);Object.assign(strict,{comparability_policy:'strict',standard:'EUCAST',standard_version:'documented-version-required',allow_unversioned_reported:false});
+r=await execute({action:'audit',configuration:JSON.stringify(strict),csv:catCsv});
+if(r.audit.raw_isolates!==266||r.audit.eligible_isolates!==0||r.audit.comparability.policy!=='strict')throw Error('Strict provenance gate failed');
 console.log('INDIA_CATEGORICAL_FULL_AUDIT_OK');
+console.log('STRICT_LAB_PROVENANCE_OK');
 console.log('BROWSER_RUNTIME_TESTS_PASSED');
 
 } catch(e) { console.error('RUNTIME_TEST_FAILED',e.message);process.exitCode=1; }

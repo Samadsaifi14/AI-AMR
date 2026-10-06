@@ -1,1 +1,1 @@
-isolate_id,source_id,patient_id,duplicate_group,species,country,collection_date,host,specimen,drug,measurement,operator,units,method,platform,standard,standard_version,reported_sir,ndm,oxa48,mechanism_evidence,evidence_class,accession,source_row
+isolate_id,source_id,patient_id,duplicate_group,species,country,collection_date,host,specimen,drug,measurement,operator,units,method,platform,standard,standard_version,reported_sir,ndm,oxa48,mechanism_evidence,evidence_class,accession,source_row,lab_id,panel_id,tested_concentrations,qc_reference

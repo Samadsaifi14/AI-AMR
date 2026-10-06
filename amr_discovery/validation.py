@@ -15,6 +15,9 @@ def validation_suite(cohort, features, cfg, audit, out):
     if len(cohort):
         specifications += [("source", {"mode": "source", "heldout": [str(source)]})
                            for source in sorted(cohort.source_id.unique())]
+        labs = sorted(set(cohort.get('lab_id', pd.Series(dtype=str))) - {''})
+        if len(labs) > 1:
+            specifications += [('lab', {'mode':'lab', 'heldout':[lab]}) for lab in labs]
         regions = sorted(set(cohort.get('region', pd.Series(dtype=str))) - {''})
         if len(regions) > 1:
             specifications += [('region', {'mode':'region', 'heldout':[region]}) for region in regions]

@@ -49,6 +49,13 @@ def validate_config(cfg):
         raise IntegrityError("Representation must be mic or categorical_ast.")
     if cfg.get("representation") == "categorical_ast" and cfg.get("label_mode") != "reported":
         raise IntegrityError("Categorical AST requires measured reported labels; no MIC breakpoint conversion.")
+    if cfg.get("comparability_policy", "exploratory") not in {"exploratory", "strict"}:
+        raise IntegrityError("Comparability policy must be exploratory or strict.")
+    if cfg.get("comparability_policy") == "strict":
+        if cfg.get("standard") not in {"EUCAST", "CLSI"} or not str(cfg.get("standard_version", "")).strip():
+            raise IntegrityError("Strict comparability requires EUCAST/CLSI and a pinned standard_version.")
+        if cfg.get("label_mode") != "reported":
+            raise IntegrityError("Strict comparability currently accepts documented reported AST only.")
     if cfg.get("target") not in {"meropenem", "imipenem"}:
         raise IntegrityError("Target must be explicitly meropenem or imipenem.")
     if cfg.get("label_mode") not in {"reported", "breakpoints"}:
@@ -191,11 +198,12 @@ def build_cohort(path, config, breakpoint_file=None):
     if not synthetic and not evidence <= {"measured_public", "measured_authorized"}:
         raise IntegrityError("Only documented measured phenotypes are allowed.")
     rules = load_rules(breakpoint_file, cfg, synthetic) if cfg["label_mode"] == "breakpoints" else None
-    if not synthetic and cfg["label_mode"] == "reported" and not cfg.get("allow_unversioned_reported", False):
+    if not synthetic and cfg["label_mode"] == "reported" and cfg.get("comparability_policy") != "strict" and not cfg.get("allow_unversioned_reported", False):
         if raw.loc[raw.drug.map(drug_name).eq(cfg["target"]), "standard_version"].eq("").any():
             raise IntegrityError("Unversioned target labels: use reviewed breakpoints or explicit exploratory configuration.")
     for col in ["country", "collection_date", "patient_id", "duplicate_group", "host", "specimen",
-                "ndm", "oxa48", "mechanism_evidence", "source_row", "region", "hospital_id"]:
+                "ndm", "oxa48", "mechanism_evidence", "source_row", "region", "hospital_id", "lab_id", "platform", "panel_id",
+                "tested_concentrations", "qc_reference"]:
         if col not in raw:
             raw[col] = ""
     for c in ["ndm", "oxa48"]:
@@ -208,10 +216,14 @@ def build_cohort(path, config, breakpoint_file=None):
     raw["drug"] = raw.drug.map(drug_name)
     raw["sir"] = raw.reported_sir.str.strip().str.lower().map(SIR).fillna("unknown")
     raw["standard"] = raw.standard.str.strip().str.upper()
+    raw["standard_version"] = raw.standard_version.str.strip()
+    raw["method"] = raw.method.str.strip()
+    from .harmonization import comparability_audit, provenance_issue
+    comparability = comparability_audit(raw, cfg)
     exclusions = []
     cleaned = []
     metadata_fields = ["source_id", "species", "country", "collection_date", "patient_id",
-                       "duplicate_group", "host", "ndm", "oxa48", "mechanism_evidence", "region", "hospital_id"]
+                       "duplicate_group", "host", "ndm", "oxa48", "mechanism_evidence", "region", "hospital_id", "lab_id"]
     for isolate, block in raw.groupby("isolate_id", sort=True):
         for column in metadata_fields:
             if block[column].nunique() > 1:
@@ -228,7 +240,7 @@ def build_cohort(path, config, breakpoint_file=None):
         by_drug = {}
         for drug, values in block.groupby("drug"):
             # Identical repeated observations collapse; conflicting measurements are never averaged.
-            cols = ["measurement", "operator", "units", "method", "standard", "standard_version", "sir"]
+            cols = ["measurement", "operator", "units", "method", "standard", "standard_version", "sir", "lab_id", "platform", "panel_id", "tested_concentrations", "qc_reference"]
             unique = values.drop_duplicates(cols)
             if len(unique) != 1:
                 exclusions.append({"isolate_id": isolate, "drug": drug, "reason": "conflicting_replicates"})
@@ -247,6 +259,11 @@ def build_cohort(path, config, breakpoint_file=None):
                 exclusions.append({"isolate_id": isolate, "reason": "target_MIC_invalid"}); continue
         if target.standard != cfg["standard"] and cfg["label_mode"] == "reported":
             exclusions.append({"isolate_id": isolate, "reason": "target_standard_mismatch"}); continue
+        if cfg.get("label_mode") == "reported" and cfg.get("standard_version") and target.standard_version.strip() != str(cfg["standard_version"]).strip():
+            exclusions.append({"isolate_id": isolate, "reason": "target_version_mismatch"}); continue
+        issue = provenance_issue(target, cfg, categorical)
+        if issue and (cfg.get("comparability_policy") == "strict" or issue == "dilution_panel_invalid"):
+            exclusions.append({"isolate_id": isolate, "reason": "target_" + issue}); continue
         sir = target.sir
         if rules:
             matches = [r for r in rules["rules"] if r["species"] == meta.species and r["drug"] == cfg["target"]]
@@ -270,6 +287,14 @@ def build_cohort(path, config, breakpoint_file=None):
                 try:
                     if r is not None and r.method.lower() not in AST_METHODS:
                         raise IntegrityError("Predictor is not a documented measured AST method.")
+                    if r is not None:
+                        expected_version = str(cfg.get("standard_version", target.standard_version)).strip()
+                        if r.standard != cfg["standard"] or r.standard_version.strip() != expected_version:
+                            exclusions.append({"isolate_id": isolate, "drug": drug, "reason": "feature_interpretation_mismatch"})
+                            r = None
+                        elif cfg.get("comparability_policy") == "strict" and provenance_issue(r, cfg, True):
+                            exclusions.append({"isolate_id": isolate, "drug": drug, "reason": "feature_" + provenance_issue(r, cfg, True)})
+                            r = None
                     encoded, present = encode_ast(drug, r.reported_sir if r is not None else "")
                 except IntegrityError:
                     exclusions.append({"isolate_id": isolate, "drug": drug, "reason": "feature_AST_invalid"})
@@ -280,6 +305,9 @@ def build_cohort(path, config, breakpoint_file=None):
             mic = None
             if r is not None and r.method.lower() in MIC_METHODS:
                 try:
+                    issue = provenance_issue(r, cfg, False)
+                    if issue and (cfg.get("comparability_policy") == "strict" or issue == "dilution_panel_invalid"):
+                        raise IntegrityError(issue)
                     mic = parse_mic(r.measurement, r.operator, r.units)
                 except IntegrityError:
                     exclusions.append({"isolate_id": isolate, "drug": drug, "reason": "feature_MIC_invalid"})
@@ -312,6 +340,7 @@ def build_cohort(path, config, breakpoint_file=None):
              "evidence_status": "SOFTWARE_DEMONSTRATION" if synthetic else "EXPLORATORY_MEASURED_DATA",
              "label_mode": cfg["label_mode"], "endpoint": cfg["endpoint"],
              "representation": cfg.get("representation", "mic"),
+             "comparability": comparability,
              "excluded_event_counts": dict(Counter(x["reason"] for x in exclusions)),
              "input_target_SIR_counts": raw.loc[raw.drug.eq(cfg["target"]), "sir"].value_counts().to_dict(),
              "class_counts": cohort.y.value_counts().to_dict() if len(cohort) else {},

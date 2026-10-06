@@ -1,0 +1,13 @@
+{
+  "doi": "10.1038/s44259-026-00185-9",
+  "rows": 2128,
+  "published_isolates": 266,
+  "row_subsampling": false,
+  "encoding": "Nominal S/I/R/SDD/missing; no MIC values inferred.",
+  "limitations": [
+    "No per-isolate AST standard/version or hospital/patient identifiers supplied.",
+    "Regions are not independent studies or verified hospital holdouts.",
+    "Gene status remains unknown until sequence/AST identity and assays are curated.",
+    "All 266 rows retained; supported gram-negative scope is selected by configuration."
+  ]
+}

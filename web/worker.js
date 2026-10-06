@@ -6,7 +6,7 @@ async function initialize() {
   postMessage({type:'progress',message:'Loading the Python runtime and scientific packages. First launch downloads about 100 MB; keep this tab open.'});
   importScripts(INDEX+'pyodide.js');
   runtime = await loadPyodide({indexURL:INDEX,stdout:message=>postMessage({type:'progress',message})});
-  await runtime.loadPackage(['numpy','pandas','scikit-learn','matplotlib','joblib','threadpoolctl']);
+  await runtime.loadPackage(['numpy','pandas','scikit-learn','matplotlib','joblib','threadpoolctl'],{checkIntegrity:true});
   const response=await fetch('python-sources.json');
   if(!response.ok) throw new Error('Cannot load application Python source.');
   const sources=await response.json();

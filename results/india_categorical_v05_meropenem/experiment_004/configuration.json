@@ -1,0 +1,39 @@
+{
+  "target": "meropenem",
+  "representation": "categorical_ast",
+  "species": [
+    "Escherichia coli",
+    "Klebsiella pneumoniae",
+    "Acinetobacter baumannii",
+    "Pseudomonas aeruginosa",
+    "Proteus mirabilis",
+    "Burkholderia cepacia",
+    "Providencia rettgeri",
+    "Enterobacter cloacae"
+  ],
+  "features": [
+    "cefepime",
+    "ceftazidime",
+    "ciprofloxacin",
+    "gentamicin",
+    "amikacin",
+    "colistin"
+  ],
+  "min_observed_features": 3,
+  "human_only": true,
+  "label_mode": "reported",
+  "endpoint": "R_vs_S",
+  "standard": "UNSPECIFIED_REPORTED",
+  "allow_unversioned_reported": true,
+  "seed": 42,
+  "bootstrap_repeats": 1000,
+  "sensitivity_target": 0.95,
+  "specificity_target": 0.5,
+  "deferral_halfwidth": 0.1,
+  "split": {
+    "mode": "country",
+    "heldout": [
+      "India"
+    ]
+  }
+}

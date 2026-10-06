@@ -26,6 +26,9 @@ const files = {
   'audit_v03.md':'docs/AUDIT_V03.md',
   'india_validation_v04.md':'docs/INDIA_VALIDATION_V04.md',
   'india_external_result_v04.json':'docs/INDIA_EXTERNAL_RESULT_V04.json',
+  'india_model_audit_v05.md':'docs/INDIA_MODEL_AUDIT_V05.md',
+  'data/india_categorical.csv':'data/curated/india_categorical_v05/observations.csv',
+  'configs/india_categorical.json':'data/curated/india_categorical_v05/meropenem_config.json',
   'implementation_plan.md':'docs/ORIGINAL_IMPLEMENTATION_PLAN.md',
   'AMR_Discovery_Source.zip':'downloads/AMR_Discovery_Source.zip'
 };

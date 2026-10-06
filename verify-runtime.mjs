@@ -1,10 +1,18 @@
 import {loadPyodide} from './test-runtime/node_modules/pyodide/pyodide.mjs';
 import {fileURLToPath} from 'node:url';
 import fs from 'node:fs';
+import {createHash} from 'node:crypto';
 try {
 const root=fileURLToPath(new URL('./dist/',import.meta.url));
 const py=await loadPyodide({indexURL:fileURLToPath(new URL('./test-runtime/node_modules/pyodide/',import.meta.url)),packageBaseUrl:'https://cdn.jsdelivr.net/pyodide/v0.29.3/full/',stdout:console.log});
-await py.loadPackage(['numpy','pandas','scikit-learn','matplotlib','joblib','threadpoolctl']);
+const scipy=JSON.parse(fs.readFileSync(new URL('./test-runtime/node_modules/pyodide/pyodide-lock.json',import.meta.url))).packages.scipy;
+const cachedScipy=new URL('./test-runtime/node_modules/pyodide/'+scipy.file_name,import.meta.url);
+if(fs.existsSync(cachedScipy)){
+  if(createHash('sha256').update(fs.readFileSync(cachedScipy)).digest('hex')!==scipy.sha256)throw Error('Cached SciPy checksum mismatch');
+  await py.loadPackage(scipy.depends,{checkIntegrity:true});
+  await py.loadPackage(fileURLToPath(cachedScipy));
+}
+await py.loadPackage(['numpy','pandas','scikit-learn','matplotlib','joblib','threadpoolctl'],{checkIntegrity:true});
 py.FS.mkdirTree('/app/amr_discovery');
 for(const [name,text] of Object.entries(JSON.parse(fs.readFileSync(root+'python-sources.json','utf8'))))py.FS.writeFile('/app/'+name,text);
 py.runPython('import sys\nsys.path.insert(0,"/app")\nfrom browser_bridge import execute');
@@ -25,8 +33,15 @@ r=await execute({action:'train',configuration:fs.readFileSync(root+'configs/publ
 if(!r.metrics||r.metrics.n!==165||!r.metrics.all_eligible_isolates_used||r.metrics.fn+r.metrics.tp!==29)throw Error('Public source integrity failure: '+JSON.stringify(r.metrics||r.blocked));
 console.log('PUBLIC_SOURCE_RUNTIME_OK',JSON.stringify({n:r.metrics.n,auroc:r.metrics.auroc,sensitivity:r.metrics.sensitivity,fn:r.metrics.fn}));
 fs.writeFileSync(new URL('./test-runtime/browser-public-source.zip',import.meta.url),Buffer.from(r.archive,'base64'));
-r=await execute({action:'validate',configuration,csv:fs.readFileSync(root+'data/india.csv','utf8')});
+r=await execute({action:'validate',configuration:fs.readFileSync(root+'configs/public_pilot.json','utf8'),csv:fs.readFileSync(root+'data/india.csv','utf8')});
 if(!r.suite||!r.suite.experiments.every(x=>x.status==='blocked'))throw Error('Validation suite must retain blocked experiments');
+const catConfig=fs.readFileSync(root+'configs/india_categorical.json','utf8');
+const catCsv=fs.readFileSync(root+'data/india_categorical.csv','utf8');
+r=await execute({action:'audit',configuration:catConfig,csv:catCsv});
+if(r.audit.raw_isolates!==266||r.audit.eligible_isolates!==213||r.audit.representation!=='categorical_ast')throw Error('Full categorical India audit mismatch');
+r=await execute({action:'validate',configuration:catConfig,csv:catCsv});
+if(r.suite.experiments.filter(x=>x.kind==='region').length!==2||!r.suite.experiments.every(x=>x.status==='blocked'))throw Error('Categorical regional validation gates failed');
+console.log('INDIA_CATEGORICAL_FULL_AUDIT_OK');
 console.log('BROWSER_RUNTIME_TESTS_PASSED');
 
 } catch(e) { console.error('RUNTIME_TEST_FAILED',e.message);process.exitCode=1; }

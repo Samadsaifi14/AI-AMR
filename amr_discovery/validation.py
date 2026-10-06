@@ -15,6 +15,9 @@ def validation_suite(cohort, features, cfg, audit, out):
     if len(cohort):
         specifications += [("source", {"mode": "source", "heldout": [str(source)]})
                            for source in sorted(cohort.source_id.unique())]
+        regions = sorted(set(cohort.get('region', pd.Series(dtype=str))) - {''})
+        if len(regions) > 1:
+            specifications += [('region', {'mode':'region', 'heldout':[region]}) for region in regions]
     # Always attempt India, including when absent: the blocker is part of the result.
     india_names = sorted({str(c) for c in cohort.get("country", pd.Series(dtype=str))
                           if str(c).strip().casefold() == "india"})

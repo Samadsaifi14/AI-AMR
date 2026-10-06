@@ -16,9 +16,12 @@ ALIASES = {"mem": "meropenem", "ipm": "imipenem", "ert": "ertapenem", "etp": "er
            "cro": "ceftriaxone", "cip": "ciprofloxacin", "amk": "amikacin", "gen": "gentamicin",
            "atm": "aztreonam", "lvx": "levofloxacin", "tob": "tobramycin"}
 SIR = {"susceptible": "S", "sensitive": "S", "s": "S", "resistant": "R", "r": "R",
-       "intermediate": "I", "i": "I", "susceptible, increased exposure": "I"}
+       "intermediate": "I", "i": "I", "susceptible, increased exposure": "I",
+       "sdd": "SDD", "susceptible dose dependent": "SDD"}
+AST_CATEGORIES = ("S", "I", "R", "SDD", "missing")
 MIC_METHODS = {"mic", "broth dilution", "broth microdilution", "frozen broth microdilution",
                "microdilution", "microbroth dilution", "agar dilution"}
+AST_METHODS = MIC_METHODS | {"reported ast", "disk diffusion", "vitek 2", "vitek2"}
 HUMANS = {"homo sapiens", "human", "humans"}
 REQUIRED = {"isolate_id", "source_id", "species", "drug", "measurement", "operator", "units",
             "method", "standard", "standard_version", "reported_sir", "evidence_class"}
@@ -42,6 +45,10 @@ def drug_name(value):
 
 
 def validate_config(cfg):
+    if cfg.get("representation", "mic") not in {"mic", "categorical_ast"}:
+        raise IntegrityError("Representation must be mic or categorical_ast.")
+    if cfg.get("representation") == "categorical_ast" and cfg.get("label_mode") != "reported":
+        raise IntegrityError("Categorical AST requires measured reported labels; no MIC breakpoint conversion.")
     if cfg.get("target") not in {"meropenem", "imipenem"}:
         raise IntegrityError("Target must be explicitly meropenem or imipenem.")
     if cfg.get("label_mode") not in {"reported", "breakpoints"}:
@@ -67,6 +74,15 @@ def validate_config(cfg):
     cfg = dict(cfg)
     cfg["features"] = drugs
     return cfg
+
+
+def encode_ast(drug, value):
+    """Nominal encoding; missing and SDD are never converted to susceptible."""
+    text = str(value).strip().lower()
+    category = SIR.get(text, "missing" if text in {"", "na", "nan", "unknown", "not tested"} else None)
+    if category is None:
+        raise IntegrityError(f"Unsupported categorical AST: {value!r}")
+    return {f"{drug}__{c}": float(c == category) for c in AST_CATEGORIES}, category != "missing"
 
 
 @dataclass(frozen=True)
@@ -179,7 +195,7 @@ def build_cohort(path, config, breakpoint_file=None):
         if raw.loc[raw.drug.map(drug_name).eq(cfg["target"]), "standard_version"].eq("").any():
             raise IntegrityError("Unversioned target labels: use reviewed breakpoints or explicit exploratory configuration.")
     for col in ["country", "collection_date", "patient_id", "duplicate_group", "host", "specimen",
-                "ndm", "oxa48", "mechanism_evidence", "source_row"]:
+                "ndm", "oxa48", "mechanism_evidence", "source_row", "region", "hospital_id"]:
         if col not in raw:
             raw[col] = ""
     for c in ["ndm", "oxa48"]:
@@ -195,7 +211,7 @@ def build_cohort(path, config, breakpoint_file=None):
     exclusions = []
     cleaned = []
     metadata_fields = ["source_id", "species", "country", "collection_date", "patient_id",
-                       "duplicate_group", "host", "ndm", "oxa48", "mechanism_evidence"]
+                       "duplicate_group", "host", "ndm", "oxa48", "mechanism_evidence", "region", "hospital_id"]
     for isolate, block in raw.groupby("isolate_id", sort=True):
         for column in metadata_fields:
             if block[column].nunique() > 1:
@@ -221,12 +237,14 @@ def build_cohort(path, config, breakpoint_file=None):
         target = by_drug.get(cfg["target"])
         if target is None:
             exclusions.append({"isolate_id": isolate, "reason": "target_missing_or_conflicting"}); continue
-        if target.method.lower() not in MIC_METHODS:
+        categorical = cfg.get("representation", "mic") == "categorical_ast"
+        if target.method.lower() not in (AST_METHODS if categorical else MIC_METHODS):
             exclusions.append({"isolate_id": isolate, "reason": "target_method_unsupported"}); continue
-        try:
-            parse_mic(target.measurement, target.operator, target.units)
-        except IntegrityError:
-            exclusions.append({"isolate_id": isolate, "reason": "target_MIC_invalid"}); continue
+        if not categorical:
+            try:
+                parse_mic(target.measurement, target.operator, target.units)
+            except IntegrityError:
+                exclusions.append({"isolate_id": isolate, "reason": "target_MIC_invalid"}); continue
         if target.standard != cfg["standard"] and cfg["label_mode"] == "reported":
             exclusions.append({"isolate_id": isolate, "reason": "target_standard_mismatch"}); continue
         sir = target.sir
@@ -248,6 +266,17 @@ def build_cohort(path, config, breakpoint_file=None):
         observed = 0
         for drug in cfg["features"]:
             r = by_drug.get(drug)
+            if categorical:
+                try:
+                    if r is not None and r.method.lower() not in AST_METHODS:
+                        raise IntegrityError("Predictor is not a documented measured AST method.")
+                    encoded, present = encode_ast(drug, r.reported_sir if r is not None else "")
+                except IntegrityError:
+                    exclusions.append({"isolate_id": isolate, "drug": drug, "reason": "feature_AST_invalid"})
+                    encoded, present = encode_ast(drug, "")
+                result.update(encoded)
+                observed += int(present)
+                continue
             mic = None
             if r is not None and r.method.lower() in MIC_METHODS:
                 try:
@@ -273,12 +302,16 @@ def build_cohort(path, config, breakpoint_file=None):
     cohort = pd.DataFrame(cleaned)
     if len(cohort):
         cohort["group_id"] = construct_groups(cohort)
-    feature_cols = [f"{d}__{suffix}" for d in cfg["features"] for suffix in
-                    ["log2_bound", "left_censored", "right_censored", "strict_bound", "missing"]]
+    suffixes = AST_CATEGORIES if cfg.get("representation") == "categorical_ast" else ["log2_bound", "left_censored", "right_censored", "strict_bound", "missing"]
+    feature_cols = [f"{d}__{suffix}" for d in cfg["features"] for suffix in suffixes]
+    if cohort.empty:
+        cohort = pd.DataFrame(columns=metadata_fields + ['isolate_id', 'y', 'target_sir',
+            'label_standard', 'label_version', 'observed_features', 'mechanism', 'group_id'] + feature_cols)
     audit = {"input_sha256": sha256(path), "raw_rows": len(raw), "raw_isolates": raw.isolate_id.nunique(),
              "eligible_isolates": len(cohort), "synthetic": synthetic,
              "evidence_status": "SOFTWARE_DEMONSTRATION" if synthetic else "EXPLORATORY_MEASURED_DATA",
              "label_mode": cfg["label_mode"], "endpoint": cfg["endpoint"],
+             "representation": cfg.get("representation", "mic"),
              "excluded_event_counts": dict(Counter(x["reason"] for x in exclusions)),
              "input_target_SIR_counts": raw.loc[raw.drug.eq(cfg["target"]), "sir"].value_counts().to_dict(),
              "class_counts": cohort.y.value_counts().to_dict() if len(cohort) else {},
@@ -289,4 +322,6 @@ def build_cohort(path, config, breakpoint_file=None):
                              "No clinical or causal validation.", "Missing patient IDs limit independence claims."]}
     if not synthetic and cfg["label_mode"] == "reported" and cfg.get("allow_unversioned_reported"):
         audit["limitations"].append("Reported labels may be unversioned; not breakpoint-harmonized.")
+    if cfg.get("representation") == "categorical_ast":
+        audit["limitations"].append("Categorical model: S, I, R, SDD and missing encoded separately; no numeric MICs inferred.")
     return cohort, audit, pd.DataFrame(exclusions), feature_cols

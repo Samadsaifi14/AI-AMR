@@ -1,0 +1,136 @@
+{
+  "metrics": {
+    "n": 165,
+    "resistant": 29,
+    "nonresistant": 136,
+    "prevalence": 0.17575757575757575,
+    "threshold": 0.28103962956891015,
+    "auroc": 0.7544371196754565,
+    "average_precision": 0.33950068145993706,
+    "brier": 0.1410898638091209,
+    "log_loss": 0.44475300796033035,
+    "sensitivity": 0.034482758620689655,
+    "specificity": 0.9705882352941176,
+    "balanced_accuracy": 0.5025354969574036,
+    "ppv": 0.2,
+    "npv": 0.825,
+    "accuracy": 0.806060606060606,
+    "false_negative_fraction_R": 0.9655172413793104,
+    "tn": 132,
+    "fp": 4,
+    "fn": 28,
+    "tp": 1,
+    "confidence_intervals": {
+      "auroc": {
+        "low": 0.6741843723089161,
+        "high": 0.8302493234544934,
+        "valid_replicates": 200,
+        "unit": "patient/duplicate component, else isolate"
+      },
+      "average_precision": {
+        "low": 0.23408687549592455,
+        "high": 0.48838827562386233,
+        "valid_replicates": 200,
+        "unit": "patient/duplicate component, else isolate"
+      },
+      "brier": {
+        "low": 0.09756824745797224,
+        "high": 0.18627347509618997,
+        "valid_replicates": 200,
+        "unit": "patient/duplicate component, else isolate"
+      },
+      "sensitivity": {
+        "low": 0.0,
+        "high": 0.12003030303030303,
+        "valid_replicates": 200,
+        "unit": "patient/duplicate component, else isolate"
+      },
+      "specificity": {
+        "low": 0.939346590909091,
+        "high": 1.0,
+        "valid_replicates": 200,
+        "unit": "patient/duplicate component, else isolate"
+      },
+      "false_negative_fraction_R": {
+        "low": 0.879969696969697,
+        "high": 1.0,
+        "valid_replicates": 200,
+        "unit": "patient/duplicate component, else isolate"
+      }
+    },
+    "selected_model": "boost_leaves7",
+    "split_mode": "source",
+    "evidence_status": "EXPLORATORY_MEASURED_DATA",
+    "calibration_note": "Calibration and operating threshold share a held-out development subset; holdout is untouched.",
+    "small_sample_warning": true,
+    "source_holdout": true,
+    "independently_verified_external_validation": false,
+    "clinical_validation": false,
+    "causal_discovery": false,
+    "partition_counts": {
+      "calibration": 79,
+      "test": 165,
+      "train": 238
+    },
+    "all_eligible_isolates_used": true,
+    "selection_cv": "leave_one_development_source_out",
+    "india_test_isolates": 0,
+    "india_validation_status": "NOT_ESTABLISHED",
+    "development_sensitivity_target": 0.95,
+    "development_specificity_target": 0.5,
+    "holdout_sensitivity_target_met": false,
+    "holdout_specificity_target_met": true,
+    "holdout_operating_target_met": false,
+    "interpretation_status": "OPERATING_POINT_FAILED"
+  },
+  "model_lock": {
+    "selected_model": "boost_leaves7",
+    "selection": "lowest equally weighted development-fold log loss; worst-fold tie break",
+    "selection_cv": "leave_one_development_source_out",
+    "threshold": 0.28103962956891015,
+    "deferral_low": 0.18103962956891015,
+    "deferral_high": 0.38103962956891013,
+    "configuration": {
+      "target": "meropenem",
+      "species": [
+        "Klebsiella pneumoniae"
+      ],
+      "features": [
+        "cefepime",
+        "ceftazidime",
+        "ciprofloxacin",
+        "gentamicin",
+        "amikacin"
+      ],
+      "min_observed_features": 3,
+      "human_only": true,
+      "require_known_source": true,
+      "label_mode": "reported",
+      "endpoint": "R_vs_S",
+      "standard": "CLSI",
+      "allow_unversioned_reported": true,
+      "seed": 42,
+      "bootstrap_repeats": 200,
+      "sensitivity_target": 0.95,
+      "deferral_halfwidth": 0.1,
+      "split": {
+        "mode": "source",
+        "heldout": [
+          "PRJNA278886"
+        ]
+      },
+      "study_note": "Exploratory project holdout selected for class coverage after feasibility audit; no independent recruitment or patient audit established.",
+      "specificity_target": 0.5
+    },
+    "input_sha256": "39d07642ac4f1e123eb57c3d8989c87c85e91785b51fa86abde8fb901e203eb9",
+    "split_sha256": "a0e5fd88e76ab01ea9475db619378d294f49df13a647e4418ce0d67188db2412",
+    "calibration": "held-out sigmoid",
+    "evidence_status": "EXPLORATORY_MEASURED_DATA",
+    "environment": {
+      "python": "3.13.2",
+      "sklearn": "1.7.0",
+      "numpy": "2.2.5",
+      "pandas": "2.3.3"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+experiment,kind,heldout,input_eligible_n,experiment_eligible_n,unknown_source_excluded_n,status,reason
+experiment_000,internal,,186,186,0,blocked,"Internal split needs >= 20 isolates of each class; found {1: 177, 0: 9}."
+experiment_001,source,PRJNA1273658,186,186,0,blocked,Development needs >= 20 isolates of each class; found {}.
+experiment_002,region,Northern,186,186,0,blocked,"Development needs >= 20 isolates of each class; found {1: 71, 0: 2}."
+experiment_003,region,Western,186,186,0,blocked,"Development needs >= 20 isolates of each class; found {1: 106, 0: 7}."
+experiment_004,India,India,186,186,0,blocked,Development needs >= 20 isolates of each class; found {}.

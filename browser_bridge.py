@@ -7,7 +7,7 @@ import zipfile
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from amr_discovery.data import build_cohort, IntegrityError, parse_mic
+from amr_discovery.data import build_cohort, IntegrityError, parse_mic, encode_ast
 from amr_discovery.modeling import fit_and_evaluate
 from amr_discovery.reporting import write_report
 from amr_discovery.topology import gene_network, spatial_edges
@@ -37,6 +37,10 @@ def execute(payload):
         for drug in LAST_CFG['features']:
             d = payload['values'].get(drug, {})
             value = str(d.get('value','')).strip()
+            if LAST_CFG.get('representation') == 'categorical_ast':
+                encoded, present = encode_ast(drug, value)
+                row.update(encoded); observed += int(present)
+                continue
             mic = parse_mic(value,str(d.get('operator','='))) if value else None
             if value and mic is None:
                 raise IntegrityError(f'Invalid MIC for {drug}; use a positive mg/L bound up to 1024.')

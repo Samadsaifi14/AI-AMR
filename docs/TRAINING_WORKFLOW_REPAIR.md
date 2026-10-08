@@ -9,3 +9,5 @@ Validation: native Python 99 passed, 1 skipped (optional XGBoost not installed);
 Scientific methods, selection, calibration, measured-label requirements and independent evaluation boundaries are preserved. Training completion does not mean operating targets have been met. No paid service or external patient-data upload was introduced.
 
 Canonical framework Pyodide integration passed: public training/evaluation on 165 held-out isolates and dynamic prediction. Demo training/prediction, public source evaluation, Indian class-balance blocking and categorical/provenance gates passed in runtime verification.
+
+Production repair deployment READY at commit 907d7d24027dca36de6b210bb11665a05fd6743a. Live guided demo train/evaluate completed in 21 seconds; progress panel and elapsed clock visible. Stop discarded the interrupted model and disabled experiment export. Final copy correction clears running instructions when an operation ends.

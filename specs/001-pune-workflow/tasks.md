@@ -12,4 +12,4 @@
 
 - [x] Follow-up: progress stages, elapsed time, cancellation and source-loading guard
 - [x] Follow-up: correct measured evidence-class documentation and add four design references
-- [ ] Follow-up: verify software/runtime and deployed UI
+- [x] Follow-up: verify software/runtime and deployed UI

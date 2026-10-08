@@ -10,6 +10,15 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+ANTIBIOTICS = {"meropenem", "imipenem", "ertapenem", "doripenem", "cefepime", "ceftazidime",
+               "cefotaxime", "ceftriaxone", "cefoxitin", "cefazolin", "aztreonam", "amikacin",
+               "gentamicin", "tobramycin", "ciprofloxacin", "levofloxacin", "colistin",
+               "polymyxin-b", "tigecycline", "trimethoprim-sulfamethoxazole", "ampicillin",
+               "piperacillin", "fosfomycin", "nitrofurantoin", "chloramphenicol", "tetracycline"}
+COMBINATIONS = {"ceftazidime-avibactam", "meropenem-vaborbactam", "imipenem-relebactam",
+                "piperacillin-tazobactam", "ampicillin-sulbactam", "amoxicillin-clavulanate"}
+MECHANISMS = ("ndm", "oxa48", "kpc", "vim", "imp")
+
 CARBAPENEMS = {"meropenem", "imipenem", "ertapenem", "doripenem", "biapenem", "panipenem", "tebipenem"}
 ALIASES = {"mem": "meropenem", "ipm": "imipenem", "ert": "ertapenem", "etp": "ertapenem",
            "dor": "doripenem", "fep": "cefepime", "caz": "ceftazidime", "ctx": "cefotaxime",
@@ -45,6 +54,10 @@ def drug_name(value):
 
 
 def validate_config(cfg):
+    cfg = dict(cfg)
+    from .harmonization import known
+    if cfg.get('selection_objective', 'log_loss') not in {'log_loss', 'specificity_at_sensitivity'}:
+        raise IntegrityError('Unknown development selection objective.')
     if cfg.get("representation", "mic") not in {"mic", "categorical_ast"}:
         raise IntegrityError("Representation must be mic or categorical_ast.")
     if cfg.get("representation") == "categorical_ast" and cfg.get("label_mode") != "reported":
@@ -52,12 +65,20 @@ def validate_config(cfg):
     if cfg.get("comparability_policy", "exploratory") not in {"exploratory", "strict"}:
         raise IntegrityError("Comparability policy must be exploratory or strict.")
     if cfg.get("comparability_policy") == "strict":
-        if cfg.get("standard") not in {"EUCAST", "CLSI"} or not str(cfg.get("standard_version", "")).strip():
+        if cfg.get("standard") not in {"EUCAST", "CLSI"} or not known(cfg.get("standard_version", "")):
             raise IntegrityError("Strict comparability requires EUCAST/CLSI and a pinned standard_version.")
         if cfg.get("label_mode") != "reported":
             raise IntegrityError("Strict comparability currently accepts documented reported AST only.")
-    if cfg.get("target") not in {"meropenem", "imipenem"}:
-        raise IntegrityError("Target must be explicitly meropenem or imipenem.")
+    if cfg.get('threshold_policy', 'calibration') not in {'calibration', 'source_robust'}:
+        raise IntegrityError('Unknown threshold policy.')
+    if cfg.get('decision_policy', 'validated_band') not in {'validated_band', 'research_binary'}:
+        raise IntegrityError('Unknown research decision policy.')
+    framework = cfg.get("task") == "antibiotic_resistance"
+    if cfg.get("task") not in {None, "antibiotic_resistance"}:
+        raise IntegrityError("This framework predicts antibiotic resistance; mechanisms are annotations only.")
+    cfg["target"] = drug_name(cfg.get("target", ""))
+    if cfg["target"] not in (ANTIBIOTICS | COMBINATIONS if framework else {"meropenem", "imipenem"}):
+        raise IntegrityError("Choose an explicitly supported antibiotic target.")
     if cfg.get("label_mode") not in {"reported", "breakpoints"}:
         raise IntegrityError("Choose reported or reviewed breakpoints label mode.")
     if cfg.get("endpoint") not in {"R_vs_S", "R_vs_nonR"}:
@@ -69,15 +90,54 @@ def validate_config(cfg):
     drugs = [drug_name(x) for x in cfg.get("features", [])]
     if not drugs or len(set(drugs)) != len(drugs):
         raise IntegrityError("Provide a nonempty unique feature drug allowlist.")
+    selection = cfg.get("feature_selection", {})
+    if not isinstance(selection, dict) or set(selection) - {"min_coverage", "correlation_threshold", "max_drugs"}:
+        raise IntegrityError("Unknown feature_selection setting.")
+    for key in ["min_coverage", "correlation_threshold"]:
+        value = selection.get(key, 0.2 if key == "min_coverage" else 0.95)
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or not 0 < value <= 1:
+            raise IntegrityError(f"Invalid feature_selection {key}.")
+    maximum = selection.get("max_drugs")
+    if maximum is not None and (isinstance(maximum, bool) or not isinstance(maximum, int) or maximum < 1):
+        raise IntegrityError("max_drugs must be a positive integer or null.")
+    families = cfg.get("model_families")
+    if families is not None and (not isinstance(families, list) or not families or
+                                 not set(families) <= {"random_forest", "xgboost", "logistic", "hist_gradient_boosting"}):
+        raise IntegrityError("Unsupported model_families.")
     for name in drugs:
+        if framework:
+            if name not in ANTIBIOTICS | COMBINATIONS:
+                raise IntegrityError(f"Unsupported antibiotic predictor: {name}")
+            # Target and products containing it are direct susceptibility proxies.
+            if name == cfg["target"] or name.startswith(cfg["target"] + "-") or cfg["target"].startswith(name + "-"):
+                raise IntegrityError(f"Target antibiotic leakage: {name}")
+            continue
         if any(c in name for c in CARBAPENEMS) or name in {"ndm", "oxa48", "species", "country"}:
             raise IntegrityError(f"Forbidden primary feature: {name}")
         if "/" in name or "-" in name:
             raise IntegrityError("v0.1 accepts single-drug MIC features only; combination ratios require review.")
-    if cfg.get("include_species", False):
+    if cfg.get("include_species", False) and not framework:
         raise IntegrityError("Core models are phenotype-only; species is implemented as a separate baseline.")
+    for name in set(drugs + [cfg["target"]]) & COMBINATIONS:
+        review = cfg.get("combination_reviews", {}).get(name, {})
+        concentration = review.get("fixed_inhibitor_mg_l")
+        if not review.get("citation") or review.get("reviewed") is not True or isinstance(concentration, bool) or not isinstance(concentration, (int, float)) or not math.isfinite(concentration) or concentration <= 0:
+            raise IntegrityError(f"Combination {name} requires reviewed citation and fixed_inhibitor_mg_l; ratio MICs are not collapsed.")
     if not 1 <= cfg.get("min_observed_features", 1) <= len(drugs):
         raise IntegrityError("Invalid minimum feature count.")
+    if not isinstance(cfg.get("species"), list) or not cfg["species"] or any(not known(s) for s in cfg["species"]):
+        raise IntegrityError("Provide a nonempty species allowlist.")
+    for field, default, lower, upper, inclusive in [
+        ("sensitivity_target", .95, 0, 1, False),
+        ("specificity_target", .5, 0, 1, True),
+        ("deferral_halfwidth", .1, 0, .5, True),
+    ]:
+        value = cfg.get(field, default)
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or not (lower <= value <= upper) or (not inclusive and value == lower) or (field == "deferral_halfwidth" and value == upper):
+            raise IntegrityError(f"Invalid {field}.")
+    repeats = cfg.get("bootstrap_repeats", 200)
+    if isinstance(repeats, bool) or not isinstance(repeats, int) or repeats < 1:
+        raise IntegrityError("bootstrap_repeats must be a positive integer.")
     cfg = dict(cfg)
     cfg["features"] = drugs
     return cfg
@@ -156,7 +216,23 @@ def load_rules(path, cfg, synthetic):
         raise IntegrityError("Breakpoint citation and version are required.")
     if rules.get("standard") != cfg["standard"]:
         raise IntegrityError("Breakpoint standard differs from study configuration.")
+    if cfg.get("standard_version") and str(rules["version"]) != str(cfg["standard_version"]):
+        raise IntegrityError("Breakpoint version differs from study configuration.")
     return rules
+
+
+def identity_tokens(row):
+    """Recorded identity links only; hospital IDs must be consistently curated across sources."""
+    from .harmonization import known
+    tokens = {'isolate:' + row['isolate_id']}
+    if known(row.get('patient_id', '')):
+        if known(row.get('source_id', '')):
+            tokens.add('patient:' + row['source_id'] + ':' + row['patient_id'])
+        if known(row.get('hospital_id', '')):
+            tokens.add('hospital_patient:' + row['hospital_id'] + ':' + row['patient_id'])
+    if known(row.get('duplicate_group', '')):
+        tokens.add('duplicate:' + row['duplicate_group'])
+    return tokens
 
 
 def construct_groups(cohort):
@@ -169,12 +245,7 @@ def construct_groups(cohort):
         return i
     seen = {}
     for i, row in enumerate(cohort.to_dict("records")):
-        tokens = ["isolate:" + row["isolate_id"]]
-        if row.get("patient_id"):
-            tokens.append("patient:" + row["source_id"] + ":" + row["patient_id"])
-        if row.get("duplicate_group"):
-            tokens.append("duplicate:" + row["duplicate_group"])
-        for token in tokens:
+        for token in sorted(identity_tokens(row)):
             if token in seen:
                 parent[root(i)] = root(seen[token])
             else:
@@ -185,6 +256,9 @@ def construct_groups(cohort):
 def build_cohort(path, config, breakpoint_file=None):
     cfg = validate_config(config)
     raw = pd.read_csv(path, dtype=str, keep_default_na=False)
+    # Formatting whitespace must not create different patient or isolate identities.
+    for column in raw.columns:
+        raw[column] = raw[column].str.strip()
     if REQUIRED - set(raw.columns):
         raise IntegrityError(f"Missing columns: {sorted(REQUIRED - set(raw.columns))}")
     if raw.empty:
@@ -203,15 +277,20 @@ def build_cohort(path, config, breakpoint_file=None):
             raise IntegrityError("Unversioned target labels: use reviewed breakpoints or explicit exploratory configuration.")
     for col in ["country", "collection_date", "patient_id", "duplicate_group", "host", "specimen",
                 "ndm", "oxa48", "mechanism_evidence", "source_row", "region", "hospital_id", "lab_id", "platform", "panel_id",
-                "tested_concentrations", "qc_reference"]:
+                "tested_concentrations", "qc_reference", "curation_status", "fixed_inhibitor_mg_l"]:
         if col not in raw:
             raw[col] = ""
-    for c in ["ndm", "oxa48"]:
+    for c in MECHANISMS:
+        if c not in raw:
+            raw[c] = "unknown"
         raw[c] = raw[c].replace("", "unknown")
         if not set(raw[c]) <= {"positive", "negative", "unknown"}:
             raise IntegrityError(f"Invalid {c} state; use positive, negative, unknown.")
-    annotated = raw[["ndm", "oxa48"]].ne("unknown").any(axis=1)
-    if (annotated & raw.mechanism_evidence.isin(["", "not_curated"])).any():
+    annotated = raw[list(MECHANISMS)].ne("unknown").any(axis=1)
+    from .harmonization import known
+    for c in ['patient_id', 'duplicate_group', 'hospital_id']:
+        raw[c] = raw[c].map(lambda value: value if known(value) else '')
+    if (annotated & ~raw.mechanism_evidence.map(known)).any():
         raise IntegrityError("Mechanism annotations need an evidence reference.")
     raw["drug"] = raw.drug.map(drug_name)
     raw["sir"] = raw.reported_sir.str.strip().str.lower().map(SIR).fillna("unknown")
@@ -223,13 +302,16 @@ def build_cohort(path, config, breakpoint_file=None):
     exclusions = []
     cleaned = []
     metadata_fields = ["source_id", "species", "country", "collection_date", "patient_id",
-                       "duplicate_group", "host", "ndm", "oxa48", "mechanism_evidence", "region", "hospital_id", "lab_id"]
+                       "duplicate_group", "host", *MECHANISMS, "mechanism_evidence", "region", "hospital_id", "lab_id"]
     for isolate, block in raw.groupby("isolate_id", sort=True):
+        if block.curation_status.str.upper().str.contains('QUARANTIN|REVIEW_REQUIRED|PROPOSED', regex=True).any():
+            exclusions.append({"isolate_id": isolate, "reason": "curation_quarantined"}); continue
         for column in metadata_fields:
             if block[column].nunique() > 1:
                 raise IntegrityError(f"Conflicting {column} for isolate {isolate}; curate before training.")
         meta = block.iloc[0]
-        if cfg.get("require_known_source", False) and meta.source_id in {"", "NCBI_SOURCE_UNKNOWN"}:
+        from .harmonization import known
+        if cfg.get("require_known_source", False) and not known(meta.source_id):
             exclusions.append({"isolate_id": isolate, "reason": "source_unknown"}); continue
         if meta.species not in cfg["species"]:
             exclusions.append({"isolate_id": isolate, "reason": "unsupported_species"}); continue
@@ -240,12 +322,22 @@ def build_cohort(path, config, breakpoint_file=None):
         by_drug = {}
         for drug, values in block.groupby("drug"):
             # Identical repeated observations collapse; conflicting measurements are never averaged.
-            cols = ["measurement", "operator", "units", "method", "standard", "standard_version", "sir", "lab_id", "platform", "panel_id", "tested_concentrations", "qc_reference"]
+            cols = ["measurement", "operator", "units", "method", "standard", "standard_version", "sir", "lab_id", "platform", "panel_id", "tested_concentrations", "qc_reference", "fixed_inhibitor_mg_l"]
             unique = values.drop_duplicates(cols)
             if len(unique) != 1:
                 exclusions.append({"isolate_id": isolate, "drug": drug, "reason": "conflicting_replicates"})
                 continue
-            by_drug[drug] = unique.iloc[0]
+            record = unique.iloc[0]
+            if drug in COMBINATIONS and drug in cfg.get('combination_reviews', {}):
+                expected = cfg['combination_reviews'][drug]['fixed_inhibitor_mg_l']
+                try:
+                    valid = math.isclose(float(record.fixed_inhibitor_mg_l), expected, rel_tol=1e-9)
+                except ValueError:
+                    valid = False
+                if not valid:
+                    exclusions.append({'isolate_id': isolate, 'drug': drug, 'reason': 'combination_inhibitor_unverified'})
+                    continue
+            by_drug[drug] = record
         target = by_drug.get(cfg["target"])
         if target is None:
             exclusions.append({"isolate_id": isolate, "reason": "target_missing_or_conflicting"}); continue
@@ -262,7 +354,7 @@ def build_cohort(path, config, breakpoint_file=None):
         if cfg.get("label_mode") == "reported" and cfg.get("standard_version") and target.standard_version.strip() != str(cfg["standard_version"]).strip():
             exclusions.append({"isolate_id": isolate, "reason": "target_version_mismatch"}); continue
         issue = provenance_issue(target, cfg, categorical)
-        if issue and (cfg.get("comparability_policy") == "strict" or issue == "dilution_panel_invalid"):
+        if issue and (cfg.get("comparability_policy") == "strict" or issue in {"dilution_panel_invalid", "drug_method_incompatible"}):
             exclusions.append({"isolate_id": isolate, "reason": "target_" + issue}); continue
         sir = target.sir
         if rules:
@@ -292,7 +384,7 @@ def build_cohort(path, config, breakpoint_file=None):
                         if r.standard != cfg["standard"] or r.standard_version.strip() != expected_version:
                             exclusions.append({"isolate_id": isolate, "drug": drug, "reason": "feature_interpretation_mismatch"})
                             r = None
-                        elif cfg.get("comparability_policy") == "strict" and provenance_issue(r, cfg, True):
+                        elif provenance_issue(r, cfg, True) and (cfg.get("comparability_policy") == "strict" or provenance_issue(r, cfg, True) == 'drug_method_incompatible'):
                             exclusions.append({"isolate_id": isolate, "drug": drug, "reason": "feature_" + provenance_issue(r, cfg, True)})
                             r = None
                     encoded, present = encode_ast(drug, r.reported_sir if r is not None else "")
@@ -306,7 +398,7 @@ def build_cohort(path, config, breakpoint_file=None):
             if r is not None and r.method.lower() in MIC_METHODS:
                 try:
                     issue = provenance_issue(r, cfg, False)
-                    if issue and (cfg.get("comparability_policy") == "strict" or issue == "dilution_panel_invalid"):
+                    if issue and (cfg.get("comparability_policy") == "strict" or issue in {"dilution_panel_invalid", "drug_method_incompatible"}):
                         raise IntegrityError(issue)
                     mic = parse_mic(r.measurement, r.operator, r.units)
                 except IntegrityError:
@@ -326,6 +418,10 @@ def build_cohort(path, config, breakpoint_file=None):
                                "NDM_only_assayed" if meta.ndm == "positive" else
                                "OXA48_only_assayed" if meta.oxa48 == "positive" else
                                "both_assayed_negative" if meta.ndm == meta.oxa48 == "negative" else "unknown")
+        if any(meta[m] != "unknown" for m in ("kpc", "vim", "imp")):
+            positives = [m.upper() for m in MECHANISMS if meta[m] == "positive"]
+            unknown = [m.upper() for m in MECHANISMS if meta[m] == "unknown"]
+            result["mechanism"] = ("+".join(positives) or "assayed_negative") + (";unassayed=" + "+".join(unknown) if unknown else "")
         cleaned.append(result)
     cohort = pd.DataFrame(cleaned)
     if len(cohort):
@@ -336,6 +432,7 @@ def build_cohort(path, config, breakpoint_file=None):
         cohort = pd.DataFrame(columns=metadata_fields + ['isolate_id', 'y', 'target_sir',
             'label_standard', 'label_version', 'observed_features', 'mechanism', 'group_id'] + feature_cols)
     audit = {"input_sha256": sha256(path), "raw_rows": len(raw), "raw_isolates": raw.isolate_id.nunique(),
+             "breakpoints_sha256": sha256(breakpoint_file) if rules else None,
              "eligible_isolates": len(cohort), "synthetic": synthetic,
              "evidence_status": "SOFTWARE_DEMONSTRATION" if synthetic else "EXPLORATORY_MEASURED_DATA",
              "label_mode": cfg["label_mode"], "endpoint": cfg["endpoint"],
@@ -347,6 +444,12 @@ def build_cohort(path, config, breakpoint_file=None):
              "patient_ids_available": int(cohort.patient_id.ne("").sum()) if len(cohort) else 0,
              "mechanism_counts": cohort.mechanism.value_counts().to_dict() if len(cohort) else {},
              "feature_columns": feature_cols,
+             "task": cfg.get("task", "legacy_carbapenem_resistance"), "target": cfg["target"],
+             "panel_coverage": [{"drug": d, "source_id": source, "isolates": len(part),
+                                 "observed": int(part[f"{d}__missing"].eq(0).sum()),
+                                 "coverage": float(part[f"{d}__missing"].eq(0).mean()),
+                                 "purpose": "descriptive audit only; selection uses training folds"}
+                                for source, part in cohort.groupby("source_id") for d in cfg["features"]],
              "limitations": ["Not a representative sample unless acquisition design establishes it.",
                              "No clinical or causal validation.", "Missing patient IDs limit independence claims."]}
     if not synthetic and cfg["label_mode"] == "reported" and cfg.get("allow_unversioned_reported"):

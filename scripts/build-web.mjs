@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {gunzipSync} from 'node:zlib';
 import {fileURLToPath} from 'node:url';
+import {packageSource} from './package-source.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const out = path.join(root, 'dist');
@@ -32,11 +33,17 @@ const files = {
   'data/india_categorical.csv':'data/curated/india_categorical_v05/observations.csv',
   'configs/india_categorical.json':'data/curated/india_categorical_v05/meropenem_config.json',
   'implementation_plan.md':'docs/ORIGINAL_IMPLEMENTATION_PLAN.md',
-  'AMR_Discovery_Source.zip':'downloads/AMR_Discovery_Source.zip'
+  'audit_v07.md':'docs/AUDIT_V07.md',
+  'framework_v09.md':'docs/FRAMEWORK_V09.md',
+  'dynamic_v10.md':'docs/DYNAMIC_V10.md',
+  'dynamic_v10_result.json':'docs/DYNAMIC_V10_RESULT.json',
+  'configs/framework_browser.json':'configs/framework_browser.json',
+  'configs/framework_native.json':'configs/framework_native.json'
 };
 for (const [destination,source] of Object.entries(files)) {
   await fs.copyFile(path.join(root,source),path.join(out,destination));
 }
+await packageSource(root,path.join(out,'AMR_Discovery_Source.zip'));
 await fs.writeFile(path.join(out,'data/public.csv'),gunzipSync(await fs.readFile(path.join(root,'data/raw/ncbi_kp_human/observations.csv.gz'))));
 for (const name of ['demo','public_pilot','public_source_holdout']) {
   await fs.copyFile(path.join(root,'configs',name+'.json'),path.join(out,'configs',name+'.json'));

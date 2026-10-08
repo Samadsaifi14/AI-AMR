@@ -1,0 +1,206 @@
+{
+  "configuration": {
+    "target": "meropenem",
+    "species": [
+      "Escherichia coli",
+      "Klebsiella pneumoniae"
+    ],
+    "features": [
+      "imipenem",
+      "ertapenem",
+      "doripenem",
+      "cefepime",
+      "ceftazidime",
+      "cefotaxime",
+      "ceftriaxone",
+      "aztreonam",
+      "amikacin",
+      "gentamicin",
+      "tobramycin",
+      "ciprofloxacin",
+      "levofloxacin",
+      "colistin",
+      "tigecycline"
+    ],
+    "min_observed_features": 3,
+    "human_only": true,
+    "label_mode": "reported",
+    "endpoint": "R_vs_S",
+    "standard": "CLSI",
+    "allow_unversioned_reported": true,
+    "seed": 42,
+    "bootstrap_repeats": 200,
+    "sensitivity_target": 1.0,
+    "deferral_halfwidth": 0,
+    "split": {
+      "mode": "source",
+      "heldout": [
+        "PRJNA278886"
+      ]
+    },
+    "specificity_target": 0.5,
+    "task": "antibiotic_resistance",
+    "include_species": true,
+    "feature_selection": {
+      "min_coverage": 0.2,
+      "correlation_threshold": 0.95,
+      "max_drugs": null
+    },
+    "model_families": [
+      "random_forest",
+      "xgboost"
+    ],
+    "study_note": "Dynamic exploratory research. Source-robust threshold uses training out-of-fold and calibration source outcomes only. Previously examined holdouts remain retrospective; this is not fresh independent validation. User-requested sensitivity-first development goal: 1.0. Final-test results do not set the threshold; perfect future sensitivity is not guaranteed.",
+    "include_xgboost": true,
+    "require_known_source": true,
+    "threshold_policy": "source_robust",
+    "decision_policy": "research_binary",
+    "selection_objective": "specificity_at_sensitivity"
+  },
+  "input_sha256": "49ccf166f7e49f9b5142cf84ea5caa7c515ec93ea0ed4a342b911eaa52753eff",
+  "experiments": [
+    [
+      "internal",
+      {
+        "mode": "internal"
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA1156689"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA1271593"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA278886"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA288601"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA296771"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA308116"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA312972"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA482724"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA529562|PRJNA529587"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA565241"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA587095"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA726009"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA861833"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA953359"
+        ]
+      }
+    ],
+    [
+      "India",
+      {
+        "mode": "country",
+        "heldout": [
+          "India"
+        ]
+      }
+    ]
+  ],
+  "row_subsampling": false,
+  "interpretation": "Exploratory repeated validation. No winner selected from test results; fresh external data required."
+}

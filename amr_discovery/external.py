@@ -1,17 +1,18 @@
-"""Independent challenge of a previously frozen, locally trusted research model."""
+"""Independent challenge of a saved, locally trusted research model snapshot."""
 import json
 import os
 from pathlib import Path
 import joblib
 import pandas as pd
-from scipy.stats import beta
-from .data import IntegrityError, build_cohort, sha256
+from .data import IntegrityError, build_cohort, sha256, identity_tokens
+from .harmonization import known
 from .modeling import metrics, cluster_intervals
+from .uncertainty import exact_interval
 
 FILES = ('research_model.joblib', 'model_lock.json', 'cohort_with_splits.csv')
 
 
-def freeze_external(run, out):
+def snapshot_external(run, out):
     run = Path(run).resolve()
     lock = json.loads((run / 'model_lock.json').read_text())
     protocol = {
@@ -26,14 +27,6 @@ def freeze_external(run, out):
     with Path(out).open('x') as f:
         json.dump(protocol, f, indent=2)
     return protocol
-
-
-def exact_interval(successes, total):
-    if not total:
-        return {'low': None, 'high': None, 'n': 0}
-    return {'low': 0. if successes == 0 else float(beta.ppf(.025, successes, total-successes+1)),
-            'high': 1. if successes == total else float(beta.ppf(.975, successes+1, total-successes)),
-            'n': int(total), 'method': 'two-sided 95% Clopper-Pearson; assumes independent isolates'}
 
 
 def evaluate_external(protocol_path, data, out, breakpoints=None):
@@ -53,10 +46,13 @@ def evaluate_external(protocol_path, data, out, breakpoints=None):
             raise IntegrityError('External evidence targets cannot be relaxed in this workflow.')
         for name in FILES:
             if sha256(run / name) != protocol['sha256'][name]:
-                raise IntegrityError(f'Frozen artifact changed: {name}')
+                raise IntegrityError(f'Evaluation snapshot changed: {name}')
         lock = json.loads((run / 'model_lock.json').read_text())
         if protocol['configuration'] != lock['configuration'] or protocol['threshold'] != lock['threshold']:
-            raise IntegrityError('Protocol differs from the frozen model lock.')
+            raise IntegrityError('Protocol differs from the evaluation snapshot.')
+        if protocol['configuration']['label_mode'] == 'breakpoints':
+            if not breakpoints or not lock.get('breakpoints_sha256') or sha256(breakpoints) != lock['breakpoints_sha256']:
+                raise IntegrityError('External breakpoint rules must match the hash recorded before evaluation.')
         cohort, audit, exclusions, features = build_cohort(data, protocol['configuration'], breakpoints)
         exclusions.to_csv(folder / 'exclusions.csv', index=False)
         (folder / 'audit.json').write_text(json.dumps(audit, indent=2))
@@ -69,19 +65,23 @@ def evaluate_external(protocol_path, data, out, breakpoints=None):
         prior = pd.read_csv(run / 'cohort_with_splits.csv', dtype=str, keep_default_na=False)
         if set(cohort.isolate_id) & set(prior.isolate_id):
             raise IntegrityError('External isolate IDs overlap prior training, calibration or test data.')
-        if cohort.source_id.isin(['', 'NCBI_SOURCE_UNKNOWN']).any():
+        if not cohort.source_id.map(known).all():
             raise IntegrityError('External source identity is unknown.')
         if set(cohort.source_id) & set(prior.source_id):
             raise IntegrityError('External sources overlap a previously used source.')
         duplicates = set(cohort.duplicate_group) - {''}
         if duplicates & (set(prior.duplicate_group) - {''}):
             raise IntegrityError('External duplicate components overlap prior data.')
+        prior_tokens = set().union(*(identity_tokens(r) for r in prior.to_dict('records')))
+        new_tokens = set().union(*(identity_tokens(r) for r in cohort.to_dict('records')))
+        if prior_tokens & new_tokens:
+            raise IntegrityError('External patient/identity links overlap prior data.')
         # joblib is executable serialization: only load the user's trusted local run.
         model = joblib.load(run / 'research_model.joblib')
         if model.evidence_status == 'SOFTWARE_DEMONSTRATION':
             raise IntegrityError('A synthetic-trained model cannot establish measured model validation.')
         if model.threshold != protocol['threshold']:
-            raise IntegrityError('Serialized model threshold differs from the frozen lock.')
+            raise IntegrityError('Serialized model threshold differs from the evaluation snapshot.')
         p = model.predict_proba(cohort.drop(columns=['y', 'target_sir']))
         predictions = cohort[['isolate_id', 'source_id', 'species', 'group_id']].copy()
         predictions['probability_R'] = p
@@ -96,7 +96,7 @@ def evaluate_external(protocol_path, data, out, breakpoints=None):
                                              or min(result['resistant'], result['nonresistant']) < 5)
         if result['small_sample_warning']:
             result['bootstrap_warning'] = 'Sparse cohorts can produce degenerate bootstrap intervals; do not interpret them as precise evidence. Exact binomial intervals are also reported.'
-        verified = (cohort.patient_id.ne('').all() and cohort.label_version.ne('').all()
+        verified = (cohort.patient_id.map(known).all() and cohort.label_version.map(known).all()
                     and not cohort.duplicate_group.duplicated().where(cohort.duplicate_group.ne(''), False).any()
                     and not cohort.patient_id.duplicated().any())
         ci_s = result['sensitivity_exact_95']['low']
@@ -119,3 +119,6 @@ def evaluate_external(protocol_path, data, out, breakpoints=None):
         result['reason'] = str(error)
     (folder / 'external_result.json').write_text(json.dumps(result, indent=2, allow_nan=False))
     return result
+
+# Compatibility for existing scripts; no retraining lock is imposed.
+freeze_external = snapshot_external

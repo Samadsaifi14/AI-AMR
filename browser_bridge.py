@@ -7,7 +7,7 @@ import zipfile
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from amr_discovery.data import build_cohort, IntegrityError, parse_mic, encode_ast
+from amr_discovery.data import build_cohort, IntegrityError, parse_mic, encode_ast, validate_config, COMBINATIONS
 from amr_discovery.modeling import fit_and_evaluate
 from amr_discovery.reporting import write_report
 from amr_discovery.topology import gene_network, spatial_edges
@@ -32,6 +32,15 @@ def execute(payload):
     if action == 'predict':
         if LAST_MODEL is None:
             raise IntegrityError('Train a model in this session before predicting.')
+        if LAST_CFG.get('comparability_policy') == 'strict':
+            # This compact form cannot collect observation-level QC, method and panel provenance.
+            # Never silently weaken the contract used to train a strict model.
+            raise IntegrityError('Strict models require observation-level laboratory provenance. Use the external CSV evaluation workflow; this quick prediction form cannot verify it.')
+        if set(LAST_CFG['features']) & COMBINATIONS:
+            raise IntegrityError('Combination MIC prediction needs documented inhibitor concentration; use the external CSV evaluation workflow.')
+        extra = set(payload.get('values', {})) - set(LAST_CFG['features'])
+        if extra:
+            raise IntegrityError('Unexpected prediction drugs; supply only the selected predictor panel.')
         row = {'species':payload['species']}
         observed = 0
         for drug in LAST_CFG['features']:
@@ -41,7 +50,7 @@ def execute(payload):
                 encoded, present = encode_ast(drug, value)
                 row.update(encoded); observed += int(present)
                 continue
-            mic = parse_mic(value,str(d.get('operator','='))) if value else None
+            mic = parse_mic(value,str(d.get('operator','')),str(d.get('units','mg/L'))) if value else None
             if value and mic is None:
                 raise IntegrityError(f'Invalid MIC for {drug}; use a positive mg/L bound up to 1024.')
             observed += int(mic is not None)
@@ -51,10 +60,11 @@ def execute(payload):
                         f'{drug}__strict_bound':float(mic.operator in {'<','>'}) if mic else 0.,
                         f'{drug}__missing':float(mic is None)})
         if observed < LAST_CFG['min_observed_features']:
-            raise IntegrityError('Insufficient observed MIC panel; defer.')
+            raise IntegrityError('Insufficient observed AST panel; defer.')
         p = LAST_MODEL.predict_proba(pd.DataFrame([row]))
         return json.dumps({'action':action,'probability':float(p[0]),'decision':str(LAST_MODEL.decisions(p)[0]),
                            'threshold':LAST_MODEL.threshold,'evidence_status':LAST_MODEL.evidence_status,
+                           'interpretation_status':getattr(LAST_MODEL,'interpretation_status','NOT_EVALUATED'),
                            'clinical_validation':False})
     if action == 'topology':
         if not LAST_TRAIN_IDS:
@@ -76,7 +86,7 @@ def execute(payload):
         result['archive'] = archive(folder)
         return json.dumps(result,allow_nan=False)
     LAST_MODEL, LAST_CFG, LAST_TRAIN_IDS = None, None, set()
-    cfg = json.loads(payload['configuration'])
+    cfg = validate_config(json.loads(payload['configuration']))
     folder = Path('/run')
     shutil.rmtree(folder,ignore_errors=True)
     folder.mkdir()
@@ -90,6 +100,7 @@ def execute(payload):
         (folder/'reviewed_breakpoints.csv').write_text(payload['breakpoints'])
     cohort,audit,exclusions,columns = build_cohort(data,cfg,breakpoints)
     cohort.to_csv(folder/'cohort.csv',index=False)
+    pd.DataFrame(audit['panel_coverage']).to_csv(folder/'panel_coverage.csv',index=False)
     exclusions.to_csv(folder/'exclusions.csv',index=False)
     (folder/'audit.json').write_text(json.dumps(audit,indent=2))
     (folder/'configuration.json').write_text(json.dumps(cfg,indent=2))
@@ -110,8 +121,10 @@ def execute(payload):
             split = pd.read_csv(folder/'cohort_with_splits.csv')
             LAST_TRAIN_IDS = set(split.loc[split.partition.eq('train'),'isolate_id'])
             answer['metrics'] = result
+            answer['importance'] = json.loads(pd.read_csv(folder/'grouped_permutation_importance.csv').to_json(orient='records'))
+            answer['selection'] = json.loads((folder/'feature_selection.json').read_text()) if (folder/'feature_selection.json').exists() else None
             answer['features'] = cfg['features']
-            answer['species'] = cfg['species']
+            answer['species'] = LAST_MODEL.species
             answer['comparison'] = json.loads(pd.read_csv(folder/'development_cv.csv').to_json(orient='records'))
         except IntegrityError as e:
             blocked = str(e)

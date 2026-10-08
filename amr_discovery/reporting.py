@@ -29,24 +29,40 @@ def write_report(out, audit, metrics=None, blocked=None):
         table("Missing provenance (relevant observation rows)", pd.DataFrame([
             {"field": k, "missing_rows": v} for k, v in comp["missing_provenance_rows"].items()]))
         table("Lab / method / drug inventory", pd.DataFrame(comp["lab_method_drug_groups"]))
+    if audit.get('target'):
+        sections.append('<h2>Resistance endpoint</h2><p>' + html.escape(audit['target']) + ': ' + html.escape(audit['endpoint']) + '</p>')
+    if audit.get('panel_coverage'):
+        table('Panel coverage by source (descriptive; not used to select holdout features)', pd.DataFrame(audit['panel_coverage']))
+    if (out / 'feature_selection.json').exists():
+        panel = json.loads((out / 'feature_selection.json').read_text())
+        table('Frozen training-only antibiotic selection', pd.DataFrame([
+            {'drug': d, 'training_coverage': v, 'selected': d in panel['selected_drugs'],
+             'exclusion': panel['dropped_drugs'].get(d, '')} for d, v in panel['training_coverage'].items()]))
     cohort_path = out / "cohort.csv"
     if cohort_path.exists():
         df = pd.read_csv(cohort_path)
         if not df.empty:
             table("Eligible source and outcome counts", df.groupby(["source_id", "y"]).size().reset_index(name="n"))
             table("Mechanism annotation", df.groupby("mechanism").size().reset_index(name="n"))
+    if (out / 'development_thresholds.csv').exists():
+        table('Development-source threshold estimates (no test outcomes used)', pd.read_csv(out / 'development_thresholds.csv'))
     if metrics:
-        table("Locked holdout results", pd.DataFrame([{"measure": k, "value": metrics[k]} for k in
+        table("Holdout results for this experiment", pd.DataFrame([{"measure": k, "value": metrics[k]} for k in
               ["selected_model", "split_mode", "n", "resistant", "nonresistant", "auroc", "average_precision",
                "sensitivity", "specificity", "brier", "fn", "fp", "small_sample_warning"]]))
         intervals = [{"metric": k, **v} for k,v in metrics["confidence_intervals"].items()]
         table("Bootstrap uncertainty", pd.DataFrame(intervals))
+        table("Exact binomial uncertainty (independent-isolate assumption)", pd.DataFrame([
+            {"metric": key, **metrics[key + '_exact_95']} for key in ['sensitivity', 'specificity']
+            if key + '_exact_95' in metrics]))
+        sections.append('<p>' + html.escape(metrics.get('uncertainty_note', '')) + '</p>')
         for name, title in [("holdout_baselines.csv", "Baseline comparison"),
                             ("subgroup_metrics.csv", "Exploratory subgroup results"),
                             ("coverage_error.csv", "Deferral coverage and errors"),
                             ("grouped_permutation_importance.csv", "Predictive feature reliance")]:
             table(title, pd.read_csv(out / name))
         p = pd.read_csv(out / "test_predictions.csv")
+        table("Misclassified holdout isolates requiring review", p.loc[p.y.ne(p.binary_prediction)])
         fig, axes = plt.subplots(1, 3, figsize=(13, 3.7))
         fpr,tpr,_ = roc_curve(p.y,p.p_resistant)
         axes[0].plot(fpr,tpr,color="#2e6560"); axes[0].plot([0,1],[0,1],"--",color="gray")

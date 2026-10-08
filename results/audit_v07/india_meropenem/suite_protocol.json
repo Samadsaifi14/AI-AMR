@@ -1,0 +1,85 @@
+{
+  "configuration": {
+    "target": "meropenem",
+    "representation": "categorical_ast",
+    "species": [
+      "Escherichia coli",
+      "Klebsiella pneumoniae",
+      "Acinetobacter baumannii",
+      "Pseudomonas aeruginosa",
+      "Proteus mirabilis",
+      "Burkholderia cepacia",
+      "Providencia rettgeri",
+      "Enterobacter cloacae"
+    ],
+    "features": [
+      "cefepime",
+      "ceftazidime",
+      "ciprofloxacin",
+      "gentamicin",
+      "amikacin",
+      "colistin"
+    ],
+    "min_observed_features": 3,
+    "human_only": true,
+    "label_mode": "reported",
+    "endpoint": "R_vs_S",
+    "standard": "UNSPECIFIED_REPORTED",
+    "allow_unversioned_reported": true,
+    "seed": 42,
+    "bootstrap_repeats": 1000,
+    "sensitivity_target": 0.95,
+    "specificity_target": 0.5,
+    "deferral_halfwidth": 0.1,
+    "split": {
+      "mode": "internal"
+    }
+  },
+  "input_sha256": "c5dddd1bc693efa456a3348b846877ef9c525c311c15c2a3821ad9a95dfa99a2",
+  "experiments": [
+    [
+      "internal",
+      {
+        "mode": "internal"
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA1273658"
+        ]
+      }
+    ],
+    [
+      "region",
+      {
+        "mode": "region",
+        "heldout": [
+          "Northern"
+        ]
+      }
+    ],
+    [
+      "region",
+      {
+        "mode": "region",
+        "heldout": [
+          "Western"
+        ]
+      }
+    ],
+    [
+      "India",
+      {
+        "mode": "country",
+        "heldout": [
+          "India"
+        ]
+      }
+    ]
+  ],
+  "row_subsampling": false,
+  "interpretation": "Exploratory repeated validation. No winner selected from test results; fresh external data required."
+}

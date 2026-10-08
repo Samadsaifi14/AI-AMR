@@ -1,0 +1,144 @@
+{
+  "input_sha256": "f5292ff592558e71bb5ab787aaad60ffabb827c6dc721a2f520d8f5874a844cc",
+  "raw_rows": 854,
+  "raw_isolates": 122,
+  "breakpoints_sha256": null,
+  "eligible_isolates": 0,
+  "synthetic": false,
+  "evidence_status": "EXPLORATORY_MEASURED_DATA",
+  "label_mode": "reported",
+  "endpoint": "R_vs_S",
+  "representation": "categorical_ast",
+  "comparability": {
+    "policy": "exploratory",
+    "status": "EXPLORATORY_NOT_HARMONIZED",
+    "missing_provenance_rows": {
+      "lab_id": 732,
+      "standard": 0,
+      "standard_version": 732,
+      "qc_reference": 732
+    },
+    "provenance_issue_counts": {
+      "lab_unknown": 732
+    },
+    "lab_method_drug_groups": [
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "UNKNOWN_REVIEW_REQUIRED",
+        "standard_version": "",
+        "drug": "amikacin",
+        "observations": 122,
+        "panels": [],
+        "units": [],
+        "bounds_with_operators": 15
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "UNKNOWN_REVIEW_REQUIRED",
+        "standard_version": "",
+        "drug": "cefepime",
+        "observations": 122,
+        "panels": [],
+        "units": [],
+        "bounds_with_operators": 101
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "UNKNOWN_REVIEW_REQUIRED",
+        "standard_version": "",
+        "drug": "ceftazidime",
+        "observations": 122,
+        "panels": [],
+        "units": [],
+        "bounds_with_operators": 119
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "UNKNOWN_REVIEW_REQUIRED",
+        "standard_version": "",
+        "drug": "ciprofloxacin",
+        "observations": 122,
+        "panels": [],
+        "units": [],
+        "bounds_with_operators": 103
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "UNKNOWN_REVIEW_REQUIRED",
+        "standard_version": "",
+        "drug": "gentamicin",
+        "observations": 122,
+        "panels": [],
+        "units": [],
+        "bounds_with_operators": 117
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "UNKNOWN_REVIEW_REQUIRED",
+        "standard_version": "",
+        "drug": "meropenem",
+        "observations": 122,
+        "panels": [],
+        "units": [],
+        "bounds_with_operators": 109
+      }
+    ],
+    "interpretation": "Provenance checks are not analytical agreement or clinical validation. No lab-specific scaling applied."
+  },
+  "excluded_event_counts": {
+    "curation_quarantined": 122
+  },
+  "input_target_SIR_counts": {
+    "R": 115,
+    "S": 6,
+    "I": 1
+  },
+  "class_counts": {},
+  "patient_ids_available": 0,
+  "mechanism_counts": {},
+  "feature_columns": [
+    "cefepime__S",
+    "cefepime__I",
+    "cefepime__R",
+    "cefepime__SDD",
+    "cefepime__missing",
+    "ceftazidime__S",
+    "ceftazidime__I",
+    "ceftazidime__R",
+    "ceftazidime__SDD",
+    "ceftazidime__missing",
+    "ciprofloxacin__S",
+    "ciprofloxacin__I",
+    "ciprofloxacin__R",
+    "ciprofloxacin__SDD",
+    "ciprofloxacin__missing",
+    "gentamicin__S",
+    "gentamicin__I",
+    "gentamicin__R",
+    "gentamicin__SDD",
+    "gentamicin__missing",
+    "amikacin__S",
+    "amikacin__I",
+    "amikacin__R",
+    "amikacin__SDD",
+    "amikacin__missing",
+    "colistin__S",
+    "colistin__I",
+    "colistin__R",
+    "colistin__SDD",
+    "colistin__missing"
+  ],
+  "limitations": [
+    "Not a representative sample unless acquisition design establishes it.",
+    "No clinical or causal validation.",
+    "Missing patient IDs limit independence claims.",
+    "Reported labels may be unversioned; not breakpoint-harmonized.",
+    "Categorical model: S, I, R, SDD and missing encoded separately; no numeric MICs inferred."
+  ]
+}

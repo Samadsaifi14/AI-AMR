@@ -1,0 +1,217 @@
+{
+  "selected_model": "xgboost_depth2",
+  "selection": "maximum pooled development out-of-fold specificity at the prespecified sensitivity target; fold log-loss tie breaks",
+  "selection_cv": "leave_one_development_source_out",
+  "threshold": 0.05037311605514655,
+  "deferral_low": 0.05037311605514655,
+  "deferral_high": 0.05037311605514655,
+  "threshold_policy": "source_robust",
+  "development_thresholds": [
+    {
+      "partition": "training_oof",
+      "source": "__pooled__",
+      "resistant": 130,
+      "threshold": 0.05037311605514655
+    },
+    {
+      "partition": "training_oof",
+      "source": "PRJNA278886",
+      "resistant": 19,
+      "threshold": 0.05037311605514655
+    },
+    {
+      "partition": "training_oof",
+      "source": "PRJNA288601",
+      "resistant": 72,
+      "threshold": 0.892970687263228
+    },
+    {
+      "partition": "training_oof",
+      "source": "PRJNA296771",
+      "resistant": 16,
+      "threshold": 0.7294724330381529
+    },
+    {
+      "partition": "training_oof",
+      "source": "PRJNA308116",
+      "resistant": 14,
+      "threshold": 0.8926249885440082
+    },
+    {
+      "partition": "training_oof",
+      "source": "PRJNA312972",
+      "resistant": 2,
+      "threshold": 0.9757467740503803
+    },
+    {
+      "partition": "training_oof",
+      "source": "PRJNA565241",
+      "resistant": 3,
+      "threshold": 0.4217044912902523
+    },
+    {
+      "partition": "training_oof",
+      "source": "PRJNA861833",
+      "resistant": 1,
+      "threshold": 0.9262948844259363
+    },
+    {
+      "partition": "training_oof",
+      "source": "PRJNA953359",
+      "resistant": 3,
+      "threshold": 0.8672597389077714
+    },
+    {
+      "partition": "calibration",
+      "source": "__pooled__",
+      "resistant": 43,
+      "threshold": 0.7951235987433006
+    },
+    {
+      "partition": "calibration",
+      "source": "PRJNA278886",
+      "resistant": 9,
+      "threshold": 0.7951235987433006
+    },
+    {
+      "partition": "calibration",
+      "source": "PRJNA288601",
+      "resistant": 19,
+      "threshold": 0.8460418204134038
+    },
+    {
+      "partition": "calibration",
+      "source": "PRJNA296771",
+      "resistant": 2,
+      "threshold": 0.9941154588016564
+    },
+    {
+      "partition": "calibration",
+      "source": "PRJNA308116",
+      "resistant": 11,
+      "threshold": 0.9819260203106324
+    },
+    {
+      "partition": "calibration",
+      "source": "PRJNA565241",
+      "resistant": 2,
+      "threshold": 0.9738090604949355
+    }
+  ],
+  "decision_policy": "research_binary",
+  "feature_selection": {
+    "fit_partition": "training_only",
+    "selected_drugs": [
+      "amikacin",
+      "aztreonam",
+      "cefepime",
+      "cefotaxime",
+      "ceftazidime",
+      "ceftriaxone",
+      "ciprofloxacin",
+      "colistin",
+      "doripenem",
+      "ertapenem",
+      "gentamicin",
+      "imipenem",
+      "levofloxacin",
+      "tigecycline",
+      "tobramycin"
+    ],
+    "training_coverage": {
+      "amikacin": 0.9897260273972602,
+      "aztreonam": 0.4315068493150685,
+      "cefepime": 0.9417808219178082,
+      "cefotaxime": 0.4315068493150685,
+      "ceftazidime": 0.886986301369863,
+      "ceftriaxone": 0.863013698630137,
+      "ciprofloxacin": 0.976027397260274,
+      "colistin": 0.4417808219178082,
+      "doripenem": 0.410958904109589,
+      "ertapenem": 0.9212328767123288,
+      "gentamicin": 0.8801369863013698,
+      "imipenem": 0.5445205479452054,
+      "levofloxacin": 0.9417808219178082,
+      "tigecycline": 0.4280821917808219,
+      "tobramycin": 0.9452054794520548
+    },
+    "dropped_drugs": {},
+    "training_model_importance": {},
+    "selection_settings": {
+      "correlation_threshold": 0.95,
+      "max_drugs": null,
+      "min_coverage": 0.2,
+      "seed": 42
+    }
+  },
+  "task": "antibiotic_resistance",
+  "target": "meropenem",
+  "configuration": {
+    "target": "meropenem",
+    "species": [
+      "Escherichia coli",
+      "Klebsiella pneumoniae"
+    ],
+    "features": [
+      "imipenem",
+      "ertapenem",
+      "doripenem",
+      "cefepime",
+      "ceftazidime",
+      "cefotaxime",
+      "ceftriaxone",
+      "aztreonam",
+      "amikacin",
+      "gentamicin",
+      "tobramycin",
+      "ciprofloxacin",
+      "levofloxacin",
+      "colistin",
+      "tigecycline"
+    ],
+    "min_observed_features": 3,
+    "human_only": true,
+    "label_mode": "reported",
+    "endpoint": "R_vs_S",
+    "standard": "CLSI",
+    "allow_unversioned_reported": true,
+    "seed": 42,
+    "bootstrap_repeats": 200,
+    "sensitivity_target": 1.0,
+    "deferral_halfwidth": 0,
+    "split": {
+      "mode": "internal"
+    },
+    "specificity_target": 0.5,
+    "task": "antibiotic_resistance",
+    "include_species": true,
+    "feature_selection": {
+      "min_coverage": 0.2,
+      "correlation_threshold": 0.95,
+      "max_drugs": null
+    },
+    "model_families": [
+      "random_forest",
+      "xgboost"
+    ],
+    "study_note": "Dynamic exploratory research. Source-robust threshold uses training out-of-fold and calibration source outcomes only. Previously examined holdouts remain retrospective; this is not fresh independent validation. User-requested sensitivity-first development goal: 1.0. Final-test results do not set the threshold; perfect future sensitivity is not guaranteed.",
+    "include_xgboost": true,
+    "require_known_source": true,
+    "threshold_policy": "source_robust",
+    "decision_policy": "research_binary",
+    "selection_objective": "specificity_at_sensitivity"
+  },
+  "input_sha256": "49ccf166f7e49f9b5142cf84ea5caa7c515ec93ea0ed4a342b911eaa52753eff",
+  "breakpoints_sha256": null,
+  "split_sha256": "eba284a98141ba343b2cca391e0c09d9d70d3d318aaac2f6809b83010fb89cf8",
+  "calibration": "held-out sigmoid",
+  "evidence_status": "EXPLORATORY_MEASURED_DATA",
+  "environment": {
+    "python": "3.12.14",
+    "sklearn": "1.8.0",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "xgboost": "3.0.5"
+  },
+  "selection_objective": "specificity_at_sensitivity"
+}

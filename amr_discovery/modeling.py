@@ -9,6 +9,8 @@ import pandas as pd
 import joblib
 import sklearn
 from sklearn.base import clone
+from sklearn.compose import ColumnTransformer, make_column_selector
+from .panel import DrugPanelSelector
 from sklearn.dummy import DummyClassifier
 from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassifier
 from sklearn.impute import SimpleImputer
@@ -19,7 +21,8 @@ from sklearn.model_selection import StratifiedGroupKFold, LeaveOneGroupOut
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from threadpoolctl import threadpool_limits
-from .data import IntegrityError, sha256
+from .data import IntegrityError, sha256, validate_config
+from .uncertainty import exact_interval
 
 
 def logit(p):
@@ -51,7 +54,7 @@ def partitions(df, cfg):
         else:
             col = {"source": "source_id", "country": "country", "region": "region", "lab": "lab_id"}[mode]
             from .harmonization import known
-            if (mode == "lab" and not df[col].map(known).all()) or df[col].isin(["", "NCBI_SOURCE_UNKNOWN"]).any():
+            if not df[col].map(known).all():
                 raise IntegrityError(f"{mode} split cannot use unknown {col}.")
             heldout = split.get("heldout", [])
             if not heldout or not set(heldout) <= set(df[col]):
@@ -103,7 +106,12 @@ def development_folds(train, cfg):
 
 
 def metrics(y, p, threshold=.5):
-    y, p = np.asarray(y, int), np.asarray(p, float)
+    y, p = np.asarray(y), np.asarray(p, float)
+    if y.ndim != 1 or p.ndim != 1 or len(y) != len(p) or not np.isin(y, [0, 1]).all():
+        raise IntegrityError("Metrics require aligned one-dimensional binary labels and probabilities.")
+    if not np.isfinite(threshold) or not 0 <= threshold <= 1:
+        raise IntegrityError("Threshold must be finite in [0,1].")
+    y = y.astype(int)
     if not len(y):
         return {"n": 0}
     if not np.isfinite(p).all() or ((p < 0) | (p > 1)).any():
@@ -152,6 +160,35 @@ def threshold_for_sensitivity(y, p, desired=.95):
     return float(max(good))
 
 
+def transport_threshold(train, oof_probabilities, calibration, calibration_probabilities, desired):
+    """Conservative source thresholds using development outcomes only."""
+    rows = []
+    for partition, frame, probability in [('training_oof', train, oof_probabilities),
+                                          ('calibration', calibration, calibration_probabilities)]:
+        probability = np.asarray(probability)
+        rows.append({'partition': partition, 'source': '__pooled__',
+                     'resistant': int(frame.y.sum()),
+                     'threshold': threshold_for_sensitivity(frame.y, probability, desired)})
+        for source in sorted(frame.source_id.unique()):
+            mask = frame.source_id.eq(source).to_numpy()
+            # Each measured development source informs transport; single-positive
+            # source estimates remain visibly sparse rather than being discarded.
+            if frame.loc[mask, 'y'].sum() > 0:
+                rows.append({'partition': partition, 'source': source,
+                             'resistant': int(frame.loc[mask, 'y'].sum()),
+                             'threshold': threshold_for_sensitivity(frame.loc[mask, 'y'], probability[mask], desired)})
+    return float(min(row['threshold'] for row in rows)), rows
+
+
+def select_candidate(scores, cfg):
+    """Choose using development out-of-fold predictions only, never holdout metrics."""
+    eligible = [s for s in scores if s['model'] not in {'species_only', 'missingness_only'}]
+    if cfg.get('selection_objective', 'log_loss') == 'specificity_at_sensitivity':
+        return min(eligible, key=lambda m: (-m['development_specificity_at_sensitivity'],
+                   m['mean_fold_log_loss'], m['worst_fold_log_loss'], m['model']))['model']
+    return min(eligible, key=lambda m: (m['mean_fold_log_loss'], m['worst_fold_log_loss'], m['model']))['model']
+
+
 def candidates(columns, seed):
     def numeric(est):
         return Pipeline([("impute", SimpleImputer(strategy="median", keep_empty_features=True)),
@@ -174,6 +211,21 @@ def candidates(columns, seed):
     return result
 
 
+def xgboost_candidates(columns, seed):
+    """Explicit opt-in native comparison; absence must never silently substitute another engine."""
+    try:
+        from xgboost import XGBClassifier
+    except ImportError as error:
+        raise IntegrityError('XGBoost requested but unavailable. Install the native xgboost extra; it is not supplied by the browser runtime.') from error
+    return [(f'xgboost_depth{depth}', Pipeline([
+        ('impute', SimpleImputer(strategy='median', keep_empty_features=True)),
+        ('model', XGBClassifier(n_estimators=120, max_depth=depth, learning_rate=.05,
+                               min_child_weight=5, reg_lambda=2, subsample=1.,
+                               colsample_bytree=1., objective='binary:logistic',
+                               eval_metric='logloss', tree_method='hist', n_jobs=1,
+                               random_state=seed))]), columns) for depth in [2, 4]]
+
+
 @dataclass
 class ResearchModel:
     estimator: object
@@ -185,22 +237,58 @@ class ResearchModel:
     name: str
     evidence_status: str
     species: list
+    interpretation_status: str = "NOT_EVALUATED"
+    min_observed_features: int = 1
+    decision_policy: str = "validated_band"
 
     def predict_proba(self, frame):
         if not set(self.columns) <= set(frame.columns):
             raise IntegrityError("Input matrix is missing required feature columns.")
-        if "species" in frame and not set(frame.species) <= set(self.species):
+        if "species" not in frame or not set(frame.species) <= set(self.species):
             raise IntegrityError("Unsupported species; defer.")
+        matrix = frame[[c for c in self.columns if c != "species"]].to_numpy(dtype=float)
+        if np.isinf(matrix).any():
+            raise IntegrityError('Infinite feature value; defer.')
+        missing_cols = [c for c in self.columns if c.endswith('__missing')]
+        if missing_cols:
+            flags = frame[missing_cols].to_numpy(dtype=float)
+            if not np.isin(flags, [0, 1]).all() or ((1-flags).sum(axis=1) < self.min_observed_features).any():
+                raise IntegrityError('Invalid or insufficient observed AST panel; defer.')
+        for missing in missing_cols:
+            prefix = missing.removesuffix('__missing')
+            if prefix + '__S' in self.columns:
+                cols = [c for c in self.columns if c.startswith(prefix + '__')]
+                values = frame[cols].to_numpy(dtype=float)
+                if not np.isin(values, [0, 1]).all() or not (values.sum(axis=1) == 1).all():
+                    raise IntegrityError('Invalid categorical AST encoding; defer.')
+            else:
+                bound = frame[prefix + '__log2_bound'].to_numpy(dtype=float)
+                absent = frame[missing].to_numpy(dtype=float).astype(bool)
+                if not np.array_equal(np.isnan(bound), absent):
+                    raise IntegrityError('MIC bound and missingness disagree; defer.')
         raw = self.estimator.predict_proba(frame[self.columns])[:, 1]
         return self.calibrator.predict_proba(logit(raw))[:, 1]
 
     def decisions(self, probabilities):
         p = np.asarray(probabilities)
+        if not np.isfinite(p).all() or ((p < 0) | (p > 1)).any():
+            raise IntegrityError("Probabilities must be finite in [0,1].")
+        if getattr(self, 'decision_policy', 'validated_band') == 'research_binary':
+            return np.where(p >= self.threshold, 'research_resistant', 'research_non_resistant')
+        if getattr(self, 'interpretation_status', 'NOT_EVALUATED') not in {
+            'EXPLORATORY_OPERATING_POINT_ONLY', 'SOFTWARE_DEMONSTRATION'}:
+            return np.full(p.shape, "defer_model_not_validated")
         return np.where(p < self.low, "non_resistant_prediction",
                         np.where(p >= self.high, "resistant_prediction", "defer"))
 
 
 def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
+    cfg = validate_config(cfg)
+    expected = {f"{d}__{suffix}" for d in cfg["features"] for suffix in
+                (["S", "I", "R", "SDD", "missing"] if cfg.get("representation") == "categorical_ast" else
+                 ["log2_bound", "left_censored", "right_censored", "strict_bound", "missing"])}
+    if set(feature_columns) != expected or len(feature_columns) != len(expected):
+        raise IntegrityError('Feature matrix differs from the reviewed antibiotic allowlist; possible leakage.')
     folder = Path(out)
     if cohort.empty:
         raise IntegrityError("No eligible isolates; inspect exclusions before training.")
@@ -214,13 +302,38 @@ def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
     absent = [c for c in feature_columns if c.endswith("__log2_bound") and train[c].isna().all()]
     if cfg.get("representation") == "categorical_ast":
         absent = [d for d in cfg["features"] if train[f"{d}__missing"].eq(1).all()]
-    if absent:
+    if absent and not cfg.get("feature_selection"):
         raise IntegrityError(f"Feature(s) never measured in training: {absent}; revise the panel before evaluation.")
     seed = cfg.get("seed", 42)
     cv, cv_design = development_folds(train, cfg)
     scores, fitted = [], {}
+    oof_predictions = {}
+    choices = candidates(feature_columns, seed)
+    wants_xgb = cfg.get('include_xgboost', False) or 'xgboost' in cfg.get('model_families', [])
+    if wants_xgb:
+        choices += xgboost_candidates(feature_columns, seed)
+    families = cfg.get('model_families')
+    if families:
+        prefix = {'random_forest': 'forest_', 'xgboost': 'xgboost_', 'logistic': 'logistic_', 'hist_gradient_boosting': 'boost_'}
+        choices = [(n, m, c) for n, m, c in choices if n in {'prevalence', 'species_only', 'missingness_only'} or any(n.startswith(prefix[f]) for f in families)]
+    updated = []
+    for name, model, cols in choices:
+        if name not in {'prevalence', 'species_only', 'missingness_only'}:
+            steps = list(model.steps)
+            if cfg.get('include_species'):
+                cols = list(cols) + ['species']
+                # Numeric and nominal transformations fit inside each CV training fold.
+                encoder = ColumnTransformer([
+                    ('numeric', Pipeline(steps[:-1]), make_column_selector(dtype_include=np.number)),
+                    ('species', OneHotEncoder(handle_unknown='ignore', sparse_output=False), ['species'])])
+                steps = [('encode', encoder), steps[-1]]
+            if cfg.get('feature_selection'):
+                steps.insert(0, ('panel', DrugPanelSelector(seed=seed, **cfg['feature_selection'])))
+            model = Pipeline(steps)
+        updated.append((name, model, cols))
+    choices = updated
     with threadpool_limits(limits=2):
-        for name, model, columns in candidates(feature_columns, seed):
+        for name, model, columns in choices:
             oof = np.zeros(len(train))
             fold_losses = []
             for tr, va in cv:
@@ -228,34 +341,75 @@ def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
                 oof[va] = estimator.predict_proba(train.iloc[va][columns])[:, 1]
                 fold_losses.append(log_loss(train.iloc[va].y, oof[va], labels=[0,1]))
             score = {"model": name, **metrics(train.y, oof), "phase": cv_design, "mean_fold_log_loss": float(np.mean(fold_losses)), "worst_fold_log_loss": float(max(fold_losses))}
+            operating_threshold = threshold_for_sensitivity(train.y, oof, cfg.get('sensitivity_target', .95))
+            operating = metrics(train.y, oof, operating_threshold)
+            score.update(development_operating_threshold=operating_threshold,
+                         development_specificity_at_sensitivity=operating['specificity'],
+                         development_sensitivity_at_threshold=operating['sensitivity'])
             scores.append(score)
+            oof_predictions[name] = oof.copy()
             fitted[name] = (clone(model).fit(train[columns], train.y), columns)
             print(f"Development CV completed: {name}", flush=True)
-        eligible = [s for s in scores if s["model"] not in {"species_only", "missingness_only"}]
-        best = min(eligible, key=lambda m: (m["mean_fold_log_loss"], m["worst_fold_log_loss"], m["model"]))["model"]
+        best = select_candidate(scores, cfg)
         estimator, columns = fitted[best]
         cal_raw = estimator.predict_proba(cal[columns])[:, 1]
         calibrator = LogisticRegression(C=1., max_iter=1000).fit(logit(cal_raw), cal.y)
         cal_prob = calibrator.predict_proba(logit(cal_raw))[:, 1]
         threshold = threshold_for_sensitivity(cal.y, cal_prob, cfg.get("sensitivity_target", .95))
+        threshold_details = []
+        if cfg.get('threshold_policy', 'calibration') == 'source_robust':
+            if calibrator.coef_[0, 0] <= 0:
+                raise IntegrityError('Calibration reversed the score ordering; source-robust transport needs a positive calibration slope.')
+            oof_probability = calibrator.predict_proba(logit(oof_predictions[best]))[:, 1]
+            threshold, threshold_details = transport_threshold(train, oof_probability, cal, cal_prob, cfg.get('sensitivity_target', .95))
+            pd.DataFrame(threshold_details).to_csv(folder / 'development_thresholds.csv', index=False)
         halfwidth = cfg.get("deferral_halfwidth", .1)
         if not 0 <= halfwidth < .5:
             raise IntegrityError("deferral_halfwidth must be in [0,0.5).")
         bundle = ResearchModel(estimator, calibrator, columns, threshold,
                                max(0., threshold-halfwidth), min(1., threshold+halfwidth),
-                               best, audit["evidence_status"], cfg["species"])
+                               best, audit["evidence_status"], sorted(train.species.unique()))
+        bundle.min_observed_features = cfg['min_observed_features']
+        bundle.decision_policy = cfg.get('decision_policy', 'validated_band')
+        selected_panel = estimator.named_steps.get('panel')
+        if selected_panel is not None:
+            selection_manifest = selected_panel.manifest()
+            (folder / 'feature_selection.json').write_text(json.dumps(selection_manifest, indent=2))
+        else:
+            selection_manifest = {'fit_partition': 'prespecified_panel', 'selected_drugs': cfg['features']}
         # Persist selection and thresholds BEFORE evaluating holdout outcomes.
         lock = {"selected_model": best, "selection": "lowest equally weighted development-fold log loss; worst-fold tie break",
                 "selection_cv": cv_design, "threshold": threshold, "deferral_low": bundle.low, "deferral_high": bundle.high,
-                "configuration": cfg, "input_sha256": audit["input_sha256"],
+                "threshold_policy": cfg.get("threshold_policy", "calibration"), "development_thresholds": threshold_details,
+                "decision_policy": bundle.decision_policy, "feature_selection": selection_manifest, "task": cfg.get("task", "legacy_carbapenem_resistance"),
+                "target": cfg["target"], "configuration": cfg, "input_sha256": audit["input_sha256"],
+                "breakpoints_sha256": audit.get('breakpoints_sha256'),
                 "split_sha256": sha256(folder / "split_manifest.csv"), "calibration": "held-out sigmoid",
                 "evidence_status": audit["evidence_status"],
                 "environment": {"python": platform.python_version(), "sklearn": sklearn.__version__,
                                 "numpy": np.__version__, "pandas": pd.__version__}}
+        if wants_xgb:
+            import xgboost
+            lock['environment']['xgboost'] = xgboost.__version__
+        lock['selection_objective'] = cfg.get('selection_objective', 'log_loss')
+        if lock['selection_objective'] == 'specificity_at_sensitivity':
+            lock['selection'] = 'maximum pooled development out-of-fold specificity at the prespecified sensitivity target; fold log-loss tie breaks'
+        (folder / "experiment_snapshot.json").write_text(json.dumps(lock, indent=2), encoding="utf-8")
         (folder / "model_lock.json").write_text(json.dumps(lock, indent=2), encoding="utf-8")
         joblib.dump(bundle, folder / "research_model.joblib")
         p = bundle.predict_proba(test)
         report = metrics(test.y, p, threshold)
+        bundle.interpretation_status = (
+            "EXPLORATORY_OPERATING_POINT_ONLY"
+            if report['sensitivity'] >= cfg.get('sensitivity_target', .95)
+            and report['specificity'] >= cfg.get('specificity_target', .5)
+            else "OPERATING_POINT_FAILED")
+        # Post-evaluation deployment eligibility cannot alter the frozen predictor or threshold.
+        # Store it separately from the pre-test lock and retain it in the research bundle.
+        joblib.dump(bundle, folder / "research_model.joblib")
+        report['sensitivity_exact_95'] = exact_interval(report['tp'], report['tp'] + report['fn'])
+        report['specificity_exact_95'] = exact_interval(report['tn'], report['tn'] + report['fp'])
+        report['uncertainty_note'] = 'Bootstrap intervals can collapse at zero/all errors. Exact intervals assume independent isolates; neither resolves unrecorded patient clustering.'
         report["confidence_intervals"] = cluster_intervals(test.y, p, test.group_id, threshold,
                                                            seed, cfg.get("bootstrap_repeats", 200))
         predictions = test[["isolate_id", "source_id", "lab_id", "country", "region", "species", "mechanism", "group_id", "y", "target_sir"]].copy()
@@ -264,6 +418,7 @@ def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
         predictions["decision"] = bundle.decisions(p)
         predictions["evidence_status"] = audit["evidence_status"]
         predictions.to_csv(folder / "test_predictions.csv", index=False)
+        predictions.loc[predictions.y.ne(predictions.binary_prediction)].to_csv(folder / "error_review.csv", index=False)
         pd.DataFrame(scores).to_csv(folder / "development_cv.csv", index=False)
         baseline_reports = []
         for name in ["prevalence", "species_only", "missingness_only"]:
@@ -303,11 +458,14 @@ def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
             for _ in range(5):
                 altered = test.copy()
                 altered[cols] = test[cols].to_numpy()[rng.permutation(len(test))]
-                differences.append(log_loss(test.y, bundle.predict_proba(altered), labels=[0, 1])-base_loss)
+                # A permutation is a counterfactual diagnostic, not a new eligible specimen.
+                altered_raw = bundle.estimator.predict_proba(altered[bundle.columns])[:, 1]
+                altered_p = bundle.calibrator.predict_proba(logit(altered_raw))[:, 1]
+                differences.append(log_loss(test.y, altered_p, labels=[0, 1])-base_loss)
             importance.append({"drug": drug, "mean_log_loss_increase": float(np.mean(differences)),
                                "repeat_sd": float(np.std(differences)),
                                "meaning": "predictive reliance, not causal mechanism"})
-        pd.DataFrame(importance).to_csv(folder / "grouped_permutation_importance.csv", index=False)
+        pd.DataFrame(importance).sort_values("mean_log_loss_increase", ascending=False).to_csv(folder / "grouped_permutation_importance.csv", index=False)
     report.update(selected_model=best, split_mode=cfg["split"]["mode"], evidence_status=audit["evidence_status"],
                   calibration_note="Calibration and operating threshold share a held-out development subset; holdout is untouched.",
                   small_sample_warning=bool(min(report["resistant"], report["nonresistant"]) < 200),
@@ -328,5 +486,16 @@ def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
     report["holdout_operating_target_met"] = report["holdout_sensitivity_target_met"] and report["holdout_specificity_target_met"]
     report["interpretation_status"] = ("OPERATING_POINT_FAILED" if not report["holdout_operating_target_met"]
                                        else "EXPLORATORY_OPERATING_POINT_ONLY")
+    report['target'] = cfg['target']
+    report['task'] = cfg.get('task', 'legacy_carbapenem_resistance')
+    report['selected_drugs'] = selection_manifest['selected_drugs']
+    report['prediction_species'] = bundle.species
+    report['calibration_slope'] = float(calibrator.coef_[0, 0])
+    report['calibration_direction_reversed'] = bool(calibrator.coef_[0, 0] < 0)
+    report['threshold_policy'] = cfg.get('threshold_policy', 'calibration')
+    report['decision_policy'] = bundle.decision_policy
+    report['deferral_note'] = 'Fixed probability band is a research heuristic, not a coverage guarantee; failed operating points defer all new decisions.'
+    if bundle.decision_policy == 'research_binary':
+        report['deferral_note'] = 'Ungated binary research outputs are enabled; validation status remains visible and no clinical suitability is established.'
     (folder / "metrics.json").write_text(json.dumps(report, indent=2, allow_nan=False), encoding="utf-8")
     return report, predictions

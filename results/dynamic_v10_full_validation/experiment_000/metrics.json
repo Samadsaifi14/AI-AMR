@@ -1,0 +1,124 @@
+{
+  "n": 98,
+  "resistant": 44,
+  "nonresistant": 54,
+  "prevalence": 0.4489795918367347,
+  "threshold": 0.05037311605514655,
+  "auroc": 0.9981060606060606,
+  "average_precision": 0.9973659084975023,
+  "brier": 0.03554818652657494,
+  "log_loss": 0.1106524133169677,
+  "sensitivity": 1.0,
+  "specificity": 0.8518518518518519,
+  "balanced_accuracy": 0.9259259259259259,
+  "ppv": 0.8461538461538461,
+  "npv": 1.0,
+  "accuracy": 0.9183673469387755,
+  "false_negative_fraction_R": 0.0,
+  "tn": 46,
+  "fp": 8,
+  "fn": 0,
+  "tp": 44,
+  "sensitivity_exact_95": {
+    "low": 0.9195800602364241,
+    "high": 1.0,
+    "n": 44,
+    "method": "two-sided 95% Clopper-Pearson; assumes independent isolates"
+  },
+  "specificity_exact_95": {
+    "low": 0.728802311437877,
+    "high": 0.9338024228387032,
+    "n": 54,
+    "method": "two-sided 95% Clopper-Pearson; assumes independent isolates"
+  },
+  "uncertainty_note": "Bootstrap intervals can collapse at zero/all errors. Exact intervals assume independent isolates; neither resolves unrecorded patient clustering.",
+  "confidence_intervals": {
+    "auroc": {
+      "low": 0.9920748212004608,
+      "high": 1.0,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "average_precision": {
+      "low": 0.989551284151714,
+      "high": 1.0,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "brier": {
+      "low": 0.010835098384621007,
+      "high": 0.06165134899866901,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "sensitivity": {
+      "low": 1.0,
+      "high": 1.0,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "specificity": {
+      "low": 0.7554166666666666,
+      "high": 0.9412319644839068,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "false_negative_fraction_R": {
+      "low": 0.0,
+      "high": 0.0,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    }
+  },
+  "selected_model": "xgboost_depth2",
+  "split_mode": "internal",
+  "evidence_status": "EXPLORATORY_MEASURED_DATA",
+  "calibration_note": "Calibration and operating threshold share a held-out development subset; holdout is untouched.",
+  "small_sample_warning": true,
+  "source_holdout": false,
+  "independently_verified_external_validation": false,
+  "clinical_validation": false,
+  "causal_discovery": false,
+  "partition_counts": {
+    "calibration": 98,
+    "test": 98,
+    "train": 292
+  },
+  "all_eligible_isolates_used": true,
+  "selection_cv": "leave_one_development_source_out",
+  "india_test_isolates": 0,
+  "india_validation_status": "NOT_ESTABLISHED",
+  "development_sensitivity_target": 1.0,
+  "development_specificity_target": 0.5,
+  "holdout_sensitivity_target_met": true,
+  "holdout_specificity_target_met": true,
+  "holdout_operating_target_met": true,
+  "interpretation_status": "EXPLORATORY_OPERATING_POINT_ONLY",
+  "target": "meropenem",
+  "task": "antibiotic_resistance",
+  "selected_drugs": [
+    "amikacin",
+    "aztreonam",
+    "cefepime",
+    "cefotaxime",
+    "ceftazidime",
+    "ceftriaxone",
+    "ciprofloxacin",
+    "colistin",
+    "doripenem",
+    "ertapenem",
+    "gentamicin",
+    "imipenem",
+    "levofloxacin",
+    "tigecycline",
+    "tobramycin"
+  ],
+  "prediction_species": [
+    "Klebsiella pneumoniae"
+  ],
+  "calibration_slope": 1.5015987069325643,
+  "calibration_direction_reversed": false,
+  "threshold_policy": "source_robust",
+  "decision_policy": "research_binary",
+  "deferral_note": "Ungated binary research outputs are enabled; validation status remains visible and no clinical suitability is established."
+}

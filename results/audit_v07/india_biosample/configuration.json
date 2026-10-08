@@ -1,0 +1,28 @@
+{
+  "target": "meropenem",
+  "species": [
+    "Escherichia coli",
+    "Klebsiella pneumoniae"
+  ],
+  "features": [
+    "cefepime",
+    "ceftazidime",
+    "ciprofloxacin",
+    "gentamicin",
+    "amikacin"
+  ],
+  "min_observed_features": 3,
+  "human_only": true,
+  "label_mode": "reported",
+  "endpoint": "R_vs_S",
+  "standard": "CLSI",
+  "allow_unversioned_reported": true,
+  "seed": 42,
+  "bootstrap_repeats": 200,
+  "sensitivity_target": 0.95,
+  "deferral_halfwidth": 0.1,
+  "split": {
+    "mode": "internal"
+  },
+  "specificity_target": 0.5
+}

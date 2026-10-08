@@ -1,0 +1,10 @@
+{
+  "experiment": "experiment_007",
+  "kind": "source",
+  "heldout": "PRJNA312972",
+  "input_eligible_n": 482,
+  "experiment_eligible_n": 482,
+  "unknown_source_excluded_n": 0,
+  "status": "blocked",
+  "reason": "Holdout (software minimum, not adequate research precision) needs >= 5 isolates of each class; found {1: 5}."
+}

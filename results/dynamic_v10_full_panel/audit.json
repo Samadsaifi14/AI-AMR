@@ -1,0 +1,2757 @@
+{
+  "input_sha256": "49ccf166f7e49f9b5142cf84ea5caa7c515ec93ea0ed4a342b911eaa52753eff",
+  "raw_rows": 25387,
+  "raw_isolates": 1804,
+  "breakpoints_sha256": null,
+  "eligible_isolates": 488,
+  "synthetic": false,
+  "evidence_status": "EXPLORATORY_MEASURED_DATA",
+  "label_mode": "reported",
+  "endpoint": "R_vs_S",
+  "representation": "mic",
+  "comparability": {
+    "policy": "exploratory",
+    "status": "EXPLORATORY_NOT_HARMONIZED",
+    "missing_provenance_rows": {
+      "lab_id": 13571,
+      "standard": 0,
+      "standard_version": 13571,
+      "qc_reference": 13571
+    },
+    "provenance_issue_counts": {
+      "lab_unknown": 13560,
+      "drug_method_incompatible": 11
+    },
+    "lab_method_drug_groups": [
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "amikacin",
+        "observations": 555,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 417
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "aztreonam",
+        "observations": 232,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 220
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "cefepime",
+        "observations": 558,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 404
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "cefotaxime",
+        "observations": 252,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 241
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "ceftazidime",
+        "observations": 736,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 550
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "ceftriaxone",
+        "observations": 702,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 616
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "ciprofloxacin",
+        "observations": 624,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 498
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "colistin",
+        "observations": 235,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 37
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "doripenem",
+        "observations": 217,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 171
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "ertapenem",
+        "observations": 561,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 529
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "gentamicin",
+        "observations": 521,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 449
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "imipenem",
+        "observations": 382,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 281
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "levofloxacin",
+        "observations": 556,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 410
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "meropenem",
+        "observations": 552,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 456
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "tigecycline",
+        "observations": 227,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 161
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "tobramycin",
+        "observations": 569,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 485
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "amikacin",
+        "observations": 378,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 97
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "aztreonam",
+        "observations": 92,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 65
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "cefepime",
+        "observations": 265,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 255
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "cefotaxime",
+        "observations": 15,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 12
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "ceftazidime",
+        "observations": 530,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 414
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "ceftriaxone",
+        "observations": 519,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 501
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "ciprofloxacin",
+        "observations": 267,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 245
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "colistin",
+        "observations": 145,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 52
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "ertapenem",
+        "observations": 262,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 244
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "gentamicin",
+        "observations": 380,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 309
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "imipenem",
+        "observations": 359,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 225
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "levofloxacin",
+        "observations": 2,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "meropenem",
+        "observations": 402,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 313
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "tigecycline",
+        "observations": 139,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 20
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "tobramycin",
+        "observations": 90,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 62
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "amikacin",
+        "observations": 131,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 114
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "aztreonam",
+        "observations": 100,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 78
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "cefepime",
+        "observations": 113,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 101
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "cefotaxime",
+        "observations": 127,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 116
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "ceftazidime",
+        "observations": 110,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 84
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "ceftriaxone",
+        "observations": 129,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 102
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "ciprofloxacin",
+        "observations": 142,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 115
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "colistin",
+        "observations": 5,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 5
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "ertapenem",
+        "observations": 124,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 121
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "gentamicin",
+        "observations": 141,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 129
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "imipenem",
+        "observations": 127,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 103
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "levofloxacin",
+        "observations": 100,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 63
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "meropenem",
+        "observations": 156,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 144
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "tigecycline",
+        "observations": 125,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 70
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "tobramycin",
+        "observations": 115,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 97
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "amikacin",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "aztreonam",
+        "observations": 6,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "cefepime",
+        "observations": 6,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "ceftazidime",
+        "observations": 6,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "ceftriaxone",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "ciprofloxacin",
+        "observations": 7,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "colistin",
+        "observations": 6,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "ertapenem",
+        "observations": 6,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "gentamicin",
+        "observations": 11,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "imipenem",
+        "observations": 9,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "levofloxacin",
+        "observations": 7,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "meropenem",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "tobramycin",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "cefotaxime",
+        "observations": 96,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "ceftazidime",
+        "observations": 96,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "ciprofloxacin",
+        "observations": 92,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "ceftriaxone",
+        "observations": 5,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "colistin",
+        "observations": 5,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "ertapenem",
+        "observations": 34,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "missing",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "amikacin",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "missing",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "aztreonam",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "missing",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "ceftriaxone",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "missing",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "ciprofloxacin",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "missing",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "gentamicin",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "missing",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "imipenem",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "missing",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "meropenem",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 0
+      }
+    ],
+    "interpretation": "Provenance checks are not analytical agreement or clinical validation. No lab-specific scaling applied."
+  },
+  "excluded_event_counts": {
+    "unsupported_species": 100,
+    "source_unknown": 56,
+    "conflicting_replicates": 47,
+    "target_missing_or_conflicting": 614,
+    "target_method_unsupported": 7,
+    "target_unresolved_or_I_excluded": 16,
+    "target_standard_mismatch": 439,
+    "human_host_not_confirmed": 82,
+    "insufficient_feature_panel": 2
+  },
+  "input_target_SIR_counts": {
+    "S": 601,
+    "R": 447,
+    "I": 42,
+    "unknown": 40
+  },
+  "class_counts": {
+    "0": 271,
+    "1": 217
+  },
+  "patient_ids_available": 0,
+  "mechanism_counts": {
+    "unknown": 488
+  },
+  "feature_columns": [
+    "imipenem__log2_bound",
+    "imipenem__left_censored",
+    "imipenem__right_censored",
+    "imipenem__strict_bound",
+    "imipenem__missing",
+    "ertapenem__log2_bound",
+    "ertapenem__left_censored",
+    "ertapenem__right_censored",
+    "ertapenem__strict_bound",
+    "ertapenem__missing",
+    "doripenem__log2_bound",
+    "doripenem__left_censored",
+    "doripenem__right_censored",
+    "doripenem__strict_bound",
+    "doripenem__missing",
+    "cefepime__log2_bound",
+    "cefepime__left_censored",
+    "cefepime__right_censored",
+    "cefepime__strict_bound",
+    "cefepime__missing",
+    "ceftazidime__log2_bound",
+    "ceftazidime__left_censored",
+    "ceftazidime__right_censored",
+    "ceftazidime__strict_bound",
+    "ceftazidime__missing",
+    "cefotaxime__log2_bound",
+    "cefotaxime__left_censored",
+    "cefotaxime__right_censored",
+    "cefotaxime__strict_bound",
+    "cefotaxime__missing",
+    "ceftriaxone__log2_bound",
+    "ceftriaxone__left_censored",
+    "ceftriaxone__right_censored",
+    "ceftriaxone__strict_bound",
+    "ceftriaxone__missing",
+    "aztreonam__log2_bound",
+    "aztreonam__left_censored",
+    "aztreonam__right_censored",
+    "aztreonam__strict_bound",
+    "aztreonam__missing",
+    "amikacin__log2_bound",
+    "amikacin__left_censored",
+    "amikacin__right_censored",
+    "amikacin__strict_bound",
+    "amikacin__missing",
+    "gentamicin__log2_bound",
+    "gentamicin__left_censored",
+    "gentamicin__right_censored",
+    "gentamicin__strict_bound",
+    "gentamicin__missing",
+    "tobramycin__log2_bound",
+    "tobramycin__left_censored",
+    "tobramycin__right_censored",
+    "tobramycin__strict_bound",
+    "tobramycin__missing",
+    "ciprofloxacin__log2_bound",
+    "ciprofloxacin__left_censored",
+    "ciprofloxacin__right_censored",
+    "ciprofloxacin__strict_bound",
+    "ciprofloxacin__missing",
+    "levofloxacin__log2_bound",
+    "levofloxacin__left_censored",
+    "levofloxacin__right_censored",
+    "levofloxacin__strict_bound",
+    "levofloxacin__missing",
+    "colistin__log2_bound",
+    "colistin__left_censored",
+    "colistin__right_censored",
+    "colistin__strict_bound",
+    "colistin__missing",
+    "tigecycline__log2_bound",
+    "tigecycline__left_censored",
+    "tigecycline__right_censored",
+    "tigecycline__strict_bound",
+    "tigecycline__missing"
+  ],
+  "task": "antibiotic_resistance",
+  "target": "meropenem",
+  "panel_coverage": [
+    {
+      "drug": "imipenem",
+      "source_id": "PRJNA1156689",
+      "isolates": 37,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ertapenem",
+      "source_id": "PRJNA1156689",
+      "isolates": 37,
+      "observed": 37,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "doripenem",
+      "source_id": "PRJNA1156689",
+      "isolates": 37,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefepime",
+      "source_id": "PRJNA1156689",
+      "isolates": 37,
+      "observed": 37,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftazidime",
+      "source_id": "PRJNA1156689",
+      "isolates": 37,
+      "observed": 37,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefotaxime",
+      "source_id": "PRJNA1156689",
+      "isolates": 37,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftriaxone",
+      "source_id": "PRJNA1156689",
+      "isolates": 37,
+      "observed": 37,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "aztreonam",
+      "source_id": "PRJNA1156689",
+      "isolates": 37,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "amikacin",
+      "source_id": "PRJNA1156689",
+      "isolates": 37,
+      "observed": 37,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "gentamicin",
+      "source_id": "PRJNA1156689",
+      "isolates": 37,
+      "observed": 37,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tobramycin",
+      "source_id": "PRJNA1156689",
+      "isolates": 37,
+      "observed": 37,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ciprofloxacin",
+      "source_id": "PRJNA1156689",
+      "isolates": 37,
+      "observed": 37,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "levofloxacin",
+      "source_id": "PRJNA1156689",
+      "isolates": 37,
+      "observed": 37,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "colistin",
+      "source_id": "PRJNA1156689",
+      "isolates": 37,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tigecycline",
+      "source_id": "PRJNA1156689",
+      "isolates": 37,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "imipenem",
+      "source_id": "PRJNA1271593",
+      "isolates": 45,
+      "observed": 45,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ertapenem",
+      "source_id": "PRJNA1271593",
+      "isolates": 45,
+      "observed": 44,
+      "coverage": 0.9777777777777777,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "doripenem",
+      "source_id": "PRJNA1271593",
+      "isolates": 45,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefepime",
+      "source_id": "PRJNA1271593",
+      "isolates": 45,
+      "observed": 45,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftazidime",
+      "source_id": "PRJNA1271593",
+      "isolates": 45,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefotaxime",
+      "source_id": "PRJNA1271593",
+      "isolates": 45,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftriaxone",
+      "source_id": "PRJNA1271593",
+      "isolates": 45,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "aztreonam",
+      "source_id": "PRJNA1271593",
+      "isolates": 45,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "amikacin",
+      "source_id": "PRJNA1271593",
+      "isolates": 45,
+      "observed": 45,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "gentamicin",
+      "source_id": "PRJNA1271593",
+      "isolates": 45,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tobramycin",
+      "source_id": "PRJNA1271593",
+      "isolates": 45,
+      "observed": 45,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ciprofloxacin",
+      "source_id": "PRJNA1271593",
+      "isolates": 45,
+      "observed": 44,
+      "coverage": 0.9777777777777777,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "levofloxacin",
+      "source_id": "PRJNA1271593",
+      "isolates": 45,
+      "observed": 44,
+      "coverage": 0.9777777777777777,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "colistin",
+      "source_id": "PRJNA1271593",
+      "isolates": 45,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tigecycline",
+      "source_id": "PRJNA1271593",
+      "isolates": 45,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "imipenem",
+      "source_id": "PRJNA278886",
+      "isolates": 165,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ertapenem",
+      "source_id": "PRJNA278886",
+      "isolates": 165,
+      "observed": 133,
+      "coverage": 0.806060606060606,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "doripenem",
+      "source_id": "PRJNA278886",
+      "isolates": 165,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefepime",
+      "source_id": "PRJNA278886",
+      "isolates": 165,
+      "observed": 165,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftazidime",
+      "source_id": "PRJNA278886",
+      "isolates": 165,
+      "observed": 164,
+      "coverage": 0.9939393939393939,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefotaxime",
+      "source_id": "PRJNA278886",
+      "isolates": 165,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftriaxone",
+      "source_id": "PRJNA278886",
+      "isolates": 165,
+      "observed": 164,
+      "coverage": 0.9939393939393939,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "aztreonam",
+      "source_id": "PRJNA278886",
+      "isolates": 165,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "amikacin",
+      "source_id": "PRJNA278886",
+      "isolates": 165,
+      "observed": 165,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "gentamicin",
+      "source_id": "PRJNA278886",
+      "isolates": 165,
+      "observed": 165,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tobramycin",
+      "source_id": "PRJNA278886",
+      "isolates": 165,
+      "observed": 165,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ciprofloxacin",
+      "source_id": "PRJNA278886",
+      "isolates": 165,
+      "observed": 164,
+      "coverage": 0.9939393939393939,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "levofloxacin",
+      "source_id": "PRJNA278886",
+      "isolates": 165,
+      "observed": 164,
+      "coverage": 0.9939393939393939,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "colistin",
+      "source_id": "PRJNA278886",
+      "isolates": 165,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tigecycline",
+      "source_id": "PRJNA278886",
+      "isolates": 165,
+      "observed": 3,
+      "coverage": 0.01818181818181818,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "imipenem",
+      "source_id": "PRJNA288601",
+      "isolates": 130,
+      "observed": 130,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ertapenem",
+      "source_id": "PRJNA288601",
+      "isolates": 130,
+      "observed": 130,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "doripenem",
+      "source_id": "PRJNA288601",
+      "isolates": 130,
+      "observed": 129,
+      "coverage": 0.9923076923076923,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefepime",
+      "source_id": "PRJNA288601",
+      "isolates": 130,
+      "observed": 130,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftazidime",
+      "source_id": "PRJNA288601",
+      "isolates": 130,
+      "observed": 130,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefotaxime",
+      "source_id": "PRJNA288601",
+      "isolates": 130,
+      "observed": 129,
+      "coverage": 0.9923076923076923,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftriaxone",
+      "source_id": "PRJNA288601",
+      "isolates": 130,
+      "observed": 130,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "aztreonam",
+      "source_id": "PRJNA288601",
+      "isolates": 130,
+      "observed": 130,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "amikacin",
+      "source_id": "PRJNA288601",
+      "isolates": 130,
+      "observed": 130,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "gentamicin",
+      "source_id": "PRJNA288601",
+      "isolates": 130,
+      "observed": 130,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tobramycin",
+      "source_id": "PRJNA288601",
+      "isolates": 130,
+      "observed": 130,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ciprofloxacin",
+      "source_id": "PRJNA288601",
+      "isolates": 130,
+      "observed": 130,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "levofloxacin",
+      "source_id": "PRJNA288601",
+      "isolates": 130,
+      "observed": 130,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "colistin",
+      "source_id": "PRJNA288601",
+      "isolates": 130,
+      "observed": 128,
+      "coverage": 0.9846153846153847,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tigecycline",
+      "source_id": "PRJNA288601",
+      "isolates": 130,
+      "observed": 129,
+      "coverage": 0.9923076923076923,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "imipenem",
+      "source_id": "PRJNA296771",
+      "isolates": 25,
+      "observed": 25,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ertapenem",
+      "source_id": "PRJNA296771",
+      "isolates": 25,
+      "observed": 25,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "doripenem",
+      "source_id": "PRJNA296771",
+      "isolates": 25,
+      "observed": 25,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefepime",
+      "source_id": "PRJNA296771",
+      "isolates": 25,
+      "observed": 25,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftazidime",
+      "source_id": "PRJNA296771",
+      "isolates": 25,
+      "observed": 25,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefotaxime",
+      "source_id": "PRJNA296771",
+      "isolates": 25,
+      "observed": 25,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftriaxone",
+      "source_id": "PRJNA296771",
+      "isolates": 25,
+      "observed": 25,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "aztreonam",
+      "source_id": "PRJNA296771",
+      "isolates": 25,
+      "observed": 25,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "amikacin",
+      "source_id": "PRJNA296771",
+      "isolates": 25,
+      "observed": 25,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "gentamicin",
+      "source_id": "PRJNA296771",
+      "isolates": 25,
+      "observed": 25,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tobramycin",
+      "source_id": "PRJNA296771",
+      "isolates": 25,
+      "observed": 25,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ciprofloxacin",
+      "source_id": "PRJNA296771",
+      "isolates": 25,
+      "observed": 25,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "levofloxacin",
+      "source_id": "PRJNA296771",
+      "isolates": 25,
+      "observed": 25,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "colistin",
+      "source_id": "PRJNA296771",
+      "isolates": 25,
+      "observed": 25,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tigecycline",
+      "source_id": "PRJNA296771",
+      "isolates": 25,
+      "observed": 25,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "imipenem",
+      "source_id": "PRJNA308116",
+      "isolates": 42,
+      "observed": 42,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ertapenem",
+      "source_id": "PRJNA308116",
+      "isolates": 42,
+      "observed": 42,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "doripenem",
+      "source_id": "PRJNA308116",
+      "isolates": 42,
+      "observed": 42,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefepime",
+      "source_id": "PRJNA308116",
+      "isolates": 42,
+      "observed": 42,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftazidime",
+      "source_id": "PRJNA308116",
+      "isolates": 42,
+      "observed": 42,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefotaxime",
+      "source_id": "PRJNA308116",
+      "isolates": 42,
+      "observed": 42,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftriaxone",
+      "source_id": "PRJNA308116",
+      "isolates": 42,
+      "observed": 42,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "aztreonam",
+      "source_id": "PRJNA308116",
+      "isolates": 42,
+      "observed": 42,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "amikacin",
+      "source_id": "PRJNA308116",
+      "isolates": 42,
+      "observed": 42,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "gentamicin",
+      "source_id": "PRJNA308116",
+      "isolates": 42,
+      "observed": 42,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tobramycin",
+      "source_id": "PRJNA308116",
+      "isolates": 42,
+      "observed": 42,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ciprofloxacin",
+      "source_id": "PRJNA308116",
+      "isolates": 42,
+      "observed": 42,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "levofloxacin",
+      "source_id": "PRJNA308116",
+      "isolates": 42,
+      "observed": 42,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "colistin",
+      "source_id": "PRJNA308116",
+      "isolates": 42,
+      "observed": 42,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tigecycline",
+      "source_id": "PRJNA308116",
+      "isolates": 42,
+      "observed": 42,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "imipenem",
+      "source_id": "PRJNA312972",
+      "isolates": 5,
+      "observed": 5,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ertapenem",
+      "source_id": "PRJNA312972",
+      "isolates": 5,
+      "observed": 5,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "doripenem",
+      "source_id": "PRJNA312972",
+      "isolates": 5,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefepime",
+      "source_id": "PRJNA312972",
+      "isolates": 5,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftazidime",
+      "source_id": "PRJNA312972",
+      "isolates": 5,
+      "observed": 5,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefotaxime",
+      "source_id": "PRJNA312972",
+      "isolates": 5,
+      "observed": 5,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftriaxone",
+      "source_id": "PRJNA312972",
+      "isolates": 5,
+      "observed": 5,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "aztreonam",
+      "source_id": "PRJNA312972",
+      "isolates": 5,
+      "observed": 5,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "amikacin",
+      "source_id": "PRJNA312972",
+      "isolates": 5,
+      "observed": 5,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "gentamicin",
+      "source_id": "PRJNA312972",
+      "isolates": 5,
+      "observed": 5,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tobramycin",
+      "source_id": "PRJNA312972",
+      "isolates": 5,
+      "observed": 5,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ciprofloxacin",
+      "source_id": "PRJNA312972",
+      "isolates": 5,
+      "observed": 5,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "levofloxacin",
+      "source_id": "PRJNA312972",
+      "isolates": 5,
+      "observed": 5,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "colistin",
+      "source_id": "PRJNA312972",
+      "isolates": 5,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tigecycline",
+      "source_id": "PRJNA312972",
+      "isolates": 5,
+      "observed": 5,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "imipenem",
+      "source_id": "PRJNA482724",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ertapenem",
+      "source_id": "PRJNA482724",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "doripenem",
+      "source_id": "PRJNA482724",
+      "isolates": 1,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefepime",
+      "source_id": "PRJNA482724",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftazidime",
+      "source_id": "PRJNA482724",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefotaxime",
+      "source_id": "PRJNA482724",
+      "isolates": 1,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftriaxone",
+      "source_id": "PRJNA482724",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "aztreonam",
+      "source_id": "PRJNA482724",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "amikacin",
+      "source_id": "PRJNA482724",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "gentamicin",
+      "source_id": "PRJNA482724",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tobramycin",
+      "source_id": "PRJNA482724",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ciprofloxacin",
+      "source_id": "PRJNA482724",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "levofloxacin",
+      "source_id": "PRJNA482724",
+      "isolates": 1,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "colistin",
+      "source_id": "PRJNA482724",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tigecycline",
+      "source_id": "PRJNA482724",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "imipenem",
+      "source_id": "PRJNA529562|PRJNA529587",
+      "isolates": 19,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ertapenem",
+      "source_id": "PRJNA529562|PRJNA529587",
+      "isolates": 19,
+      "observed": 19,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "doripenem",
+      "source_id": "PRJNA529562|PRJNA529587",
+      "isolates": 19,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefepime",
+      "source_id": "PRJNA529562|PRJNA529587",
+      "isolates": 19,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftazidime",
+      "source_id": "PRJNA529562|PRJNA529587",
+      "isolates": 19,
+      "observed": 19,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefotaxime",
+      "source_id": "PRJNA529562|PRJNA529587",
+      "isolates": 19,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftriaxone",
+      "source_id": "PRJNA529562|PRJNA529587",
+      "isolates": 19,
+      "observed": 19,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "aztreonam",
+      "source_id": "PRJNA529562|PRJNA529587",
+      "isolates": 19,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "amikacin",
+      "source_id": "PRJNA529562|PRJNA529587",
+      "isolates": 19,
+      "observed": 19,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "gentamicin",
+      "source_id": "PRJNA529562|PRJNA529587",
+      "isolates": 19,
+      "observed": 19,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tobramycin",
+      "source_id": "PRJNA529562|PRJNA529587",
+      "isolates": 19,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ciprofloxacin",
+      "source_id": "PRJNA529562|PRJNA529587",
+      "isolates": 19,
+      "observed": 19,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "levofloxacin",
+      "source_id": "PRJNA529562|PRJNA529587",
+      "isolates": 19,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "colistin",
+      "source_id": "PRJNA529562|PRJNA529587",
+      "isolates": 19,
+      "observed": 14,
+      "coverage": 0.7368421052631579,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tigecycline",
+      "source_id": "PRJNA529562|PRJNA529587",
+      "isolates": 19,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "imipenem",
+      "source_id": "PRJNA565241",
+      "isolates": 5,
+      "observed": 5,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ertapenem",
+      "source_id": "PRJNA565241",
+      "isolates": 5,
+      "observed": 5,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "doripenem",
+      "source_id": "PRJNA565241",
+      "isolates": 5,
+      "observed": 5,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefepime",
+      "source_id": "PRJNA565241",
+      "isolates": 5,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftazidime",
+      "source_id": "PRJNA565241",
+      "isolates": 5,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefotaxime",
+      "source_id": "PRJNA565241",
+      "isolates": 5,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftriaxone",
+      "source_id": "PRJNA565241",
+      "isolates": 5,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "aztreonam",
+      "source_id": "PRJNA565241",
+      "isolates": 5,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "amikacin",
+      "source_id": "PRJNA565241",
+      "isolates": 5,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "gentamicin",
+      "source_id": "PRJNA565241",
+      "isolates": 5,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tobramycin",
+      "source_id": "PRJNA565241",
+      "isolates": 5,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ciprofloxacin",
+      "source_id": "PRJNA565241",
+      "isolates": 5,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "levofloxacin",
+      "source_id": "PRJNA565241",
+      "isolates": 5,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "colistin",
+      "source_id": "PRJNA565241",
+      "isolates": 5,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tigecycline",
+      "source_id": "PRJNA565241",
+      "isolates": 5,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "imipenem",
+      "source_id": "PRJNA587095",
+      "isolates": 3,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ertapenem",
+      "source_id": "PRJNA587095",
+      "isolates": 3,
+      "observed": 3,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "doripenem",
+      "source_id": "PRJNA587095",
+      "isolates": 3,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefepime",
+      "source_id": "PRJNA587095",
+      "isolates": 3,
+      "observed": 3,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftazidime",
+      "source_id": "PRJNA587095",
+      "isolates": 3,
+      "observed": 3,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefotaxime",
+      "source_id": "PRJNA587095",
+      "isolates": 3,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftriaxone",
+      "source_id": "PRJNA587095",
+      "isolates": 3,
+      "observed": 3,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "aztreonam",
+      "source_id": "PRJNA587095",
+      "isolates": 3,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "amikacin",
+      "source_id": "PRJNA587095",
+      "isolates": 3,
+      "observed": 3,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "gentamicin",
+      "source_id": "PRJNA587095",
+      "isolates": 3,
+      "observed": 3,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tobramycin",
+      "source_id": "PRJNA587095",
+      "isolates": 3,
+      "observed": 3,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ciprofloxacin",
+      "source_id": "PRJNA587095",
+      "isolates": 3,
+      "observed": 3,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "levofloxacin",
+      "source_id": "PRJNA587095",
+      "isolates": 3,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "colistin",
+      "source_id": "PRJNA587095",
+      "isolates": 3,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tigecycline",
+      "source_id": "PRJNA587095",
+      "isolates": 3,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "imipenem",
+      "source_id": "PRJNA726009",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ertapenem",
+      "source_id": "PRJNA726009",
+      "isolates": 1,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "doripenem",
+      "source_id": "PRJNA726009",
+      "isolates": 1,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefepime",
+      "source_id": "PRJNA726009",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftazidime",
+      "source_id": "PRJNA726009",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefotaxime",
+      "source_id": "PRJNA726009",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftriaxone",
+      "source_id": "PRJNA726009",
+      "isolates": 1,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "aztreonam",
+      "source_id": "PRJNA726009",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "amikacin",
+      "source_id": "PRJNA726009",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "gentamicin",
+      "source_id": "PRJNA726009",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tobramycin",
+      "source_id": "PRJNA726009",
+      "isolates": 1,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ciprofloxacin",
+      "source_id": "PRJNA726009",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "levofloxacin",
+      "source_id": "PRJNA726009",
+      "isolates": 1,
+      "observed": 1,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "colistin",
+      "source_id": "PRJNA726009",
+      "isolates": 1,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tigecycline",
+      "source_id": "PRJNA726009",
+      "isolates": 1,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "imipenem",
+      "source_id": "PRJNA861833",
+      "isolates": 6,
+      "observed": 6,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ertapenem",
+      "source_id": "PRJNA861833",
+      "isolates": 6,
+      "observed": 6,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "doripenem",
+      "source_id": "PRJNA861833",
+      "isolates": 6,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefepime",
+      "source_id": "PRJNA861833",
+      "isolates": 6,
+      "observed": 6,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftazidime",
+      "source_id": "PRJNA861833",
+      "isolates": 6,
+      "observed": 6,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefotaxime",
+      "source_id": "PRJNA861833",
+      "isolates": 6,
+      "observed": 6,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftriaxone",
+      "source_id": "PRJNA861833",
+      "isolates": 6,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "aztreonam",
+      "source_id": "PRJNA861833",
+      "isolates": 6,
+      "observed": 6,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "amikacin",
+      "source_id": "PRJNA861833",
+      "isolates": 6,
+      "observed": 6,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "gentamicin",
+      "source_id": "PRJNA861833",
+      "isolates": 6,
+      "observed": 6,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tobramycin",
+      "source_id": "PRJNA861833",
+      "isolates": 6,
+      "observed": 6,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ciprofloxacin",
+      "source_id": "PRJNA861833",
+      "isolates": 6,
+      "observed": 6,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "levofloxacin",
+      "source_id": "PRJNA861833",
+      "isolates": 6,
+      "observed": 6,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "colistin",
+      "source_id": "PRJNA861833",
+      "isolates": 6,
+      "observed": 6,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tigecycline",
+      "source_id": "PRJNA861833",
+      "isolates": 6,
+      "observed": 6,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "imipenem",
+      "source_id": "PRJNA953359",
+      "isolates": 4,
+      "observed": 4,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ertapenem",
+      "source_id": "PRJNA953359",
+      "isolates": 4,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "doripenem",
+      "source_id": "PRJNA953359",
+      "isolates": 4,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefepime",
+      "source_id": "PRJNA953359",
+      "isolates": 4,
+      "observed": 4,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftazidime",
+      "source_id": "PRJNA953359",
+      "isolates": 4,
+      "observed": 4,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "cefotaxime",
+      "source_id": "PRJNA953359",
+      "isolates": 4,
+      "observed": 4,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ceftriaxone",
+      "source_id": "PRJNA953359",
+      "isolates": 4,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "aztreonam",
+      "source_id": "PRJNA953359",
+      "isolates": 4,
+      "observed": 3,
+      "coverage": 0.75,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "amikacin",
+      "source_id": "PRJNA953359",
+      "isolates": 4,
+      "observed": 4,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "gentamicin",
+      "source_id": "PRJNA953359",
+      "isolates": 4,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tobramycin",
+      "source_id": "PRJNA953359",
+      "isolates": 4,
+      "observed": 4,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "ciprofloxacin",
+      "source_id": "PRJNA953359",
+      "isolates": 4,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "levofloxacin",
+      "source_id": "PRJNA953359",
+      "isolates": 4,
+      "observed": 4,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "colistin",
+      "source_id": "PRJNA953359",
+      "isolates": 4,
+      "observed": 0,
+      "coverage": 0.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    },
+    {
+      "drug": "tigecycline",
+      "source_id": "PRJNA953359",
+      "isolates": 4,
+      "observed": 4,
+      "coverage": 1.0,
+      "purpose": "descriptive audit only; selection uses training folds"
+    }
+  ],
+  "limitations": [
+    "Not a representative sample unless acquisition design establishes it.",
+    "No clinical or causal validation.",
+    "Missing patient IDs limit independence claims.",
+    "Reported labels may be unversioned; not breakpoint-harmonized."
+  ]
+}

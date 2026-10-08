@@ -1,0 +1,215 @@
+{
+  "selected_model": "xgboost_depth4",
+  "selection": "maximum pooled development out-of-fold specificity at the prespecified sensitivity target; fold log-loss tie breaks",
+  "selection_cv": "leave_one_development_source_out",
+  "threshold": 0.02809035975992206,
+  "deferral_low": 0.02809035975992206,
+  "deferral_high": 0.02809035975992206,
+  "threshold_policy": "source_robust",
+  "development_thresholds": [
+    {
+      "partition": "training_oof",
+      "source": "__pooled__",
+      "resistant": 75,
+      "threshold": 0.02809035975992206
+    },
+    {
+      "partition": "training_oof",
+      "source": "PRJNA278886",
+      "resistant": 20,
+      "threshold": 0.02809035975992206
+    },
+    {
+      "partition": "training_oof",
+      "source": "PRJNA296771",
+      "resistant": 17,
+      "threshold": 0.814351781960526
+    },
+    {
+      "partition": "training_oof",
+      "source": "PRJNA308116",
+      "resistant": 22,
+      "threshold": 0.7493163962556442
+    },
+    {
+      "partition": "training_oof",
+      "source": "PRJNA312972",
+      "resistant": 4,
+      "threshold": 0.9352568003474071
+    },
+    {
+      "partition": "training_oof",
+      "source": "PRJNA565241",
+      "resistant": 4,
+      "threshold": 0.6377449638779126
+    },
+    {
+      "partition": "training_oof",
+      "source": "PRJNA861833",
+      "resistant": 4,
+      "threshold": 0.9516373095950714
+    },
+    {
+      "partition": "training_oof",
+      "source": "PRJNA953359",
+      "resistant": 4,
+      "threshold": 0.38870489851526113
+    },
+    {
+      "partition": "calibration",
+      "source": "__pooled__",
+      "resistant": 25,
+      "threshold": 0.5185336268962379
+    },
+    {
+      "partition": "calibration",
+      "source": "PRJNA278886",
+      "resistant": 9,
+      "threshold": 0.5185336268962379
+    },
+    {
+      "partition": "calibration",
+      "source": "PRJNA296771",
+      "resistant": 7,
+      "threshold": 0.9249047098606338
+    },
+    {
+      "partition": "calibration",
+      "source": "PRJNA308116",
+      "resistant": 7,
+      "threshold": 0.8849266031930996
+    },
+    {
+      "partition": "calibration",
+      "source": "PRJNA312972",
+      "resistant": 1,
+      "threshold": 0.9603957599010472
+    },
+    {
+      "partition": "calibration",
+      "source": "PRJNA565241",
+      "resistant": 1,
+      "threshold": 0.8760951152123008
+    }
+  ],
+  "decision_policy": "research_binary",
+  "feature_selection": {
+    "fit_partition": "training_only",
+    "selected_drugs": [
+      "amikacin",
+      "aztreonam",
+      "cefepime",
+      "cefotaxime",
+      "ceftazidime",
+      "ceftriaxone",
+      "ciprofloxacin",
+      "colistin",
+      "ertapenem",
+      "gentamicin",
+      "imipenem",
+      "levofloxacin",
+      "tigecycline",
+      "tobramycin"
+    ],
+    "training_coverage": {
+      "amikacin": 0.9850746268656716,
+      "aztreonam": 0.23134328358208955,
+      "cefepime": 0.917910447761194,
+      "cefotaxime": 0.23134328358208955,
+      "ceftazidime": 0.8395522388059702,
+      "ceftriaxone": 0.8059701492537313,
+      "ciprofloxacin": 0.9701492537313433,
+      "colistin": 0.24253731343283583,
+      "doripenem": 0.19776119402985073,
+      "ertapenem": 0.8992537313432836,
+      "gentamicin": 0.8283582089552238,
+      "imipenem": 0.3917910447761194,
+      "levofloxacin": 0.9253731343283582,
+      "tigecycline": 0.24253731343283583,
+      "tobramycin": 0.9291044776119403
+    },
+    "dropped_drugs": {
+      "doripenem": "low_training_coverage"
+    },
+    "training_model_importance": {},
+    "selection_settings": {
+      "correlation_threshold": 0.95,
+      "max_drugs": null,
+      "min_coverage": 0.2,
+      "seed": 42
+    }
+  },
+  "task": "antibiotic_resistance",
+  "target": "meropenem",
+  "configuration": {
+    "target": "meropenem",
+    "species": [
+      "Escherichia coli",
+      "Klebsiella pneumoniae"
+    ],
+    "features": [
+      "imipenem",
+      "ertapenem",
+      "doripenem",
+      "cefepime",
+      "ceftazidime",
+      "cefotaxime",
+      "ceftriaxone",
+      "aztreonam",
+      "amikacin",
+      "gentamicin",
+      "tobramycin",
+      "ciprofloxacin",
+      "levofloxacin",
+      "colistin",
+      "tigecycline"
+    ],
+    "min_observed_features": 3,
+    "human_only": true,
+    "label_mode": "reported",
+    "endpoint": "R_vs_S",
+    "standard": "CLSI",
+    "allow_unversioned_reported": true,
+    "seed": 42,
+    "bootstrap_repeats": 200,
+    "sensitivity_target": 1.0,
+    "deferral_halfwidth": 0,
+    "split": {
+      "mode": "source",
+      "heldout": [
+        "PRJNA288601"
+      ]
+    },
+    "specificity_target": 0.5,
+    "task": "antibiotic_resistance",
+    "include_species": true,
+    "feature_selection": {
+      "min_coverage": 0.2,
+      "correlation_threshold": 0.95,
+      "max_drugs": null
+    },
+    "model_families": [
+      "random_forest",
+      "xgboost"
+    ],
+    "study_note": "Dynamic exploratory research. Source-robust threshold uses training out-of-fold and calibration source outcomes only. Previously examined holdouts remain retrospective; this is not fresh independent validation. User-requested sensitivity-first development goal: 1.0. Final-test results do not set the threshold; perfect future sensitivity is not guaranteed.",
+    "include_xgboost": true,
+    "require_known_source": true,
+    "threshold_policy": "source_robust",
+    "decision_policy": "research_binary",
+    "selection_objective": "specificity_at_sensitivity"
+  },
+  "input_sha256": "49ccf166f7e49f9b5142cf84ea5caa7c515ec93ea0ed4a342b911eaa52753eff",
+  "breakpoints_sha256": null,
+  "split_sha256": "c405f1ea613ce9bcea9af6167de8ad5a564aa49fa558ff62fbc5a367928be425",
+  "calibration": "held-out sigmoid",
+  "evidence_status": "EXPLORATORY_MEASURED_DATA",
+  "environment": {
+    "python": "3.12.14",
+    "sklearn": "1.8.0",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "xgboost": "3.0.5"
+  },
+  "selection_objective": "specificity_at_sensitivity"
+}

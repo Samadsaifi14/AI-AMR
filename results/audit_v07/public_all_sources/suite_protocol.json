@@ -1,0 +1,172 @@
+{
+  "configuration": {
+    "target": "meropenem",
+    "species": [
+      "Klebsiella pneumoniae"
+    ],
+    "features": [
+      "cefepime",
+      "ceftazidime",
+      "ciprofloxacin",
+      "gentamicin",
+      "amikacin"
+    ],
+    "min_observed_features": 3,
+    "human_only": true,
+    "require_known_source": true,
+    "label_mode": "reported",
+    "endpoint": "R_vs_S",
+    "standard": "CLSI",
+    "allow_unversioned_reported": true,
+    "seed": 42,
+    "bootstrap_repeats": 200,
+    "sensitivity_target": 0.95,
+    "deferral_halfwidth": 0.1,
+    "split": {
+      "mode": "source",
+      "heldout": [
+        "PRJNA278886"
+      ]
+    },
+    "study_note": "v0.7 retrospective method comparison on previously inspected public data. No fresh external validation. Candidate/threshold selection uses development data only.",
+    "specificity_target": 0.5,
+    "include_xgboost": true
+  },
+  "input_sha256": "39d07642ac4f1e123eb57c3d8989c87c85e91785b51fa86abde8fb901e203eb9",
+  "experiments": [
+    [
+      "internal",
+      {
+        "mode": "internal"
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA1156689"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA1271593"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA278886"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA288601"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA296771"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA308116"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA312972"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA482724"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA529562|PRJNA529587"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA587095"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA726009"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA861833"
+        ]
+      }
+    ],
+    [
+      "source",
+      {
+        "mode": "source",
+        "heldout": [
+          "PRJNA953359"
+        ]
+      }
+    ],
+    [
+      "India",
+      {
+        "mode": "country",
+        "heldout": [
+          "India"
+        ]
+      }
+    ]
+  ],
+  "row_subsampling": false,
+  "interpretation": "Exploratory repeated validation. No winner selected from test results; fresh external data required."
+}

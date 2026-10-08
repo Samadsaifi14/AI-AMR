@@ -4,10 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "amr-discovery"
-version = "0.2.0"
+version = "0.10.0"
 description = "Local phenotype-only AMR research workflow with explicit scientific integrity checks"
 requires-python = ">=3.11"
 dependencies = ["numpy>=2", "pandas>=2.2", "scikit-learn>=1.6", "scipy>=1.11", "matplotlib>=3.9", "joblib>=1.4", "threadpoolctl>=3"]
+
+[project.optional-dependencies]
+xgboost = ["xgboost-cpu==3.0.5"]
 
 [tool.setuptools.packages.find]
 include = ["amr_discovery*"]

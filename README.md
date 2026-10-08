@@ -14,7 +14,7 @@ Choose the synthetic fixture to test software behavior, or upload an authorized 
 
 ## Build the website
 
-Requires Node 20 or newer. No frontend package dependencies are needed.
+Requires Node 20 or newer. The build uses the pinned fflate package to produce the current source download; no frontend framework is required.
 
 ```sh
 npm ci --ignore-scripts
@@ -24,7 +24,7 @@ npm run test:web
 
 The build generates `dist/python-sources.json` from the canonical Python modules; it does not maintain a second handwritten implementation. It copies source-derived public data and the synthetic fixture into static assets. `vercel.json` specifies the static output directory. Uploads remain in browser worker memory. Scientific packages download from the pinned Pyodide distribution on jsDelivr.
 
-The website's download ZIP is the tested v0.2 scientific source snapshot. This repository also contains the Vercel configuration and repeatable build verification.
+The website's source ZIP is generated from the current implementation at build time and checked against the browser's canonical Python modules. Historical ZIPs under downloads/ remain archived releases.
 
 ## Test the actual browser Python runtime
 
@@ -78,3 +78,19 @@ See [complete India acquisition and frozen-model challenge](docs/INDIA_VALIDATIO
 ## Laboratory comparability
 
 [Laboratory harmonization decision](docs/LAB_HARMONIZATION_V06.md): categorical AST under a documented, pinned EUCAST/CLSI version is the primary India research path. `comparability_policy: strict` filters unknown labs, QC and methods; mismatched predictor interpretations become missing, and target-version mismatches exclude the isolate. MICs retain censoring and actual dilution-panel metadata; no lab-specific scaling is applied. Laboratory holdout uses real `lab_id` values. Use the revised CSV and `configs/india_strict_categorical.json` template after replacing its placeholders with documented metadata. Full public Indian inputs were audited; strict comparability eligibility is zero. This revision adds provenance checks, not proof of India accuracy.
+
+## Whole-project audit v0.7
+
+[Audit, fixes, full reevaluation and remaining requirements](docs/AUDIT_V07.md). The native rerun compares actual XGBoost, Random Forest, histogram gradient boosting and logistic controls. The internal test has sensitivity 100% / specificity 79.6%, but **all three evaluable source holdouts fail the preset operating targets**. India training remains blocked by class coverage and provenance; no accuracy or clinical validation claim is established.
+
+New safeguards reject placeholder provenance and unsupported inference, group recorded hospital-patient links across sources, retain exact confidence intervals, and defer decisions from failed models. The wide importer accepts categorical AST without MIC fabrication. The strict quick-prediction form is intentionally unavailable because it cannot verify per-observation lab metadata.
+
+For the native-only XGBoost comparison, install `python -m pip install -e '.[xgboost]'` and explicitly set `include_xgboost: true`. Browser models continue to use the available scikit-learn candidates; histogram gradient boosting is not XGBoost. `scripts/reevaluate_v07.py` reproduces the full retrospective audit in a new output directory.
+
+## Collaborator framework (v0.9)
+
+The MIC framework now supports antibiotic-specific resistance endpoints, broad prespecified panels, optional species encoding and whole-drug feature selection fitted inside every training fold. Mechanisms remain annotations. Native RF/XGBoost and explicit browser RF presets, run instructions, dilution/combination contracts and validation limits are in [docs/FRAMEWORK_V09.md](docs/FRAMEWORK_V09.md). Use **Load broad MIC framework** in the app; archived v0.7 metrics do not establish performance of this new design.
+
+## Dynamic workflow (v0.10)
+
+Editable panel and operating settings, fresh retraining, ungated labelled research predictions, and automatic external-evaluation snapshots replace the manual freezing workflow. Source-robust development thresholds reduce the recorded source-challenge false negatives from 29 to 3; remaining misses and false positives are retained. See [docs/DYNAMIC_V10.md](docs/DYNAMIC_V10.md) for the method and limits.

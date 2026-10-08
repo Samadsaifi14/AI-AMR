@@ -15,8 +15,8 @@ def import_wide(source, mapping_path, destination, chunksize=10000):
     if set(metadata) & set(constants):
         raise IntegrityError('Metadata columns and constants must not overlap.')
     for drug, fields in drugs.items():
-        if not fields.get('measurement'):
-            raise IntegrityError(f'Map a MIC measurement column for {drug}; categorical AST is not converted to MIC.')
+        if not fields.get('measurement') and not fields.get('reported_sir'):
+            raise IntegrityError(f'Map a MIC measurement or reported_sir column for {drug}; categories are never converted to MIC.')
     out = Path(destination)
     if out.exists():
         raise IntegrityError('Output exists; select a new output path.')
@@ -30,7 +30,7 @@ def import_wide(source, mapping_path, destination, chunksize=10000):
                 if not needed <= set(chunk.columns):
                     raise IntegrityError(f'Mapped source columns missing: {sorted(needed-set(chunk.columns))}')
                 input_rows += len(chunk)
-                base = pd.DataFrame({k:chunk[v] for k,v in metadata.items()})
+                base = pd.DataFrame({k:chunk[v] for k,v in metadata.items()}, index=chunk.index)
                 for k,v in constants.items():
                     base[k] = str(v)
                 for drug, fields in drugs.items():

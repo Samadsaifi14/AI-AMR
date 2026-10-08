@@ -1,0 +1,4 @@
+model,n,resistant,nonresistant,prevalence,threshold,auroc,average_precision,brier,log_loss,sensitivity,specificity,balanced_accuracy,ppv,npv,accuracy,false_negative_fraction_R,tn,fp,fn,tp
+prevalence,130,117,13,0.9,0.2689393939393939,0.5,0.9,0.4882374885215795,1.213268194918644,1.0,0.0,0.5,0.9,,0.9,0.0,0,13,0,117
+species_only,130,117,13,0.9,0.2689413294530066,0.5,0.9,0.48823504567253895,1.2132619825410813,1.0,0.0,0.5,0.9,,0.9,0.0,0,13,0,117
+missingness_only,130,117,13,0.9,0.3019647562773641,0.5,0.9,0.44764615273439257,1.1136490410426438,1.0,0.0,0.5,0.9,,0.9,0.0,0,13,0,117

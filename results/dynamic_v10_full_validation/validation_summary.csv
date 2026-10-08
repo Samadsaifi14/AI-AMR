@@ -1,0 +1,17 @@
+experiment,kind,heldout,input_eligible_n,experiment_eligible_n,unknown_source_excluded_n,n,fn,fp,sensitivity,specificity,auroc,brier,selected_model,interpretation_status,status,reason
+experiment_000,internal,,488,488,0,98.0,0.0,8.0,1.0,0.8518518518518519,0.9981060606060606,0.03554818652657494,xgboost_depth2,EXPLORATORY_OPERATING_POINT_ONLY,evaluated,
+experiment_001,source,PRJNA1156689,488,488,0,,,,,,,,,,blocked,"Holdout (software minimum, not adequate research precision) needs >= 5 isolates of each class; found {0: 37}."
+experiment_002,source,PRJNA1271593,488,488,0,,,,,,,,,,blocked,"Holdout (software minimum, not adequate research precision) needs >= 5 isolates of each class; found {0: 45}."
+experiment_003,source,PRJNA278886,488,488,0,165.0,3.0,7.0,0.896551724137931,0.9485294117647058,0.9648833671399595,0.05469789974560557,xgboost_depth2,OPERATING_POINT_FAILED,evaluated,
+experiment_004,source,PRJNA288601,488,488,0,130.0,0.0,5.0,1.0,0.6153846153846154,0.9464168310322156,0.03394229138909099,xgboost_depth4,EXPLORATORY_OPERATING_POINT_ONLY,evaluated,
+experiment_005,source,PRJNA296771,488,488,0,,,,,,,,,,blocked,"Holdout (software minimum, not adequate research precision) needs >= 5 isolates of each class; found {1: 24, 0: 1}."
+experiment_006,source,PRJNA308116,488,488,0,42.0,0.0,5.0,1.0,0.6153846153846154,0.9893899204244032,0.02235593056588721,xgboost_depth2,EXPLORATORY_OPERATING_POINT_ONLY,evaluated,
+experiment_007,source,PRJNA312972,488,488,0,,,,,,,,,,blocked,"Holdout (software minimum, not adequate research precision) needs >= 5 isolates of each class; found {1: 5}."
+experiment_008,source,PRJNA482724,488,488,0,,,,,,,,,,blocked,"Holdout (software minimum, not adequate research precision) needs >= 5 isolates of each class; found {0: 1}."
+experiment_009,source,PRJNA529562|PRJNA529587,488,488,0,,,,,,,,,,blocked,"Holdout (software minimum, not adequate research precision) needs >= 5 isolates of each class; found {0: 19}."
+experiment_010,source,PRJNA565241,488,488,0,,,,,,,,,,blocked,"Holdout (software minimum, not adequate research precision) needs >= 5 isolates of each class; found {1: 5}."
+experiment_011,source,PRJNA587095,488,488,0,,,,,,,,,,blocked,"Holdout (software minimum, not adequate research precision) needs >= 5 isolates of each class; found {0: 3}."
+experiment_012,source,PRJNA726009,488,488,0,,,,,,,,,,blocked,"Holdout (software minimum, not adequate research precision) needs >= 5 isolates of each class; found {0: 1}."
+experiment_013,source,PRJNA861833,488,488,0,,,,,,,,,,blocked,"Holdout (software minimum, not adequate research precision) needs >= 5 isolates of each class; found {1: 4, 0: 2}."
+experiment_014,source,PRJNA953359,488,488,0,,,,,,,,,,blocked,"Holdout (software minimum, not adequate research precision) needs >= 5 isolates of each class; found {1: 4}."
+experiment_015,India,India,488,488,0,,,,,,,,,,blocked,Every prespecified holdout must be present in eligible data.

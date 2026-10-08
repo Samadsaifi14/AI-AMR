@@ -1,12 +1,18 @@
 {
   "name": "amr-research-lab",
-  "version": "0.2.0",
+  "version": "0.10.0",
   "private": true,
   "description": "Browser-local AMR research with auditable data and held-out evaluation",
   "scripts": {
     "build": "node scripts/build-web.mjs",
     "test:web": "node scripts/verify-web.mjs",
-    "test:runtime": "node verify-runtime.mjs"
+    "test:runtime": "node verify-runtime.mjs",
+    "test:framework": "node scripts/verify-framework-runtime.mjs"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "fflate": "0.8.2"
+  }
 }

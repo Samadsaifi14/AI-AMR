@@ -3,7 +3,7 @@ import json
 import sys
 from pathlib import Path
 import pandas as pd
-from .data import build_cohort, IntegrityError
+from .data import build_cohort, IntegrityError, validate_config
 from .ncbi import fetch_biosamples
 from .demo import generate_demo
 from .modeling import fit_and_evaluate
@@ -15,8 +15,10 @@ def run(args, audit_only=False):
     out=Path(args.out)
     out.mkdir(parents=True,exist_ok=False)
     try:
+        cfg=validate_config(cfg)
         cohort,audit,exclusions,features=build_cohort(args.data,cfg,args.breakpoints)
         cohort.to_csv(out / "cohort.csv",index=False)
+        pd.DataFrame(audit["panel_coverage"]).to_csv(out / "panel_coverage.csv",index=False)
         exclusions.to_csv(out / "exclusions.csv",index=False)
         (out / "audit.json").write_text(json.dumps(audit,indent=2),encoding="utf-8")
         (out / "configuration.json").write_text(json.dumps(cfg,indent=2),encoding="utf-8")
@@ -44,10 +46,11 @@ def run(args, audit_only=False):
 def main():
     parser=argparse.ArgumentParser(description="Free local phenotype-only AMR research pipeline")
     sub=parser.add_subparsers(dest="command",required=True)
-    p=sub.add_parser('freeze-external', help='Freeze trusted local model artifacts before acquiring external results')
+    p=sub.add_parser('snapshot-external', aliases=['freeze-external'], help='Create a reproducible external evaluation snapshot from any newly trained run')
     p.add_argument('--run', required=True);p.add_argument('--out', required=True)
     p=sub.add_parser('external', help='Evaluate every eligible external isolate without refitting')
-    p.add_argument('--protocol', required=True);p.add_argument('--data', required=True)
+    origin=p.add_mutually_exclusive_group(required=True);origin.add_argument('--protocol');origin.add_argument('--run', help='Evaluate a saved run directly; snapshot is created automatically')
+    p.add_argument('--data', required=True)
     p.add_argument('--out', required=True);p.add_argument('--breakpoints')
     for name in ["audit","run","validate"]:
         p=sub.add_parser(name);p.add_argument("--data",required=True);p.add_argument("--config",required=True)
@@ -60,12 +63,17 @@ def main():
     p=sub.add_parser("topology",help="Exploratory networks using an existing run's training partition only")
     p.add_argument("--run",required=True);p.add_argument("--genes");p.add_argument("--geography");p.add_argument("--out",required=True)
     args=parser.parse_args()
-    if args.command=='freeze-external':
-        from .external import freeze_external
-        print(json.dumps(freeze_external(args.run,args.out),indent=2));return 0
+    if args.command in {'snapshot-external', 'freeze-external'}:
+        from .external import snapshot_external
+        print(json.dumps(snapshot_external(args.run,args.out),indent=2));return 0
     if args.command=='external':
-        from .external import evaluate_external
-        result=evaluate_external(args.protocol,args.data,args.out,args.breakpoints)
+        from .external import evaluate_external, snapshot_external
+        protocol=args.protocol
+        if args.run:
+            protocol=str(Path(args.out).with_suffix('.protocol.json'))
+            Path(protocol).parent.mkdir(parents=True,exist_ok=True)
+            snapshot_external(args.run,protocol)
+        result=evaluate_external(protocol,args.data,args.out,args.breakpoints)
         print(json.dumps(result,indent=2));return 2 if result['status']=='BLOCKED' else 0
     if args.command=="import-wide":
         from .importer import import_wide

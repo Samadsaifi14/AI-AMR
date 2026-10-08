@@ -1,0 +1,34 @@
+{
+  "target": "meropenem",
+  "species": [
+    "Klebsiella pneumoniae"
+  ],
+  "features": [
+    "cefepime",
+    "ceftazidime",
+    "ciprofloxacin",
+    "gentamicin",
+    "amikacin"
+  ],
+  "min_observed_features": 3,
+  "human_only": true,
+  "require_known_source": true,
+  "label_mode": "reported",
+  "endpoint": "R_vs_S",
+  "standard": "CLSI",
+  "allow_unversioned_reported": true,
+  "seed": 42,
+  "bootstrap_repeats": 200,
+  "sensitivity_target": 0.95,
+  "deferral_halfwidth": 0.1,
+  "split": {
+    "mode": "source",
+    "heldout": [
+      "PRJNA278886"
+    ]
+  },
+  "study_note": "Prespecified retrospective specificity experiment: same cohort, split seeds and candidate families as v0.7; maximize development OOF specificity at sensitivity >=0.95. Final calibration remains development-only. Previously examined tests are exploratory; no test-based candidate/threshold choice.",
+  "specificity_target": 0.85,
+  "include_xgboost": true,
+  "selection_objective": "specificity_at_sensitivity"
+}

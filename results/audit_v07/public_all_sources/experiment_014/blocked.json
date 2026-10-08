@@ -1,0 +1,10 @@
+{
+  "experiment": "experiment_014",
+  "kind": "India",
+  "heldout": "India",
+  "input_eligible_n": 482,
+  "experiment_eligible_n": 482,
+  "unknown_source_excluded_n": 0,
+  "status": "blocked",
+  "reason": "Every prespecified holdout must be present in eligible data."
+}

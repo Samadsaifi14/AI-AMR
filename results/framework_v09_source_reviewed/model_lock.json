@@ -1,0 +1,140 @@
+{
+  "selected_model": "xgboost_depth2",
+  "selection": "lowest equally weighted development-fold log loss; worst-fold tie break",
+  "selection_cv": "leave_one_development_source_out",
+  "threshold": 0.9717358716576218,
+  "deferral_low": 0.8717358716576218,
+  "deferral_high": 1.0,
+  "feature_selection": {
+    "fit_partition": "training_only",
+    "selected_drugs": [
+      "aztreonam",
+      "cefepime",
+      "cefotaxime",
+      "ceftazidime",
+      "ceftriaxone",
+      "ciprofloxacin",
+      "doripenem",
+      "ertapenem",
+      "imipenem",
+      "tigecycline"
+    ],
+    "training_coverage": {
+      "amikacin": 0.987603305785124,
+      "aztreonam": 0.6735537190082644,
+      "cefepime": 0.9008264462809917,
+      "cefotaxime": 0.6735537190082644,
+      "ceftazidime": 0.871900826446281,
+      "ceftriaxone": 0.8347107438016529,
+      "ciprofloxacin": 0.9710743801652892,
+      "colistin": 0.6859504132231405,
+      "doripenem": 0.628099173553719,
+      "ertapenem": 0.9793388429752066,
+      "gentamicin": 0.859504132231405,
+      "imipenem": 0.8057851239669421,
+      "levofloxacin": 0.9090909090909091,
+      "tigecycline": 0.6735537190082644,
+      "tobramycin": 0.9173553719008265
+    },
+    "dropped_drugs": {
+      "amikacin": "training_model_rank",
+      "tobramycin": "training_model_rank",
+      "levofloxacin": "training_model_rank",
+      "gentamicin": "training_model_rank",
+      "colistin": "training_model_rank"
+    },
+    "training_model_importance": {
+      "amikacin": 0.012862122811918474,
+      "ertapenem": 0.46111081347179395,
+      "ciprofloxacin": 0.018844590594246525,
+      "tobramycin": 0.00743145169810593,
+      "levofloxacin": 0.004648652634234552,
+      "cefepime": 0.018784697991115602,
+      "ceftazidime": 0.05067586170812656,
+      "gentamicin": 0.003482883927941822,
+      "ceftriaxone": 0.03375590219718294,
+      "imipenem": 0.06518575786063938,
+      "colistin": 0.006767976658054347,
+      "aztreonam": 0.08161897667161862,
+      "cefotaxime": 0.09671581516698244,
+      "tigecycline": 0.043459609135996086,
+      "doripenem": 0.09465488747204255
+    },
+    "selection_settings": {
+      "correlation_threshold": 0.95,
+      "max_drugs": 10,
+      "min_coverage": 0.2,
+      "seed": 42
+    }
+  },
+  "task": "antibiotic_resistance",
+  "target": "meropenem",
+  "configuration": {
+    "target": "meropenem",
+    "species": [
+      "Escherichia coli",
+      "Klebsiella pneumoniae"
+    ],
+    "features": [
+      "imipenem",
+      "ertapenem",
+      "doripenem",
+      "cefepime",
+      "ceftazidime",
+      "cefotaxime",
+      "ceftriaxone",
+      "aztreonam",
+      "amikacin",
+      "gentamicin",
+      "tobramycin",
+      "ciprofloxacin",
+      "levofloxacin",
+      "colistin",
+      "tigecycline"
+    ],
+    "min_observed_features": 3,
+    "human_only": true,
+    "label_mode": "reported",
+    "endpoint": "R_vs_S",
+    "standard": "CLSI",
+    "allow_unversioned_reported": true,
+    "seed": 42,
+    "bootstrap_repeats": 200,
+    "sensitivity_target": 0.95,
+    "deferral_halfwidth": 0.1,
+    "split": {
+      "mode": "source",
+      "heldout": [
+        "PRJNA278886"
+      ]
+    },
+    "specificity_target": 0.5,
+    "task": "antibiotic_resistance",
+    "include_species": true,
+    "feature_selection": {
+      "min_coverage": 0.2,
+      "correlation_threshold": 0.95,
+      "max_drugs": 10
+    },
+    "model_families": [
+      "random_forest",
+      "xgboost"
+    ],
+    "study_note": "Prespecified candidate panel from collaborator framework. Coverage, correlation and whole-drug ranking fit separately inside training folds. Previously examined public cohorts remain retrospective exploratory evidence.",
+    "include_xgboost": true,
+    "require_known_source": true
+  },
+  "input_sha256": "49ccf166f7e49f9b5142cf84ea5caa7c515ec93ea0ed4a342b911eaa52753eff",
+  "breakpoints_sha256": null,
+  "split_sha256": "fac34f7c32f532259b9eab301d8772cb9529e916ec924cc758a09a606b9b19be",
+  "calibration": "held-out sigmoid",
+  "evidence_status": "EXPLORATORY_MEASURED_DATA",
+  "environment": {
+    "python": "3.12.14",
+    "sklearn": "1.8.0",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "xgboost": "3.0.5"
+  },
+  "selection_objective": "log_loss"
+}

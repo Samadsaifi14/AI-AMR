@@ -4,14 +4,21 @@ import math
 from .data import IntegrityError, parse_mic
 
 
-UNKNOWN = {"", "unknown", "unspecified", "unspecified_reported", "not reported", "na", "nan"}
+UNKNOWN = {"", "unknown", "unspecified", "unspecified_reported", "not reported", "na", "nan",
+           "none", "null", "n/a", "not_curated", "ncbi_source_unknown"}
 
 
 def known(value):
-    return str(value).strip().lower() not in UNKNOWN
+    text = str(value).strip().lower()
+    return text not in UNKNOWN and not text.startswith(("replace_", "placeholder", "<"))
 
 
 def provenance_issue(row, cfg, categorical):
+    # EUCAST explicitly rejects colistin disk/gradient susceptibility tests.
+    # Do not let a categorical label conceal a known incompatible measurement method.
+    if row.get('drug', '') == 'colistin' and row.method.strip().lower() in {
+        'disk diffusion', 'disc diffusion', 'gradient diffusion', 'etest', 'e-test'}:
+        return 'drug_method_incompatible'
     if not categorical and row.tested_concentrations.strip():
         issue = dilution_issue(row)
         if issue:

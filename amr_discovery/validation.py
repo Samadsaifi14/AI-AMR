@@ -6,6 +6,7 @@ import pandas as pd
 from .data import IntegrityError
 from .modeling import fit_and_evaluate
 from .reporting import write_report
+from .harmonization import known
 
 
 def validation_suite(cohort, features, cfg, audit, out):
@@ -15,10 +16,10 @@ def validation_suite(cohort, features, cfg, audit, out):
     if len(cohort):
         specifications += [("source", {"mode": "source", "heldout": [str(source)]})
                            for source in sorted(cohort.source_id.unique())]
-        labs = sorted(set(cohort.get('lab_id', pd.Series(dtype=str))) - {''})
+        labs = sorted(x for x in set(cohort.get('lab_id', pd.Series(dtype=str))) if known(x))
         if len(labs) > 1:
             specifications += [('lab', {'mode':'lab', 'heldout':[lab]}) for lab in labs]
-        regions = sorted(set(cohort.get('region', pd.Series(dtype=str))) - {''})
+        regions = sorted(x for x in set(cohort.get('region', pd.Series(dtype=str))) if known(x))
         if len(regions) > 1:
             specifications += [('region', {'mode':'region', 'heldout':[region]}) for region in regions]
     # Always attempt India, including when absent: the blocker is part of the result.
@@ -40,7 +41,7 @@ def validation_suite(cohort, features, cfg, audit, out):
         record = {"experiment": run.name, "kind": kind, "heldout": ", ".join(split.get("heldout", []))}
         eligible = cohort
         if kind == "source" and len(cohort):
-            unknown = cohort.source_id.isin(["", "NCBI_SOURCE_UNKNOWN"])
+            unknown = ~cohort.source_id.map(known)
             # Unknown source rows cannot support source independence; retain an explicit exclusion table.
             cohort.loc[unknown, ["isolate_id", "source_id"]].to_csv(run / "unknown_source_exclusions.csv", index=False)
             eligible = cohort.loc[~unknown].copy()

@@ -28,7 +28,7 @@ def test_artifact_mutation_blocks_before_deserialization(tmp_path):
     data=generate_demo(tmp_path/'demo',100)
     result=evaluate_external(protocol,data,tmp_path/'out')
     assert result['status']=='BLOCKED'
-    assert 'Frozen artifact changed' in result['reason']
+    assert 'research_model.joblib' in result['reason']
     assert not result['india_accuracy_established']
 
 

@@ -2,6 +2,7 @@ import {loadPyodide} from './test-runtime/node_modules/pyodide/pyodide.mjs';
 import {fileURLToPath} from 'node:url';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
+const keepAlive=setInterval(()=>{},1000);
 try {
 const root=fileURLToPath(new URL('./dist/',import.meta.url));
 const py=await loadPyodide({indexURL:fileURLToPath(new URL('./test-runtime/node_modules/pyodide/',import.meta.url)),packageBaseUrl:'https://cdn.jsdelivr.net/pyodide/v0.29.3/full/',stdout:console.log});
@@ -50,6 +51,13 @@ r=await execute({action:'audit',configuration:JSON.stringify(strict),csv:catCsv}
 if(r.audit.raw_isolates!==266||r.audit.eligible_isolates!==0||r.audit.comparability.policy!=='strict')throw Error('Strict provenance gate failed');
 console.log('INDIA_CATEGORICAL_FULL_AUDIT_OK');
 console.log('STRICT_LAB_PROVENANCE_OK');
+const frameworkConfig=JSON.parse(fs.readFileSync(root+'configs/framework_browser.json','utf8'));
+frameworkConfig.bootstrap_repeats=10;
+r=await execute({action:'train',configuration:JSON.stringify(frameworkConfig),csv:fs.readFileSync(root+'data/public.csv','utf8')});
+if(!r.metrics||!r.selection||r.selection.fit_partition!=='training_only'||!r.metrics.selected_model.startsWith('forest_'))throw Error('Broad MIC framework failed: '+JSON.stringify(r.blocked||r.metrics));
+if(r.metrics.selected_drugs.includes(frameworkConfig.target)||!r.importance.length)throw Error('Target leakage or absent importance');
+fs.writeFileSync(new URL('./test-runtime/browser-framework-v09.zip',import.meta.url),Buffer.from(r.archive,'base64'));
+console.log('FRAMEWORK_BROWSER_OK',JSON.stringify({n:r.metrics.n,model:r.metrics.selected_model,panel:r.metrics.selected_drugs,sensitivity:r.metrics.sensitivity,specificity:r.metrics.specificity}));
 console.log('BROWSER_RUNTIME_TESTS_PASSED');
 
-} catch(e) { console.error('RUNTIME_TEST_FAILED',e.message);process.exitCode=1; }
+} catch(e) { console.error('RUNTIME_TEST_FAILED',e.message);process.exitCode=1; } finally {clearInterval(keepAlive);}

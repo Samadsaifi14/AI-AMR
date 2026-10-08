@@ -1,0 +1,103 @@
+{
+  "n": 42,
+  "resistant": 29,
+  "nonresistant": 13,
+  "prevalence": 0.6904761904761905,
+  "threshold": 0.25531647198237256,
+  "auroc": 0.9270557029177718,
+  "average_precision": 0.968916900674409,
+  "brier": 0.1213815130955875,
+  "log_loss": 0.38656600672245667,
+  "sensitivity": 1.0,
+  "specificity": 0.07692307692307693,
+  "balanced_accuracy": 0.5384615384615384,
+  "ppv": 0.7073170731707317,
+  "npv": 1.0,
+  "accuracy": 0.7142857142857143,
+  "false_negative_fraction_R": 0.0,
+  "tn": 1,
+  "fp": 12,
+  "fn": 0,
+  "tp": 29,
+  "sensitivity_exact_95": {
+    "low": 0.8805551309304973,
+    "high": 1.0,
+    "n": 29,
+    "method": "two-sided 95% Clopper-Pearson; assumes independent isolates"
+  },
+  "specificity_exact_95": {
+    "low": 0.0019456284973467482,
+    "high": 0.3602974352678775,
+    "n": 13,
+    "method": "two-sided 95% Clopper-Pearson; assumes independent isolates"
+  },
+  "uncertainty_note": "Bootstrap intervals can collapse at zero/all errors. Exact intervals assume independent isolates; neither resolves unrecorded patient clustering.",
+  "confidence_intervals": {
+    "auroc": {
+      "low": 0.8280572710022427,
+      "high": 0.9937499999999999,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "average_precision": {
+      "low": 0.9041149233295023,
+      "high": 0.9981060606060606,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "brier": {
+      "low": 0.06255927058896828,
+      "high": 0.1857611795973679,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "sensitivity": {
+      "low": 1.0,
+      "high": 1.0,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "specificity": {
+      "low": 0.0,
+      "high": 0.25,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "false_negative_fraction_R": {
+      "low": 0.0,
+      "high": 0.0,
+      "valid_replicates": 200,
+      "unit": "patient/duplicate component, else isolate"
+    }
+  },
+  "selected_model": "forest_depth4",
+  "split_mode": "source",
+  "evidence_status": "EXPLORATORY_MEASURED_DATA",
+  "calibration_note": "Calibration and operating threshold share a held-out development subset; holdout is untouched.",
+  "small_sample_warning": true,
+  "source_holdout": true,
+  "independently_verified_external_validation": false,
+  "clinical_validation": false,
+  "causal_discovery": false,
+  "partition_counts": {
+    "calibration": 110,
+    "test": 42,
+    "train": 330
+  },
+  "all_eligible_isolates_used": true,
+  "selection_cv": "leave_one_development_source_out",
+  "india_test_isolates": 0,
+  "india_validation_status": "NOT_ESTABLISHED",
+  "development_sensitivity_target": 0.95,
+  "development_specificity_target": 0.5,
+  "holdout_sensitivity_target_met": true,
+  "holdout_specificity_target_met": false,
+  "holdout_operating_target_met": false,
+  "interpretation_status": "OPERATING_POINT_FAILED",
+  "prediction_species": [
+    "Klebsiella pneumoniae"
+  ],
+  "calibration_slope": 1.0675578508196486,
+  "calibration_direction_reversed": false,
+  "deferral_note": "Fixed probability band is a research heuristic, not a coverage guarantee; failed operating points defer all new decisions."
+}

@@ -1,0 +1,46 @@
+{
+  "framework": "collaborator MIC resistance framework v0.9",
+  "python_tests": {
+    "passed": 89
+  },
+  "web_asset_and_source_checks": "passed",
+  "native_RF_XGBoost_source_challenge": {
+    "n": 165,
+    "selected_model": "xgboost_depth2",
+    "auroc": 0.936105476673428,
+    "sensitivity": 0.0,
+    "specificity": 1.0,
+    "fn": 29,
+    "fp": 0,
+    "interpretation_status": "OPERATING_POINT_FAILED",
+    "selected_drugs": [
+      "aztreonam",
+      "cefepime",
+      "cefotaxime",
+      "ceftazidime",
+      "ceftriaxone",
+      "ciprofloxacin",
+      "doripenem",
+      "ertapenem",
+      "imipenem",
+      "tigecycline"
+    ]
+  },
+  "cohort": {
+    "raw_isolates": 1804,
+    "eligible_isolates": 488,
+    "class_counts": {
+      "0": 271,
+      "1": 217
+    }
+  },
+  "interpretation": "Retrospective exploratory source challenge. The frozen operating point failed; no accuracy or India validation established. Browser runtime verification is recorded separately.",
+  "browser_runtime": "passed: demo, predictions, topology, public source, full Indian audit, strict provenance and broad MIC framework",
+  "browser_framework": {
+    "model": "forest_depth4",
+    "n": 165,
+    "sensitivity": 0,
+    "specificity": 1,
+    "interpretation": "OPERATING_POINT_FAILED"
+  }
+}

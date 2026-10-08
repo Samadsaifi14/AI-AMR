@@ -3,7 +3,7 @@ import path from 'node:path';
 import {zipSync} from 'fflate';
 
 export async function packageSource(root, destination) {
-  const names = ['README.md', 'pyproject.toml', 'requirements-local.lock.txt',
+  const names = ['README.md', 'AGENTS.md', 'pyproject.toml', 'requirements-local.lock.txt',
     'browser_bridge.py', 'package.json', 'package-lock.json', 'vercel.json', 'verify-runtime.mjs',
     'results/public_pilot/audit.json'];
   async function collect(directory) {
@@ -14,7 +14,7 @@ export async function packageSource(root, destination) {
       else if (item.isFile() && !/\.(pyc|joblib|xml)$/.test(name)) names.push(name);
     }
   }
-  for (const directory of ['amr_discovery', 'scripts', 'tests', 'configs', 'docs', 'web', 'data', 'results/audit_v07', 'results/framework_v09_source_reviewed', 'results/dynamic_v10_full_panel', 'results/dynamic_v10_full_validation']) {
+  for (const directory of ['.agents', '.specify', 'specs', 'amr_discovery', 'scripts', 'tests', 'configs', 'docs', 'web', 'data', 'results/audit_v07', 'results/framework_v09_source_reviewed', 'results/dynamic_v10_full_panel', 'results/dynamic_v10_full_validation']) {
     await collect(directory);
   }
   const files = {};

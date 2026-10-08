@@ -57,6 +57,8 @@ def main():
         p.add_argument("--out",required=True);p.add_argument("--breakpoints")
     p=sub.add_parser("import-wide",help="Chunked full-file import using an explicitly reviewed column mapping")
     p.add_argument("--data",required=True);p.add_argument("--mapping",required=True);p.add_argument("--out",required=True)
+    p=sub.add_parser("prepare-batch",help="Combine new measured data with a prior batch; reject conflicts and save hashes")
+    p.add_argument("--data",required=True);p.add_argument("--base");p.add_argument("--out",required=True)
     p=sub.add_parser("fetch-ncbi");p.add_argument("--query",required=True);p.add_argument("--out",required=True)
     p.add_argument("--limit",type=int,default=200);p.add_argument("--email",default="");p.add_argument("--resume",action="store_true")
     p=sub.add_parser("demo");p.add_argument("--out",required=True);p.add_argument("--n",type=int,default=800)
@@ -75,6 +77,12 @@ def main():
             snapshot_external(args.run,protocol)
         result=evaluate_external(protocol,args.data,args.out,args.breakpoints)
         print(json.dumps(result,indent=2));return 2 if result['status']=='BLOCKED' else 0
+    if args.command=="prepare-batch":
+        from .batches import prepare_batch
+        try:
+            print(json.dumps(prepare_batch(args.data,args.out,args.base),indent=2));return 0
+        except (IntegrityError, FileExistsError, OSError) as e:
+            print(f"Batch not prepared: {e}",file=sys.stderr);return 2
     if args.command=="import-wide":
         from .importer import import_wide
         print(json.dumps(import_wide(args.data,args.mapping,args.out),indent=2));return 0

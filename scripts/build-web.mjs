@@ -26,6 +26,7 @@ const files = {
   'lab_harmonization_v06.md':'docs/LAB_HARMONIZATION_V06.md',
   'configs/india_strict_categorical.json':'configs/india_strict_categorical.json',
   'data_dictionary.md':'docs/DATA_DICTIONARY.md',
+  'reel_evidence.md':'docs/REEL_EVIDENCE.md',
   'audit_v03.md':'docs/AUDIT_V03.md',
   'india_validation_v04.md':'docs/INDIA_VALIDATION_V04.md',
   'india_external_result_v04.json':'docs/INDIA_EXTERNAL_RESULT_V04.json',

@@ -29,6 +29,11 @@ def archive(folder):
 def execute(payload):
     global LAST_MODEL, LAST_CFG, LAST_TRAIN_IDS
     action = payload['action']
+    if action == 'prepare':
+        from amr_discovery.batches import merge_observations
+        content,manifest=merge_observations(payload.get('csv',''),payload.get('base_csv',''))
+        LAST_MODEL, LAST_CFG, LAST_TRAIN_IDS = None, None, set()
+        return json.dumps({'action':'prepare','csv':content,'manifest':manifest})
     if action == 'predict':
         if LAST_MODEL is None:
             raise IntegrityError('Train a model in this session before predicting.')

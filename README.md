@@ -1,10 +1,10 @@
 # AI-AMR · AMR Research Lab
 
-A browser-local team lab for measured antibiotic susceptibility research. It trains and evaluates meropenem resistance models, audits source observations, exports reproducible runs, and explores development-only gene co-occurrence and geographic proximity.
+A browser-local team lab for measured antibiotic susceptibility research. It trains and evaluates antibiotic-specific resistance models, audits source observations, exports reproducible runs, and explores development-only gene co-occurrence and geographic proximity.
 
-The existing publication is https://amr-research-lab.samads14122003.chatgpt.site. This repository is prepared for a separate Vercel deployment. Its Vercel URL will be recorded after deployment is confirmed.
+Live workspace: https://ai-amr.vercel.app/ · [Pune user guide](https://ai-amr.vercel.app/guide.html) · [Free tools](https://ai-amr.vercel.app/resources.html).
 
-**India accuracy and clinical validity are not established.** The public India BioSample cohort has one eligible resistant isolate and no eligible susceptible isolate. The public source-held-out test missed all 29 resistant isolates. The lab displays failed operating points rather than treating them as successful validation. It does not predict human genetics or ethnicity from location.
+**India accuracy and clinical validity are not established.** The public India BioSample cohort has one eligible resistant isolate and no eligible susceptible isolate. The current native public-source challenge misses 3 of 29 resistant isolates; browser RF misses 15. The earlier 29-miss failure is archived. The lab displays failed operating points rather than treating them as successful validation. It does not predict human genetics or ethnicity from location.
 
 ## Team workflow
 
@@ -94,3 +94,9 @@ The MIC framework now supports antibiotic-specific resistance endpoints, broad p
 ## Dynamic workflow (v0.10)
 
 Editable panel and operating settings, fresh retraining, ungated labelled research predictions, and automatic external-evaluation snapshots replace the manual freezing workflow. Source-robust development thresholds reduce the recorded source-challenge false negatives from 29 to 3; remaining misses and false positives are retained. See [docs/DYNAMIC_V10.md](docs/DYNAMIC_V10.md) for the method and limits.
+
+## Add new development data
+
+Use the checked batch preparation in the upload workspace or `python -m amr_discovery prepare-batch --data new.csv --base earlier.csv --out new-batch`. Exact duplicate rows are removed, conflicting identities rejected, and hashes recorded. Audit the combined observations before retraining. Keep a fresh independent evaluation cohort outside this merge. See the Pune guide for Windows/Linux commands and troubleshooting.
+
+Project-local Spec Kit Codex skills are in `.agents/skills`. Follow `AGENTS.md` and `specs/001-pune-workflow` for the completed specification and evidence.

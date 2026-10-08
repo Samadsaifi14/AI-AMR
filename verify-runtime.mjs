@@ -21,6 +21,10 @@ py.FS.mkdirTree('/app/amr_discovery');
 for(const [name,text] of Object.entries(JSON.parse(fs.readFileSync(root+'python-sources.json','utf8'))))py.FS.writeFile('/app/'+name,text);
 py.runPython('import sys\nsys.path.insert(0,"/app")\nfrom browser_bridge import execute');
 async function execute(p){py.globals.set('payload_json',JSON.stringify(p));return JSON.parse(await py.runPythonAsync('execute(__import__("json").loads(payload_json))'));}
+const demoCsv=fs.readFileSync(root+'data/demo.csv','utf8');
+let prepared=await execute({action:'prepare',csv:demoCsv,base_csv:demoCsv});
+if(prepared.manifest.exact_duplicate_rows_removed!==prepared.manifest.rows||prepared.manifest.status!=='PREPARED_NOT_AUDITED')throw Error('Batch deduplication contract failed');
+console.log('BATCH_PREPARE_RUNTIME_OK');
 const configuration=fs.readFileSync(root+'configs/demo.json','utf8');
 let r=await execute({action:'train',configuration,csv:fs.readFileSync(root+'data/demo.csv','utf8')});
 if(!r.metrics)throw Error('Demo blocked '+r.blocked);

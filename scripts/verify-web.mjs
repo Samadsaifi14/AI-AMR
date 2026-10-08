@@ -12,8 +12,8 @@ const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
 assert.equal(ids.length,new Set(ids).size,'Duplicate element IDs');
 for (const match of html.matchAll(/\b(?:src|href)="([^"]+)"/g)) {
   const ref=match[1];
-  if (!ref.startsWith('#') && !ref.startsWith('https:')) {
-    assert(fs.existsSync(path.join(dist,ref)), 'Missing local asset: '+ref);
+  if (!ref.startsWith('#') && !/^[a-z]+:/i.test(ref)) {
+    assert(fs.existsSync(path.join(dist,ref.split('#')[0])), 'Missing local asset: '+ref);
   }
 }
 const app=fs.readFileSync(path.join(dist,'app.js'),'utf8');
@@ -26,7 +26,8 @@ for(const [name,content] of Object.entries(sources)) {
   assert.equal(strFromU8(archive[name]),content,'Stale source download: '+name);
 }
 assert(archive['results/public_pilot/audit.json'],'Source download missing materialization hash');
-for (const name of ['app.js','worker.js']) {
+for(const page of ['guide.html','resources.html']){const document=fs.readFileSync(path.join(dist,page),'utf8');for(const m of document.matchAll(/\b(?:src|href)="([^"]+)"/g)){const ref=m[1];if(!ref.startsWith('#')&&!/^[a-z]+:/i.test(ref))assert(fs.existsSync(path.join(dist,ref.split('#')[0])),'Missing guide asset: '+ref);}}
+for (const name of ['app.js','worker.js','onboarding.js']) {
   execFileSync(process.execPath,['--check',path.join(dist,name)]);
 }
 console.log('PASS: generated modules, asset links, unique IDs and JavaScript syntax.');

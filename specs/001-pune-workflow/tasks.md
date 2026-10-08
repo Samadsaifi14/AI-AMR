@@ -8,4 +8,8 @@
 - [x] Spec Kit skills and project constitution
 - [x] Review five reels and record applicability
 - [x] Python (100 tests), build, canonical-runtime and UI-state verification; local browser preview blocked, live visual check follows release
-- [ ] Publish checked source and verify deployment
+- [x] Publish original Pune source and verify production deployment
+
+- [x] Follow-up: progress stages, elapsed time, cancellation and source-loading guard
+- [x] Follow-up: correct measured evidence-class documentation and add four design references
+- [ ] Follow-up: verify software/runtime and deployed UI

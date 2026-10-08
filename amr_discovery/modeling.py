@@ -336,7 +336,8 @@ def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
         for name, model, columns in choices:
             oof = np.zeros(len(train))
             fold_losses = []
-            for tr, va in cv:
+            for fold_index, (tr, va) in enumerate(cv):
+                print(f"Training development model {name}: fold {fold_index + 1} of {len(cv)}",flush=True)
                 estimator = clone(model).fit(train.iloc[tr][columns], train.iloc[tr].y)
                 oof[va] = estimator.predict_proba(train.iloc[va][columns])[:, 1]
                 fold_losses.append(log_loss(train.iloc[va].y, oof[va], labels=[0,1]))
@@ -350,6 +351,7 @@ def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
             oof_predictions[name] = oof.copy()
             fitted[name] = (clone(model).fit(train[columns], train.y), columns)
             print(f"Development CV completed: {name}", flush=True)
+        print('Selecting the model and calibrating with development data',flush=True)
         best = select_candidate(scores, cfg)
         estimator, columns = fitted[best]
         cal_raw = estimator.predict_proba(cal[columns])[:, 1]
@@ -397,6 +399,7 @@ def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
         (folder / "experiment_snapshot.json").write_text(json.dumps(lock, indent=2), encoding="utf-8")
         (folder / "model_lock.json").write_text(json.dumps(lock, indent=2), encoding="utf-8")
         joblib.dump(bundle, folder / "research_model.joblib")
+        print('Evaluating the reserved holdout and computing uncertainty',flush=True)
         p = bundle.predict_proba(test)
         report = metrics(test.y, p, threshold)
         bundle.interpretation_status = (

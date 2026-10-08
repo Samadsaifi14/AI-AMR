@@ -91,6 +91,7 @@ def execute(payload):
         result['archive'] = archive(folder)
         return json.dumps(result,allow_nan=False)
     LAST_MODEL, LAST_CFG, LAST_TRAIN_IDS = None, None, set()
+    print('Checking configuration and laboratory input', flush=True)
     cfg = validate_config(json.loads(payload['configuration']))
     folder = Path('/run')
     shutil.rmtree(folder,ignore_errors=True)
@@ -103,7 +104,8 @@ def execute(payload):
         breakpoints = '/breakpoints.csv'
         Path(breakpoints).write_text(payload['breakpoints'])
         (folder/'reviewed_breakpoints.csv').write_text(payload['breakpoints'])
-    cohort,audit,exclusions,columns = build_cohort(data,cfg,breakpoints)
+    cohort,audit,exclusions,columns = build_cohort(data,cfg,breakpoints,progress=lambda message: print(message,flush=True))
+    print(f'Audit complete: {len(cohort)} eligible isolates. Preparing {action}.',flush=True)
     cohort.to_csv(folder/'cohort.csv',index=False)
     pd.DataFrame(audit['panel_coverage']).to_csv(folder/'panel_coverage.csv',index=False)
     exclusions.to_csv(folder/'exclusions.csv',index=False)
@@ -135,6 +137,7 @@ def execute(payload):
             blocked = str(e)
             answer['blocked'] = blocked
             (folder/'blocked.json').write_text(json.dumps({'status':'TRAINING_BLOCKED','reason':blocked}))
+    print('Building evidence report and downloadable experiment',flush=True)
     write_report(folder,audit,result,blocked)
     answer['report'] = (folder/'report.html').read_text()
     answer['archive'] = archive(folder)

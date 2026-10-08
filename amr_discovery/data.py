@@ -253,7 +253,7 @@ def construct_groups(cohort):
     return ["G" + str(root(i)) for i in range(len(cohort))]
 
 
-def build_cohort(path, config, breakpoint_file=None):
+def build_cohort(path, config, breakpoint_file=None, progress=None):
     cfg = validate_config(config)
     raw = pd.read_csv(path, dtype=str, keep_default_na=False)
     # Formatting whitespace must not create different patient or isolate identities.
@@ -303,7 +303,12 @@ def build_cohort(path, config, breakpoint_file=None):
     cleaned = []
     metadata_fields = ["source_id", "species", "country", "collection_date", "patient_id",
                        "duplicate_group", "host", *MECHANISMS, "mechanism_evidence", "region", "hospital_id", "lab_id"]
-    for isolate, block in raw.groupby("isolate_id", sort=True):
+    groups = raw.groupby("isolate_id", sort=True)
+    if progress:
+        progress(f"Auditing {len(raw)} observation rows across {len(groups)} isolate groups")
+    for group_index, (isolate, block) in enumerate(groups):
+        if progress and group_index % 100 == 0:
+            progress(f"Auditing isolate group {group_index + 1} of {len(groups)}")
         if block.curation_status.str.upper().str.contains('QUARANTIN|REVIEW_REQUIRED|PROPOSED', regex=True).any():
             exclusions.append({"isolate_id": isolate, "reason": "curation_quarantined"}); continue
         for column in metadata_fields:

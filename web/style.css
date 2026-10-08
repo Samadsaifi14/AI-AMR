@@ -14,3 +14,9 @@ input[type="checkbox"] {width:auto;min-height:0;display:inline-block;margin-righ
 @media print{aside,.hero-visual,button{display:none!important}main{margin:0;padding:0}section{break-inside:avoid}a{color:inherit}}
 
 .table-pages{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12px}.table-pages span{flex:1;min-width:180px}
+
+/* Motion inspired by the requested design references; implemented locally. */
+:root{--motion-short:180ms;--motion-reveal:360ms;--motion-ease:cubic-bezier(.2,.65,.3,1)}
+.run-activity{margin-top:20px;padding:20px 22px;background:#eaf1eb;border:1px solid var(--line);border-radius:4px}.run-heading{display:flex;justify-content:space-between;gap:16px;align-items:baseline}.run-heading strong{font-size:14px}.run-heading span{font:13px ui-monospace,monospace;white-space:nowrap}.run-activity p{font-size:13px;margin:10px 0 0}.run-activity:not([hidden]),.metrics-grid{animation:panel-in var(--motion-reveal) var(--motion-ease) both}details[open]>:not(summary){animation:panel-in var(--motion-short) var(--motion-ease) both}.hero-copy{animation:panel-in 550ms var(--motion-ease) both}.journey li:nth-child(2){animation-delay:60ms}.journey li:nth-child(3){animation-delay:120ms}.journey li:nth-child(4){animation-delay:180ms}nav a span{transition:color var(--motion-short) var(--motion-ease)}@keyframes panel-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:760px){.run-heading{flex-direction:column;gap:5px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}

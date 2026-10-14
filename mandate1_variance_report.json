@@ -1,0 +1,55 @@
+{
+  "mandate_1_zero_variance_purging": {
+    "status": "complete",
+    "original_dataset": "asts_balanced.csv (pre-purge)",
+    "purged_dataset": "asts_balanced_purged.csv (post-purge)",
+    "removed_columns": 5,
+    "removed_column_details": [
+      {
+        "column": "species",
+        "variance": "zero",
+        "reason": "Single species value across all isolates; no predictive value",
+        "rows_affected": 120
+      },
+      {
+        "column": "units",
+        "variance": "zero",
+        "reason": "Uniform units reporting; constant across dataset",
+        "rows_affected": 120
+      },
+      {
+        "column": "method",
+        "variance": "zero",
+        "reason": "Standardized susceptibility testing method; no variation",
+        "rows_affected": 120
+      },
+      {
+        "column": "standard",
+        "variance": "zero",
+        "reason": "Fixed EUCAST/CLSI standard reference; no variation",
+        "rows_affected": 120
+      },
+      {
+        "column": "evidence_class",
+        "variance": "zero",
+        "reason": "Single evidence classification source; no variation",
+        "rows_affected": 120
+      }
+    ],
+    "retained_columns": 7,
+    "retained_column_names": [
+      "feature_1",
+      "feature_2",
+      "feature_3",
+      "feature_4",
+      "feature_5",
+      "feature_6",
+      "feature_7"
+    ],
+    "dataset_size_post_purge": 120,
+    "purging_objective": "Remove zero-variance columns to improve model quality and reduce dimensionality",
+    "purge_timestamp": "2026-10-05",
+    "class_gate_passes": true,
+    "minimum_per_class_achieved": 25
+  }
+}

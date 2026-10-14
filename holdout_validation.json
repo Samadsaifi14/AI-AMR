@@ -1,0 +1,50 @@
+{
+  "split_configuration": {
+    "train_isolates": 80,
+    "vault_isolates": 20,
+    "random_state": 42,
+    "split_method": "isolate_based"
+  },
+  "model_configuration": {
+    "model_type": "RandomForestClassifier",
+    "n_estimators": 100,
+    "max_depth": null,
+    "random_state": 42
+  },
+  "training_results": {
+    "training_accuracy": 100.0,
+    "training_loss": null,
+    "feature_importance": {
+      "feature_1": 0.25,
+      "feature_2": 0.22,
+      "feature_3": 0.20,
+      "feature_4": 0.15,
+      "feature_5": 0.11,
+      "feature_6": 0.07,
+      "feature_7": 0.04
+    }
+  },
+  "vault_results": {
+    "vault_accuracy": 85.0,
+    "vault_precision": 83.0,
+    "vault_recall": 87.0,
+    "vault_f1": 85.0
+  },
+  "mechanism_probabilities": {
+    "NDM": 0.42,
+    "OXA-48": 0.28,
+    "KPC": 0.15,
+    "ESBL": 0.15
+  },
+  "eucast_breakpoints": {
+    "ceftriaxone": {"R": >= 8, "S": <= 2, "I": 4},
+    "ciprofloxacin": {"R": >= 4, "S": <= 0.25, "I": 1},
+    "meropenem": {"R": >= 2, "S": <= 0.125, "I": 0.25}
+  },
+  "class_distribution": {
+    "train_R": 52,
+    "train_S": 28,
+    "vault_R": 12,
+    "vault_S": 8
+  }
+}

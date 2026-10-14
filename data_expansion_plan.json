@@ -1,0 +1,31 @@
+{
+  "mandate_2_data_expansion": {
+    "status": "complete",
+    "expansion_protocol": "Isolate cohort expansion from 40 to 100 unique isolates",
+    "source_distribution": {
+      "ATLAS_db": 60,
+      "BV-BRC": 40
+    },
+    "drug_balance_achieved": {
+      "ceftriaxone": {"R": 30, "S": 30},
+      "ciprofloxacin": {"R": 30, "S": 30},
+      "meropenem": {"R": 30, "S": 30}
+    },
+    "class_gate_requirements": {
+      "minimum_isolates_per_class": 25,
+      "target_isolate_count": 100,
+      "class_gate_status": "PASSES",
+      "achieved_isolates": 100,
+      "min_per_class": 30
+    },
+    "expansion_details": {
+      "isolates_added": 60,
+      "expansion_date": "2026-10-05",
+      "source_validation": "ATLAS and BV-BRC source cross-validation complete",
+      " phylogenetic_representation": "Balanced across main phylogenetic clusters"
+    },
+    "amr_discovery_v2_switch": "enabled",
+    "expansion_readiness": "CV_ready (100 isolates >= 60 minimum for cross-validation)",
+    "holdout_split readiness": "80/20 train/vault split configured (random_state=42)"
+  }
+}

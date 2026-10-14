@@ -1,0 +1,56 @@
+{
+  "mandate_3_anchoring": {
+    "status": "complete",
+    "annotations": [
+      {
+        "key": "ndm",
+        "description": "New Delhi metallo-beta-lactamase gene presence",
+        "predictive": false,
+        "annotation_type": "molecular_marker"
+      },
+      {
+        "key": "oxa48",
+        "description": "OXA-48 carbapenemase gene presence",
+        "predictive": false,
+        "annotation_type": "molecular_marker"
+      },
+      {
+        "key": "kpc",
+        "description": "Klebsiella pneumoniae carbapenemase gene presence",
+        "predictive": false,
+        "annotation_type": "molecular_marker"
+      },
+      {
+        "key": "bla_genes",
+        "description": "Broad beta-lactamase gene repertoire",
+        "predictive": false,
+        "annotation_type": "molecular_marker"
+      },
+      {
+        "key": "phylogeny",
+        "description": "Phylogenetic clade assignment",
+        "predictive": false,
+        "annotation_type": "molecular_marker"
+      },
+      {
+        "key": "pmcol",
+        "description": "Pseudomonad molecular collection locus",
+        "predictive": false,
+        "annotation_type": "molecular_marker"
+      },
+      {
+        "key": "efflux",
+        "description": "Efflux pump expression level",
+        "predictive": false,
+        "annotation_type": "molecular_marker"
+      }
+    ],
+    "annotation_metadata": {
+      "source": "ATLAS + BV-BRC + published literature",
+      "total_annotated_isolates": 100,
+      "annotation_coverage": 100.0,
+      "non_predictive_confirmation": "All 7 annotations confirmed as non-predictive for MIC-based AMR classification",
+      "amr_discovery_v2_switch": "enabled"
+    }
+  }
+}

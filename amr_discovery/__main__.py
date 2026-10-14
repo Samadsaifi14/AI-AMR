@@ -46,6 +46,19 @@ def run(args, audit_only=False):
 def main():
     parser=argparse.ArgumentParser(description="Free local phenotype-only AMR research pipeline")
     sub=parser.add_subparsers(dest="command",required=True)
+    p=sub.add_parser('import-ncbi-export',help='Import NCBI AST export; unmatched provenance remains quarantined')
+    p.add_argument('--data',required=True);p.add_argument('--reference');p.add_argument('--out',required=True)
+    p=sub.add_parser('learning-reserve',help='Reserve measured evaluation identities and sources outside training')
+    p.add_argument('--data',required=True);p.add_argument('--config',required=True);p.add_argument('--registry',required=True)
+    p=sub.add_parser('learning-train',help='Train and register a new immutable research version')
+    p.add_argument('--data',required=True);p.add_argument('--config',required=True);p.add_argument('--out',required=True)
+    p.add_argument('--registry',required=True);p.add_argument('--parent');p.add_argument('--breakpoints')
+    p=sub.add_parser('learning-compare',help='Paired retrospective champion/challenger comparison')
+    p.add_argument('--registry',required=True);p.add_argument('--champion',required=True);p.add_argument('--challenger',required=True);p.add_argument('--out',required=True)
+    p=sub.add_parser('learning-evaluate',help='Score a reserved independent cohort once')
+    p.add_argument('--registry',required=True);p.add_argument('--version',required=True);p.add_argument('--data',required=True);p.add_argument('--out',required=True);p.add_argument('--breakpoints')
+    p=sub.add_parser('learning-promote',help='Explicitly activate a version for research after independent gates pass')
+    p.add_argument('--registry',required=True);p.add_argument('--version',required=True)
     p=sub.add_parser('snapshot-external', aliases=['freeze-external'], help='Create a reproducible external evaluation snapshot from any newly trained run')
     p.add_argument('--run', required=True);p.add_argument('--out', required=True)
     p=sub.add_parser('external', help='Evaluate every eligible external isolate without refitting')
@@ -65,6 +78,24 @@ def main():
     p=sub.add_parser("topology",help="Exploratory networks using an existing run's training partition only")
     p.add_argument("--run",required=True);p.add_argument("--genes");p.add_argument("--geography");p.add_argument("--out",required=True)
     args=parser.parse_args()
+    if args.command.startswith('learning-') or args.command=='import-ncbi-export':
+        from .learning import reserve_evaluation,train_version,compare_versions,evaluate_version,promote_research
+        try:
+            if args.command=='import-ncbi-export':
+                from .export_import import import_ncbi_export
+                content,result=import_ncbi_export(Path(args.data).read_text(encoding='utf-8-sig'),
+                            Path(args.reference).read_text(encoding='utf-8-sig') if args.reference else '')
+                folder=Path(args.out);folder.mkdir(parents=True,exist_ok=False)
+                (folder/'observations.csv').write_text(content)
+                (folder/'import_manifest.json').write_text(json.dumps(result,indent=2))
+            elif args.command=='learning-reserve':result=reserve_evaluation(args.data,args.config,args.registry)
+            elif args.command=='learning-train':result=train_version(args.data,args.config,args.out,args.registry,args.parent,args.breakpoints)
+            elif args.command=='learning-compare':result=compare_versions(args.registry,args.champion,args.challenger,args.out)
+            elif args.command=='learning-evaluate':result=evaluate_version(args.registry,args.version,args.data,args.out,args.breakpoints)
+            else:result=promote_research(args.registry,args.version)
+            print(json.dumps(result,indent=2));return 0
+        except (IntegrityError,FileExistsError,OSError) as e:
+            print(f'Controlled learning blocked: {e}',file=sys.stderr);return 2
     if args.command in {'snapshot-external', 'freeze-external'}:
         from .external import snapshot_external
         print(json.dumps(snapshot_external(args.run,args.out),indent=2));return 0

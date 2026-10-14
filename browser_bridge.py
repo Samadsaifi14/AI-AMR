@@ -15,6 +15,7 @@ from amr_discovery.topology import gene_network, spatial_edges
 LAST_MODEL = None
 LAST_CFG = None
 LAST_TRAIN_IDS = set()
+LAST_PROFILE = None
 
 
 def archive(folder):
@@ -27,12 +28,27 @@ def archive(folder):
 
 
 def execute(payload):
-    global LAST_MODEL, LAST_CFG, LAST_TRAIN_IDS
+    global LAST_MODEL, LAST_CFG, LAST_TRAIN_IDS, LAST_PROFILE
     action = payload['action']
+    if action == 'import_export':
+        from amr_discovery.export_import import import_ncbi_export
+        content,manifest=import_ncbi_export(payload.get('csv',''),payload.get('reference_csv',''))
+        LAST_MODEL, LAST_CFG, LAST_TRAIN_IDS, LAST_PROFILE = None, None, set(), None
+        return json.dumps({'action':action,'csv':content,'manifest':manifest})
+    if action == 'drift':
+        from amr_discovery.learning import drift_report
+        if LAST_PROFILE is None or LAST_CFG is None:
+            raise IntegrityError('Train a session version before checking incoming data drift.')
+        if payload.get('configuration') and validate_config(json.loads(payload['configuration'])) != LAST_CFG:
+            raise IntegrityError('Session configuration changed; monitoring cannot use a stale model.')
+        data=Path('/monitor.csv');data.write_text(payload['csv'])
+        cohort,audit,exclusions,_=build_cohort(data,LAST_CFG)
+        drift=drift_report(LAST_PROFILE,cohort,LAST_CFG)
+        return json.dumps({'action':action,'drift':drift,'audit':audit},allow_nan=False)
     if action == 'prepare':
         from amr_discovery.batches import merge_observations
         content,manifest=merge_observations(payload.get('csv',''),payload.get('base_csv',''))
-        LAST_MODEL, LAST_CFG, LAST_TRAIN_IDS = None, None, set()
+        LAST_MODEL, LAST_CFG, LAST_TRAIN_IDS, LAST_PROFILE = None, None, set(), None
         return json.dumps({'action':'prepare','csv':content,'manifest':manifest})
     if action == 'predict':
         if LAST_MODEL is None:
@@ -90,7 +106,7 @@ def execute(payload):
         (folder/'analysis.json').write_text(json.dumps(result,indent=2))
         result['archive'] = archive(folder)
         return json.dumps(result,allow_nan=False)
-    LAST_MODEL, LAST_CFG, LAST_TRAIN_IDS = None, None, set()
+    LAST_MODEL, LAST_CFG, LAST_TRAIN_IDS, LAST_PROFILE = None, None, set(), None
     print('Checking configuration and laboratory input', flush=True)
     cfg = validate_config(json.loads(payload['configuration']))
     folder = Path('/run')
@@ -127,6 +143,9 @@ def execute(payload):
             LAST_CFG = cfg
             split = pd.read_csv(folder/'cohort_with_splits.csv')
             LAST_TRAIN_IDS = set(split.loc[split.partition.eq('train'),'isolate_id'])
+            from amr_discovery.learning import training_artifacts
+            answer['learning_version']=training_artifacts(folder,cfg,audit,result)
+            LAST_PROFILE=json.loads((folder/'reference_profile.json').read_text())
             answer['metrics'] = result
             answer['importance'] = json.loads(pd.read_csv(folder/'grouped_permutation_importance.csv').to_json(orient='records'))
             answer['selection'] = json.loads((folder/'feature_selection.json').read_text()) if (folder/'feature_selection.json').exists() else None

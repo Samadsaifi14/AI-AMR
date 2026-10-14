@@ -21,6 +21,7 @@ sources['browser_bridge.py'] = await fs.readFile(path.join(root,'browser_bridge.
 await fs.writeFile(path.join(out,'python-sources.json'), JSON.stringify(sources));
 
 const files = {
+  'controlled_learning.md':'docs/CONTROLLED_LEARNING.md',
   'data/demo.csv':'data/fixtures/browser_demo.csv',
   'data/india.csv':'data/raw/ncbi_india/observations.csv',
   'lab_harmonization_v06.md':'docs/LAB_HARMONIZATION_V06.md',

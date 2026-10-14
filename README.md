@@ -100,3 +100,7 @@ Editable panel and operating settings, fresh retraining, ungated labelled resear
 Use the checked batch preparation in the upload workspace or `python -m amr_discovery prepare-batch --data new.csv --base earlier.csv --out new-batch`. Exact duplicate rows are removed, conflicting identities rejected, and hashes recorded. Audit the combined observations before retraining. Keep a fresh independent evaluation cohort outside this merge. See the Pune guide for Windows/Linux commands and troubleshooting.
 
 Project-local Spec Kit Codex skills are in `.agents/skills`. Follow `AGENTS.md` and `specs/001-pune-workflow` for the completed specification and evidence.
+
+## Controlled learning
+
+See [the controlled-learning guide](docs/CONTROLLED_LEARNING.md) for original NCBI export import, versioned training, drift monitoring, reserved independent evaluation, paired comparison and explicit research promotion. Run `python -m amr_discovery --help` for commands. Browser versions and drift reports use the same canonical Python modules. Uploaded patient data and trained models remain private; no clinical validation is inferred from internal performance.

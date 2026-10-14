@@ -27,7 +27,7 @@ for(const [name,content] of Object.entries(sources)) {
 }
 assert(archive['results/public_pilot/audit.json'],'Source download missing materialization hash');
 for(const page of ['guide.html','resources.html']){const document=fs.readFileSync(path.join(dist,page),'utf8');for(const m of document.matchAll(/\b(?:src|href)="([^"]+)"/g)){const ref=m[1];if(!ref.startsWith('#')&&!/^[a-z]+:/i.test(ref))assert(fs.existsSync(path.join(dist,ref.split('#')[0])),'Missing guide asset: '+ref);}}
-for (const name of ['app.js','worker.js','onboarding.js']) {
+for (const name of ['app.js','worker.js','onboarding.js','learning-ui.js']) {
   execFileSync(process.execPath,['--check',path.join(dist,name)]);
 }
 console.log('PASS: generated modules, asset links, unique IDs and JavaScript syntax.');

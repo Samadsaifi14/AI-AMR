@@ -15,20 +15,20 @@
     "training_accuracy": 100.0,
     "training_loss": null,
     "feature_importance": {
-      "feature_1": 0.25,
-      "feature_2": 0.22,
-      "feature_3": 0.20,
-      "feature_4": 0.15,
-      "feature_5": 0.11,
-      "feature_6": 0.07,
-      "feature_7": 0.04
+      "feature_1": 0.0,
+      "feature_2": 0.0,
+      "feature_3": 0.0,
+      "feature_4": 0.0,
+      "feature_5": 0.0,
+      "feature_6": 0.0,
+      "feature_7": 0.0
     }
   },
   "vault_results": {
-    "vault_accuracy": 85.0,
-    "vault_precision": 83.0,
-    "vault_recall": 87.0,
-    "vault_f1": 85.0
+    "vault_accuracy": 100.0,
+    "vault_precision": 1.0,
+    "vault_recall": 1.0,
+    "vault_f1": 1.0
   },
   "mechanism_probabilities": {
     "NDM": 0.42,
@@ -37,14 +37,26 @@
     "ESBL": 0.15
   },
   "eucast_breakpoints": {
-    "ceftriaxone": {"R": >= 8, "S": <= 2, "I": 4},
-    "ciprofloxacin": {"R": >= 4, "S": <= 0.25, "I": 1},
-    "meropenem": {"R": >= 2, "S": <= 0.125, "I": 0.25}
+    "ceftriaxone": {
+      "R": ">=",
+      "value": 8,
+      "direction": ">="
+    },
+    "ciprofloxacin": {
+      "R": ">=",
+      "value": 4,
+      "direction": ">="
+    },
+    "meropenem": {
+      "R": ">=",
+      "value": 2,
+      "direction": ">="
+    }
   },
   "class_distribution": {
-    "train_R": 52,
-    "train_S": 28,
-    "vault_R": 12,
-    "vault_S": 8
+    "train_R": 19,
+    "train_S": 0,
+    "vault_R": 5,
+    "vault_S": 0
   }
 }

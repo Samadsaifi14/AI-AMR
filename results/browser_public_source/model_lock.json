@@ -1,0 +1,48 @@
+{
+  "selected_model": "boost_leaves15",
+  "selection": "lowest grouped development OOF log loss",
+  "threshold": 0.2955597275515562,
+  "deferral_low": 0.19555972755155618,
+  "deferral_high": 0.3955597275515562,
+  "configuration": {
+    "target": "meropenem",
+    "species": [
+      "Klebsiella pneumoniae"
+    ],
+    "features": [
+      "cefepime",
+      "ceftazidime",
+      "ciprofloxacin",
+      "gentamicin",
+      "amikacin"
+    ],
+    "min_observed_features": 3,
+    "human_only": true,
+    "require_known_source": true,
+    "label_mode": "reported",
+    "endpoint": "R_vs_S",
+    "standard": "CLSI",
+    "allow_unversioned_reported": true,
+    "seed": 42,
+    "bootstrap_repeats": 200,
+    "sensitivity_target": 0.95,
+    "deferral_halfwidth": 0.1,
+    "split": {
+      "mode": "source",
+      "heldout": [
+        "PRJNA278886"
+      ]
+    },
+    "study_note": "Exploratory project holdout selected for class coverage after feasibility audit; no independent recruitment or patient audit established."
+  },
+  "input_sha256": "39d07642ac4f1e123eb57c3d8989c87c85e91785b51fa86abde8fb901e203eb9",
+  "split_sha256": "a0e5fd88e76ab01ea9475db619378d294f49df13a647e4418ce0d67188db2412",
+  "calibration": "held-out sigmoid",
+  "evidence_status": "EXPLORATORY_MEASURED_DATA",
+  "environment": {
+    "python": "3.13.2",
+    "sklearn": "1.7.0",
+    "numpy": "2.2.5",
+    "pandas": "2.3.3"
+  }
+}

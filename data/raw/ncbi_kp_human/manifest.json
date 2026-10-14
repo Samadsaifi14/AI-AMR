@@ -1,0 +1,91 @@
+{
+  "retrieved_at_utc": "2026-10-05T05:32:39.637926+00:00",
+  "query": "Klebsiella pneumoniae[Organism] AND antibiogram[filter] AND (Homo sapiens[All Fields] OR human[All Fields])",
+  "available_biosamples": 1804,
+  "requested_limit": 2500,
+  "retrieved_biosamples": 1804,
+  "ast_rows": 25387,
+  "files": [
+    {
+      "file": "biosamples_00000.xml",
+      "sha256": "75f8bb14d7b0d8adc139e400629caf3b6e5efdd054f29b807e3c5ef8a3346140"
+    },
+    {
+      "file": "biosamples_00100.xml",
+      "sha256": "e0d7f5423f0afca1bd1a1e9321cfbd907ba5d26a8b2220cb7c41202c183f5ad1"
+    },
+    {
+      "file": "biosamples_00200.xml",
+      "sha256": "305bf8649e850300dfd37da4f71edf8a19f7db02ed68ff0f99f66d79a5d91fe1"
+    },
+    {
+      "file": "biosamples_00300.xml",
+      "sha256": "ab7a5a92b7299e3d6d668aca39607eeee0e76ee087e5c4ccba2400393f7ced23"
+    },
+    {
+      "file": "biosamples_00400.xml",
+      "sha256": "691013948822ed946928fa73a7bae78fd6b85e116702da3461f4d86f19eb0439"
+    },
+    {
+      "file": "biosamples_00500.xml",
+      "sha256": "544d4201b5f3882a37137ea2a3a2c65cf86e50d5506c73ae35a64eb38377d7db"
+    },
+    {
+      "file": "biosamples_00600.xml",
+      "sha256": "fc25b1e34e133d0c26b5bd3882444deb788139269f20667b29087a4ba3e352bf"
+    },
+    {
+      "file": "biosamples_00700.xml",
+      "sha256": "bf062e21d3abfb2127e483329e148c270feb2aa9f739c88df45448f95a88c2ea"
+    },
+    {
+      "file": "biosamples_00800.xml",
+      "sha256": "ef14bf76dca4c1b98a0af98f10464696e69db2ee5daab210b9dba4ecfb8a3ae4"
+    },
+    {
+      "file": "biosamples_00900.xml",
+      "sha256": "b3e139a6d387f00a2d42ecc21fa5e60a1d50d8fdf58a248438825e67670eb825"
+    },
+    {
+      "file": "biosamples_01000.xml",
+      "sha256": "d373cfa4ebcc4274bc7f02e1a3ca779920bd90edc57804ccfbf1036a5f44a5a7"
+    },
+    {
+      "file": "biosamples_01100.xml",
+      "sha256": "0773308d0dbfabb57518c160132ee54c59d412a2c87116ff815a9089e0524c7b"
+    },
+    {
+      "file": "biosamples_01200.xml",
+      "sha256": "188284958145179b4e2b0ef662e4d71494c1395f45019392dbea205814fbaf31"
+    },
+    {
+      "file": "biosamples_01300.xml",
+      "sha256": "6bd29198770f68dec3a8513ab6bac62b333041ef88d3d50924e6f6f4fbe0af5e"
+    },
+    {
+      "file": "biosamples_01400.xml",
+      "sha256": "f3e7da963596467a342dac4d34a2d7a3100637e0477f976298d13b82b9afaf0b"
+    },
+    {
+      "file": "biosamples_01500.xml",
+      "sha256": "0e207e9e8ed2540b082a38a13eb6365b962608d86cb472872f8551794a050d80"
+    },
+    {
+      "file": "biosamples_01600.xml",
+      "sha256": "5e84eba373d0f62ad668e73bfcd9b593f7a3d8100fc97356e53e4baf681a397d"
+    },
+    {
+      "file": "biosamples_01700.xml",
+      "sha256": "29822a28dfefed2f02a9309e7103ee38ddbc7f0fea0ba15052285875d495c73b"
+    },
+    {
+      "file": "biosamples_01800.xml",
+      "sha256": "65b74c5fd3f5a4486f081ea7530b99e122e22b0ea29e8ab7bf0cf4a71396f36a"
+    }
+  ],
+  "cost_usd": 0,
+  "access": "public NCBI E-utilities; no paid API",
+  "selection": "NCBI default order; convenience pilot, not representative sampling",
+  "mechanisms": "unknown until independent annotation is curated",
+  "patient_identity": "unavailable; patient independence not established"
+}

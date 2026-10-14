@@ -1,0 +1,55 @@
+{
+  "target": "meropenem",
+  "species": [
+    "Escherichia coli",
+    "Klebsiella pneumoniae"
+  ],
+  "features": [
+    "imipenem",
+    "ertapenem",
+    "doripenem",
+    "cefepime",
+    "ceftazidime",
+    "cefotaxime",
+    "ceftriaxone",
+    "aztreonam",
+    "amikacin",
+    "gentamicin",
+    "tobramycin",
+    "ciprofloxacin",
+    "levofloxacin",
+    "colistin",
+    "tigecycline"
+  ],
+  "min_observed_features": 3,
+  "human_only": true,
+  "label_mode": "reported",
+  "endpoint": "R_vs_S",
+  "standard": "CLSI",
+  "allow_unversioned_reported": true,
+  "seed": 42,
+  "bootstrap_repeats": 200,
+  "sensitivity_target": 0.95,
+  "deferral_halfwidth": 0.1,
+  "split": {
+    "mode": "source",
+    "heldout": [
+      "PRJNA278886"
+    ]
+  },
+  "specificity_target": 0.5,
+  "task": "antibiotic_resistance",
+  "include_species": true,
+  "feature_selection": {
+    "min_coverage": 0.2,
+    "correlation_threshold": 0.95,
+    "max_drugs": 10
+  },
+  "model_families": [
+    "random_forest",
+    "xgboost"
+  ],
+  "study_note": "Prespecified candidate panel from collaborator framework. Coverage, correlation and whole-drug ranking fit separately inside training folds. Previously examined public cohorts remain retrospective exploratory evidence.",
+  "include_xgboost": true,
+  "require_known_source": true
+}

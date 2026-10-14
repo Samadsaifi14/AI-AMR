@@ -1,0 +1,46 @@
+{
+  "fit_partition": "training_only",
+  "selected_drugs": [
+    "amikacin",
+    "aztreonam",
+    "cefepime",
+    "cefotaxime",
+    "ceftazidime",
+    "ceftriaxone",
+    "ciprofloxacin",
+    "colistin",
+    "ertapenem",
+    "gentamicin",
+    "imipenem",
+    "levofloxacin",
+    "tigecycline",
+    "tobramycin"
+  ],
+  "training_coverage": {
+    "amikacin": 0.9850746268656716,
+    "aztreonam": 0.23134328358208955,
+    "cefepime": 0.917910447761194,
+    "cefotaxime": 0.23134328358208955,
+    "ceftazidime": 0.8395522388059702,
+    "ceftriaxone": 0.8059701492537313,
+    "ciprofloxacin": 0.9701492537313433,
+    "colistin": 0.24253731343283583,
+    "doripenem": 0.19776119402985073,
+    "ertapenem": 0.8992537313432836,
+    "gentamicin": 0.8283582089552238,
+    "imipenem": 0.3917910447761194,
+    "levofloxacin": 0.9253731343283582,
+    "tigecycline": 0.24253731343283583,
+    "tobramycin": 0.9291044776119403
+  },
+  "dropped_drugs": {
+    "doripenem": "low_training_coverage"
+  },
+  "training_model_importance": {},
+  "selection_settings": {
+    "correlation_threshold": 0.95,
+    "max_drugs": null,
+    "min_coverage": 0.2,
+    "seed": 42
+  }
+}

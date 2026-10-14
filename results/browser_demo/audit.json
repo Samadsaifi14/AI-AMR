@@ -1,0 +1,60 @@
+{
+  "input_sha256": "48d035c357b5bd7dd709ec90f89f281077b3375dc7835eb8c4281effd17cfea1",
+  "raw_rows": 1333,
+  "raw_isolates": 240,
+  "eligible_isolates": 237,
+  "synthetic": true,
+  "evidence_status": "SOFTWARE_DEMONSTRATION",
+  "label_mode": "reported",
+  "endpoint": "R_vs_nonR",
+  "excluded_event_counts": {
+    "insufficient_feature_panel": 3
+  },
+  "input_target_SIR_counts": {
+    "S": 134,
+    "R": 106
+  },
+  "class_counts": {
+    "0": 134,
+    "1": 103
+  },
+  "patient_ids_available": 237,
+  "mechanism_counts": {
+    "unknown": 128,
+    "NDM_positive_other_unknown": 62,
+    "OXA48_positive_other_unknown": 31,
+    "co_producer": 16
+  },
+  "feature_columns": [
+    "cefepime__log2_bound",
+    "cefepime__left_censored",
+    "cefepime__right_censored",
+    "cefepime__strict_bound",
+    "cefepime__missing",
+    "ceftazidime__log2_bound",
+    "ceftazidime__left_censored",
+    "ceftazidime__right_censored",
+    "ceftazidime__strict_bound",
+    "ceftazidime__missing",
+    "ciprofloxacin__log2_bound",
+    "ciprofloxacin__left_censored",
+    "ciprofloxacin__right_censored",
+    "ciprofloxacin__strict_bound",
+    "ciprofloxacin__missing",
+    "gentamicin__log2_bound",
+    "gentamicin__left_censored",
+    "gentamicin__right_censored",
+    "gentamicin__strict_bound",
+    "gentamicin__missing",
+    "amikacin__log2_bound",
+    "amikacin__left_censored",
+    "amikacin__right_censored",
+    "amikacin__strict_bound",
+    "amikacin__missing"
+  ],
+  "limitations": [
+    "Not a representative sample unless acquisition design establishes it.",
+    "No clinical or causal validation.",
+    "Missing patient IDs limit independence claims."
+  ]
+}

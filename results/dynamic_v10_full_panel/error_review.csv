@@ -1,0 +1,11 @@
+isolate_id,source_id,lab_id,country,region,species,mechanism,group_id,y,target_sir,p_resistant,binary_prediction,decision,evidence_status
+SAMN04096279,PRJNA278886,,USA,,Klebsiella pneumoniae,unknown,G0,1,R,0.0937980374858372,0,research_non_resistant,EXPLORATORY_MEASURED_DATA
+SAMN04339714,PRJNA278886,,USA,,Klebsiella pneumoniae,unknown,G2,1,R,0.0937980374858372,0,research_non_resistant,EXPLORATORY_MEASURED_DATA
+SAMN06680398,PRJNA278886,,USA,,Klebsiella pneumoniae,unknown,G185,0,S,0.8258581089499792,1,research_resistant,EXPLORATORY_MEASURED_DATA
+SAMN06680399,PRJNA278886,,USA,,Klebsiella pneumoniae,unknown,G186,0,S,0.937649254460524,1,research_resistant,EXPLORATORY_MEASURED_DATA
+SAMN06754730,PRJNA278886,,USA,,Klebsiella pneumoniae,unknown,G190,0,S,0.9415003392132644,1,research_resistant,EXPLORATORY_MEASURED_DATA
+SAMN07410707,PRJNA278886,,USA,,Klebsiella pneumoniae,unknown,G204,0,S,0.9415003392132644,1,research_resistant,EXPLORATORY_MEASURED_DATA
+SAMN08045835,PRJNA278886,,USA,,Klebsiella pneumoniae,unknown,G209,0,S,0.9415003392132644,1,research_resistant,EXPLORATORY_MEASURED_DATA
+SAMN35159612,PRJNA278886,,USA,,Klebsiella pneumoniae,unknown,G314,1,R,0.0355197092432638,0,research_non_resistant,EXPLORATORY_MEASURED_DATA
+SAMN35159634,PRJNA278886,,USA,,Klebsiella pneumoniae,unknown,G330,0,S,0.7129001150863223,1,research_resistant,EXPLORATORY_MEASURED_DATA
+SAMN36727284,PRJNA278886,,USA,,Klebsiella pneumoniae,unknown,G370,0,S,0.7129001150863223,1,research_resistant,EXPLORATORY_MEASURED_DATA

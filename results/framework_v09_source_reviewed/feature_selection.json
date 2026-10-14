@@ -1,0 +1,62 @@
+{
+  "fit_partition": "training_only",
+  "selected_drugs": [
+    "aztreonam",
+    "cefepime",
+    "cefotaxime",
+    "ceftazidime",
+    "ceftriaxone",
+    "ciprofloxacin",
+    "doripenem",
+    "ertapenem",
+    "imipenem",
+    "tigecycline"
+  ],
+  "training_coverage": {
+    "amikacin": 0.987603305785124,
+    "aztreonam": 0.6735537190082644,
+    "cefepime": 0.9008264462809917,
+    "cefotaxime": 0.6735537190082644,
+    "ceftazidime": 0.871900826446281,
+    "ceftriaxone": 0.8347107438016529,
+    "ciprofloxacin": 0.9710743801652892,
+    "colistin": 0.6859504132231405,
+    "doripenem": 0.628099173553719,
+    "ertapenem": 0.9793388429752066,
+    "gentamicin": 0.859504132231405,
+    "imipenem": 0.8057851239669421,
+    "levofloxacin": 0.9090909090909091,
+    "tigecycline": 0.6735537190082644,
+    "tobramycin": 0.9173553719008265
+  },
+  "dropped_drugs": {
+    "amikacin": "training_model_rank",
+    "tobramycin": "training_model_rank",
+    "levofloxacin": "training_model_rank",
+    "gentamicin": "training_model_rank",
+    "colistin": "training_model_rank"
+  },
+  "training_model_importance": {
+    "amikacin": 0.012862122811918474,
+    "ertapenem": 0.46111081347179395,
+    "ciprofloxacin": 0.018844590594246525,
+    "tobramycin": 0.00743145169810593,
+    "levofloxacin": 0.004648652634234552,
+    "cefepime": 0.018784697991115602,
+    "ceftazidime": 0.05067586170812656,
+    "gentamicin": 0.003482883927941822,
+    "ceftriaxone": 0.03375590219718294,
+    "imipenem": 0.06518575786063938,
+    "colistin": 0.006767976658054347,
+    "aztreonam": 0.08161897667161862,
+    "cefotaxime": 0.09671581516698244,
+    "tigecycline": 0.043459609135996086,
+    "doripenem": 0.09465488747204255
+  },
+  "selection_settings": {
+    "correlation_threshold": 0.95,
+    "max_drugs": 10,
+    "min_coverage": 0.2,
+    "seed": 42
+  }
+}

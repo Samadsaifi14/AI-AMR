@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-05",
+  "python_tests_passed": 34,
+  "javascript_syntax": "passed",
+  "static_asset_links": "passed",
+  "browser_python_runtime": "Pyodide 0.29.3 tested under Node",
+  "runtime_cases": [
+    "synthetic training/report/export",
+    "single-isolate prediction",
+    "unknown-call denominator",
+    "India minimum class gate",
+    "public source holdout"
+  ],
+  "browser_ui_visual_qa": "not available",
+  "public_source_holdout_sensitivity": 0,
+  "clinical_validation": false
+}

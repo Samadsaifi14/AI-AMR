@@ -1,0 +1,47 @@
+{
+  "status": "INCOMPATIBLE_WITH_FROZEN_MIC_MODEL",
+  "india_accuracy_established": false,
+  "doi": "10.1038/s44259-026-00185-9",
+  "source_url": "https://www.nature.com/articles/s44259-026-00185-9",
+  "file_sha256": "0ea263f9af2b1ef9c7e5d145cb50efbf2b5df08ec96bcd0224452cffec375823",
+  "raw_isolates": 266,
+  "row_subsampling": false,
+  "supported_species_isolates": 116,
+  "eligible_MIC_isolates": 0,
+  "feature_symbols": [
+    "I",
+    "R",
+    "S",
+    "SDD"
+  ],
+  "target_counts_supported_species": {
+    "Meropenem": {
+      "R": 108,
+      "S": 8
+    },
+    "Imipenem": {
+      "R": 106,
+      "S": 7,
+      "missing": 3
+    }
+  },
+  "species_counts": {
+    "Klebsiella pneumoniae": 69,
+    "Escherichia coli": 47,
+    "Acinetobacter baumannii": 45,
+    "Pseudomonas aeruginosa": 41,
+    "Staphylococcus aureus": 28,
+    "Enterococci": 19,
+    "Proteus mirabilis": 7,
+    "Burkholderia cepacia": 4,
+    "Providencia rettgeri": 3,
+    "Enterobacter cloacae": 2,
+    "Streptococcus pneumoniae": 1
+  },
+  "limitations": [
+    "Published predictor fields contain susceptibility categories, not numeric MICs.",
+    "Do not map R/S/I/SDD to invented MIC concentrations.",
+    "No per-isolate AST standard/version or patient IDs in this supplement.",
+    "Resistance-selected tertiary-care cohort from two geographical zones; not national sampling."
+  ]
+}

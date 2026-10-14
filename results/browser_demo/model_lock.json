@@ -1,0 +1,47 @@
+{
+  "selected_model": "logistic_C0.1",
+  "selection": "lowest grouped development OOF log loss",
+  "threshold": 0.13499366296581247,
+  "deferral_low": 0.034993662965812466,
+  "deferral_high": 0.23499366296581248,
+  "configuration": {
+    "target": "meropenem",
+    "species": [
+      "Escherichia coli",
+      "Klebsiella pneumoniae"
+    ],
+    "features": [
+      "cefepime",
+      "ceftazidime",
+      "ciprofloxacin",
+      "gentamicin",
+      "amikacin"
+    ],
+    "min_observed_features": 3,
+    "human_only": true,
+    "label_mode": "reported",
+    "endpoint": "R_vs_nonR",
+    "standard": "EUCAST",
+    "allow_unversioned_reported": false,
+    "seed": 42,
+    "bootstrap_repeats": 200,
+    "sensitivity_target": 0.95,
+    "deferral_halfwidth": 0.1,
+    "split": {
+      "mode": "source",
+      "heldout": [
+        "DEMO_B"
+      ]
+    }
+  },
+  "input_sha256": "48d035c357b5bd7dd709ec90f89f281077b3375dc7835eb8c4281effd17cfea1",
+  "split_sha256": "7ee7431d3d97dc87794607d27a058b588d05088ed8fbe0b1bf79f837289848a6",
+  "calibration": "held-out sigmoid",
+  "evidence_status": "SOFTWARE_DEMONSTRATION",
+  "environment": {
+    "python": "3.13.2",
+    "sklearn": "1.7.0",
+    "numpy": "2.2.5",
+    "pandas": "2.3.3"
+  }
+}

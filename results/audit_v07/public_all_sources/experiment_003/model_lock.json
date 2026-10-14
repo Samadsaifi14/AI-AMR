@@ -1,0 +1,53 @@
+{
+  "selected_model": "xgboost_depth2",
+  "selection": "lowest equally weighted development-fold log loss; worst-fold tie break",
+  "selection_cv": "leave_one_development_source_out",
+  "threshold": 0.7275658502653374,
+  "deferral_low": 0.6275658502653374,
+  "deferral_high": 0.8275658502653374,
+  "configuration": {
+    "target": "meropenem",
+    "species": [
+      "Klebsiella pneumoniae"
+    ],
+    "features": [
+      "cefepime",
+      "ceftazidime",
+      "ciprofloxacin",
+      "gentamicin",
+      "amikacin"
+    ],
+    "min_observed_features": 3,
+    "human_only": true,
+    "require_known_source": true,
+    "label_mode": "reported",
+    "endpoint": "R_vs_S",
+    "standard": "CLSI",
+    "allow_unversioned_reported": true,
+    "seed": 42,
+    "bootstrap_repeats": 200,
+    "sensitivity_target": 0.95,
+    "deferral_halfwidth": 0.1,
+    "split": {
+      "mode": "source",
+      "heldout": [
+        "PRJNA278886"
+      ]
+    },
+    "study_note": "v0.7 retrospective method comparison on previously inspected public data. No fresh external validation. Candidate/threshold selection uses development data only.",
+    "specificity_target": 0.5,
+    "include_xgboost": true
+  },
+  "input_sha256": "39d07642ac4f1e123eb57c3d8989c87c85e91785b51fa86abde8fb901e203eb9",
+  "breakpoints_sha256": null,
+  "split_sha256": "3207d05242d7f26c6074fa5db404c685dac4eb06b8b5d4cee4e612191af56df5",
+  "calibration": "held-out sigmoid",
+  "evidence_status": "EXPLORATORY_MEASURED_DATA",
+  "environment": {
+    "python": "3.12.14",
+    "sklearn": "1.8.0",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "xgboost": "3.0.5"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "experiments": [
+    {
+      "experiment": "experiment_000",
+      "kind": "internal",
+      "heldout": "",
+      "input_eligible_n": 186,
+      "experiment_eligible_n": 186,
+      "unknown_source_excluded_n": 0,
+      "status": "blocked",
+      "reason": "Internal split needs >= 20 isolates of each class; found {1: 177, 0: 9}."
+    },
+    {
+      "experiment": "experiment_001",
+      "kind": "source",
+      "heldout": "PRJNA1273658",
+      "input_eligible_n": 186,
+      "experiment_eligible_n": 186,
+      "unknown_source_excluded_n": 0,
+      "status": "blocked",
+      "reason": "Development needs >= 20 isolates of each class; found {}."
+    },
+    {
+      "experiment": "experiment_002",
+      "kind": "region",
+      "heldout": "Northern",
+      "input_eligible_n": 186,
+      "experiment_eligible_n": 186,
+      "unknown_source_excluded_n": 0,
+      "status": "blocked",
+      "reason": "Development needs >= 20 isolates of each class; found {1: 71, 0: 2}."
+    },
+    {
+      "experiment": "experiment_003",
+      "kind": "region",
+      "heldout": "Western",
+      "input_eligible_n": 186,
+      "experiment_eligible_n": 186,
+      "unknown_source_excluded_n": 0,
+      "status": "blocked",
+      "reason": "Development needs >= 20 isolates of each class; found {1: 106, 0: 7}."
+    },
+    {
+      "experiment": "experiment_004",
+      "kind": "India",
+      "heldout": "India",
+      "input_eligible_n": 186,
+      "experiment_eligible_n": 186,
+      "unknown_source_excluded_n": 0,
+      "status": "blocked",
+      "reason": "Development needs >= 20 isolates of each class; found {}."
+    }
+  ],
+  "eligible_isolates": 186,
+  "row_subsampling": false,
+  "india_validation_status": "NOT_ESTABLISHED",
+  "clinical_validation": false,
+  "note": "Source holdouts test transfer within the supplied collection, not independently verified external validation. Never choose a threshold from these test results."
+}

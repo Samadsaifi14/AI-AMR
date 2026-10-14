@@ -1,0 +1,67 @@
+{
+  "input_sha256": "c5dddd1bc693efa456a3348b846877ef9c525c311c15c2a3821ad9a95dfa99a2",
+  "raw_rows": 2128,
+  "raw_isolates": 266,
+  "eligible_isolates": 186,
+  "synthetic": false,
+  "evidence_status": "EXPLORATORY_MEASURED_DATA",
+  "label_mode": "reported",
+  "endpoint": "R_vs_S",
+  "representation": "categorical_ast",
+  "excluded_event_counts": {
+    "target_unresolved_or_I_excluded": 32,
+    "unsupported_species": 48
+  },
+  "input_target_SIR_counts": {
+    "R": 177,
+    "unknown": 80,
+    "S": 9
+  },
+  "class_counts": {
+    "1": 177,
+    "0": 9
+  },
+  "patient_ids_available": 0,
+  "mechanism_counts": {
+    "unknown": 186
+  },
+  "feature_columns": [
+    "cefepime__S",
+    "cefepime__I",
+    "cefepime__R",
+    "cefepime__SDD",
+    "cefepime__missing",
+    "ceftazidime__S",
+    "ceftazidime__I",
+    "ceftazidime__R",
+    "ceftazidime__SDD",
+    "ceftazidime__missing",
+    "ciprofloxacin__S",
+    "ciprofloxacin__I",
+    "ciprofloxacin__R",
+    "ciprofloxacin__SDD",
+    "ciprofloxacin__missing",
+    "gentamicin__S",
+    "gentamicin__I",
+    "gentamicin__R",
+    "gentamicin__SDD",
+    "gentamicin__missing",
+    "amikacin__S",
+    "amikacin__I",
+    "amikacin__R",
+    "amikacin__SDD",
+    "amikacin__missing",
+    "colistin__S",
+    "colistin__I",
+    "colistin__R",
+    "colistin__SDD",
+    "colistin__missing"
+  ],
+  "limitations": [
+    "Not a representative sample unless acquisition design establishes it.",
+    "No clinical or causal validation.",
+    "Missing patient IDs limit independence claims.",
+    "Reported labels may be unversioned; not breakpoint-harmonized.",
+    "Categorical model: S, I, R, SDD and missing encoded separately; no numeric MICs inferred."
+  ]
+}

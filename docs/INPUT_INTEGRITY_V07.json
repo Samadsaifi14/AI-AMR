@@ -1,0 +1,32 @@
+[
+  {
+    "file": "data/raw/india_npj_2026/supplementary_data_1.xlsx",
+    "sha256": "0ea263f9af2b1ef9c7e5d145cb50efbf2b5df08ec96bcd0224452cffec375823",
+    "matches_manifest": true
+  },
+  {
+    "file": "data/raw/india_surgical_icu_2026/41467_2026_74764_MOESM3_ESM.xlsx",
+    "sha256": "c012825ab6b24b17de227a7793906e439d8d6f2df86d55ec5855e491daea618c",
+    "matches_manifest": true
+  },
+  {
+    "file": "data/raw/india_surgical_icu_2026/41467_2026_74764_MOESM4_ESM.xlsx",
+    "sha256": "cf96f94bdb31dd9f65ec503950691b1b3c4ae212a8bcd9a81dc21d4ddc25b61d",
+    "matches_manifest": true
+  },
+  {
+    "file": "data/raw/india_surgical_icu_2026/41467_2026_74764_MOESM5_ESM.xlsx",
+    "sha256": "a92a16d41c3ea2de84896707737a1b95e2b16dc746cefe55a702848691e7173c",
+    "matches_manifest": true
+  },
+  {
+    "file": "data/raw/india_surgical_icu_2026/41467_2026_74764_MOESM1_ESM.pdf",
+    "sha256": "5c27c5ae8be898c14040f54bebb56e785e24534b79586e7434ed11b0236e8a8c",
+    "matches_manifest": true
+  },
+  {
+    "file": "data/raw/india_surgical_icu_2026/41467_2026_74764_MOESM2_ESM.docx",
+    "sha256": "88a81c9de219c5d788a66b5efb48a8a104a5ae52f9e709eec919ef33438aa245",
+    "matches_manifest": true
+  }
+]

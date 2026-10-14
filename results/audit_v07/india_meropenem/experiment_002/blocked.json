@@ -1,0 +1,10 @@
+{
+  "experiment": "experiment_002",
+  "kind": "region",
+  "heldout": "Northern",
+  "input_eligible_n": 213,
+  "experiment_eligible_n": 213,
+  "unknown_source_excluded_n": 0,
+  "status": "blocked",
+  "reason": "Development needs >= 20 isolates of each class; found {1: 71, 0: 2}."
+}

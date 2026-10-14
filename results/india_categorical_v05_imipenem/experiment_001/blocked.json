@@ -1,0 +1,10 @@
+{
+  "experiment": "experiment_001",
+  "kind": "source",
+  "heldout": "PRJNA1273658",
+  "input_eligible_n": 186,
+  "experiment_eligible_n": 186,
+  "unknown_source_excluded_n": 0,
+  "status": "blocked",
+  "reason": "Development needs >= 20 isolates of each class; found {}."
+}

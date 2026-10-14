@@ -1,0 +1,69 @@
+{
+  "status": "EXTERNAL_GATES_NOT_ESTABLISHED",
+  "india_accuracy_established": false,
+  "clinical_validation": false,
+  "row_subsampling": false,
+  "protocol_sha256": "a640219167e325c896a38b0a6553e9a1836323d4599bec9cca2f4712c081823a",
+  "input_sha256": "d73794bad02fa5b1a3565c90d0056851af96d7c75c791799b41a02f98f894964",
+  "n": 1,
+  "resistant": 1,
+  "nonresistant": 0,
+  "prevalence": 1.0,
+  "threshold": 0.7820232701098387,
+  "auroc": null,
+  "average_precision": null,
+  "brier": 0.823298005940291,
+  "log_loss": 2.379009498794852,
+  "sensitivity": 0.0,
+  "specificity": null,
+  "balanced_accuracy": null,
+  "ppv": null,
+  "npv": 0.0,
+  "accuracy": 0.0,
+  "false_negative_fraction_R": 1.0,
+  "tn": 0,
+  "fp": 0,
+  "fn": 1,
+  "tp": 0,
+  "sensitivity_exact_95": {
+    "low": 0.0,
+    "high": 0.975,
+    "n": 1,
+    "method": "two-sided 95% Clopper-Pearson; assumes independent isolates"
+  },
+  "specificity_exact_95": {
+    "low": null,
+    "high": null,
+    "n": 0
+  },
+  "cluster_intervals": {
+    "brier": {
+      "low": 0.823298005940291,
+      "high": 0.823298005940291,
+      "valid_replicates": 1000,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "sensitivity": {
+      "low": 0.0,
+      "high": 0.0,
+      "valid_replicates": 1000,
+      "unit": "patient/duplicate component, else isolate"
+    },
+    "false_negative_fraction_R": {
+      "low": 1.0,
+      "high": 1.0,
+      "valid_replicates": 1000,
+      "unit": "patient/duplicate component, else isolate"
+    }
+  },
+  "small_sample_warning": true,
+  "bootstrap_warning": "Sparse cohorts can produce degenerate bootstrap intervals; do not interpret them as precise evidence. Exact binomial intervals are also reported.",
+  "identity_and_label_metadata_complete": false,
+  "interpretation": "Selected external cohort only. National representativeness and prospective clinical utility remain unestablished. Identity checks use recorded identifiers; metadata must be independently verified.",
+  "limitations": [
+    "Not a representative sample unless acquisition design establishes it.",
+    "No clinical or causal validation.",
+    "Missing patient IDs limit independence claims.",
+    "Reported labels may be unversioned; not breakpoint-harmonized."
+  ]
+}

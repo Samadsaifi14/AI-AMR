@@ -1,0 +1,126 @@
+{
+  "input_sha256": "d73794bad02fa5b1a3565c90d0056851af96d7c75c791799b41a02f98f894964",
+  "raw_rows": 29,
+  "raw_isolates": 2,
+  "breakpoints_sha256": null,
+  "eligible_isolates": 1,
+  "synthetic": false,
+  "evidence_status": "EXPLORATORY_MEASURED_DATA",
+  "label_mode": "reported",
+  "endpoint": "R_vs_S",
+  "representation": "mic",
+  "comparability": {
+    "policy": "exploratory",
+    "status": "EXPLORATORY_NOT_HARMONIZED",
+    "missing_provenance_rows": {
+      "lab_id": 7,
+      "standard": 0,
+      "standard_version": 7,
+      "qc_reference": 7
+    },
+    "provenance_issue_counts": {
+      "lab_unknown": 7
+    },
+    "lab_method_drug_groups": [
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "amikacin",
+        "observations": 1,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "ciprofloxacin",
+        "observations": 2,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 1
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "gentamicin",
+        "observations": 2,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 1
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "meropenem",
+        "observations": 2,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 2
+      }
+    ],
+    "interpretation": "Provenance checks are not analytical agreement or clinical validation. No lab-specific scaling applied."
+  },
+  "excluded_event_counts": {
+    "insufficient_feature_panel": 1
+  },
+  "input_target_SIR_counts": {
+    "R": 2
+  },
+  "class_counts": {
+    "1": 1
+  },
+  "patient_ids_available": 0,
+  "mechanism_counts": {
+    "unknown": 1
+  },
+  "feature_columns": [
+    "cefepime__log2_bound",
+    "cefepime__left_censored",
+    "cefepime__right_censored",
+    "cefepime__strict_bound",
+    "cefepime__missing",
+    "ceftazidime__log2_bound",
+    "ceftazidime__left_censored",
+    "ceftazidime__right_censored",
+    "ceftazidime__strict_bound",
+    "ceftazidime__missing",
+    "ciprofloxacin__log2_bound",
+    "ciprofloxacin__left_censored",
+    "ciprofloxacin__right_censored",
+    "ciprofloxacin__strict_bound",
+    "ciprofloxacin__missing",
+    "gentamicin__log2_bound",
+    "gentamicin__left_censored",
+    "gentamicin__right_censored",
+    "gentamicin__strict_bound",
+    "gentamicin__missing",
+    "amikacin__log2_bound",
+    "amikacin__left_censored",
+    "amikacin__right_censored",
+    "amikacin__strict_bound",
+    "amikacin__missing"
+  ],
+  "limitations": [
+    "Not a representative sample unless acquisition design establishes it.",
+    "No clinical or causal validation.",
+    "Missing patient IDs limit independence claims.",
+    "Reported labels may be unversioned; not breakpoint-harmonized."
+  ]
+}

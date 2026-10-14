@@ -1,0 +1,476 @@
+{
+  "input_sha256": "39d07642ac4f1e123eb57c3d8989c87c85e91785b51fa86abde8fb901e203eb9",
+  "raw_rows": 25387,
+  "raw_isolates": 1804,
+  "breakpoints_sha256": null,
+  "eligible_isolates": 482,
+  "synthetic": false,
+  "evidence_status": "EXPLORATORY_MEASURED_DATA",
+  "label_mode": "reported",
+  "endpoint": "R_vs_S",
+  "representation": "mic",
+  "comparability": {
+    "policy": "exploratory",
+    "status": "EXPLORATORY_NOT_HARMONIZED",
+    "missing_provenance_rows": {
+      "lab_id": 6839,
+      "standard": 0,
+      "standard_version": 6839,
+      "qc_reference": 6839
+    },
+    "provenance_issue_counts": {
+      "lab_unknown": 6839
+    },
+    "lab_method_drug_groups": [
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "amikacin",
+        "observations": 555,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 417
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "cefepime",
+        "observations": 558,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 404
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "ceftazidime",
+        "observations": 736,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 550
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "ciprofloxacin",
+        "observations": 624,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 498
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "gentamicin",
+        "observations": 521,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 449
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "meropenem",
+        "observations": 552,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 456
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "amikacin",
+        "observations": 378,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 97
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "cefepime",
+        "observations": 265,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 255
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "ceftazidime",
+        "observations": 530,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 414
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "ciprofloxacin",
+        "observations": 267,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 245
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "gentamicin",
+        "observations": 380,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 309
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "meropenem",
+        "observations": 402,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 313
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "amikacin",
+        "observations": 131,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 114
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "cefepime",
+        "observations": 113,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 101
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "ceftazidime",
+        "observations": 110,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 84
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "ciprofloxacin",
+        "observations": 142,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 115
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "gentamicin",
+        "observations": 141,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 129
+      },
+      {
+        "lab_id": "",
+        "method": "MIC",
+        "standard": "MISSING",
+        "standard_version": "",
+        "drug": "meropenem",
+        "observations": 156,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 144
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "amikacin",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "cefepime",
+        "observations": 6,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "ceftazidime",
+        "observations": 6,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "ciprofloxacin",
+        "observations": 7,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "gentamicin",
+        "observations": 11,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "CLSI",
+        "standard_version": "",
+        "drug": "meropenem",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "ceftazidime",
+        "observations": 96,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "disk diffusion",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "ciprofloxacin",
+        "observations": 92,
+        "panels": [],
+        "units": [
+          "mm"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "missing",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "amikacin",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "missing",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "ciprofloxacin",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "missing",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "gentamicin",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 0
+      },
+      {
+        "lab_id": "",
+        "method": "missing",
+        "standard": "EUCAST",
+        "standard_version": "",
+        "drug": "meropenem",
+        "observations": 10,
+        "panels": [],
+        "units": [
+          "mg/L"
+        ],
+        "bounds_with_operators": 0
+      }
+    ],
+    "interpretation": "Provenance checks are not analytical agreement or clinical validation. No lab-specific scaling applied."
+  },
+  "excluded_event_counts": {
+    "unsupported_species": 100,
+    "source_unknown": 56,
+    "conflicting_replicates": 47,
+    "target_missing_or_conflicting": 614,
+    "target_method_unsupported": 7,
+    "target_unresolved_or_I_excluded": 16,
+    "target_standard_mismatch": 439,
+    "human_host_not_confirmed": 82,
+    "insufficient_feature_panel": 8
+  },
+  "input_target_SIR_counts": {
+    "S": 601,
+    "R": 447,
+    "I": 42,
+    "unknown": 40
+  },
+  "class_counts": {
+    "0": 270,
+    "1": 212
+  },
+  "patient_ids_available": 0,
+  "mechanism_counts": {
+    "unknown": 482
+  },
+  "feature_columns": [
+    "cefepime__log2_bound",
+    "cefepime__left_censored",
+    "cefepime__right_censored",
+    "cefepime__strict_bound",
+    "cefepime__missing",
+    "ceftazidime__log2_bound",
+    "ceftazidime__left_censored",
+    "ceftazidime__right_censored",
+    "ceftazidime__strict_bound",
+    "ceftazidime__missing",
+    "ciprofloxacin__log2_bound",
+    "ciprofloxacin__left_censored",
+    "ciprofloxacin__right_censored",
+    "ciprofloxacin__strict_bound",
+    "ciprofloxacin__missing",
+    "gentamicin__log2_bound",
+    "gentamicin__left_censored",
+    "gentamicin__right_censored",
+    "gentamicin__strict_bound",
+    "gentamicin__missing",
+    "amikacin__log2_bound",
+    "amikacin__left_censored",
+    "amikacin__right_censored",
+    "amikacin__strict_bound",
+    "amikacin__missing"
+  ],
+  "limitations": [
+    "Not a representative sample unless acquisition design establishes it.",
+    "No clinical or causal validation.",
+    "Missing patient IDs limit independence claims.",
+    "Reported labels may be unversioned; not breakpoint-harmonized."
+  ]
+}

@@ -13,6 +13,12 @@
 - Save my experiment downloads the ZIP and invokes the report's browser Print dialog for Save as PDF; the HTML report is also available separately.
 - Guide copy covers import, review, Recipe, result layers, local resume and export.
 
+## Checks completed
+
+- `npm run build` completed and packaged the current browser application.
+- JavaScript syntax checks completed for the app, onboarding, guided UI and import modules.
+- Python syntax compilation completed for `browser_bridge.py`; `git diff --check` found no whitespace errors.
+
 ## Not run
 
-Automated browser, Python, build, and runtime checks were not run for this implementation. No end-to-end success is claimed. XLSX support is limited to the first worksheet and relies on cached cell values; complex workbook features and date serial interpretation may require exporting to CSV. PDF creation depends on the browser's Print-to-PDF dialog. IndexedDB availability and quota vary by browser.
+Interactive browser and scientific runtime checks were not completed. The available browser preview could not access the local app, and the installed Playwright package had no browser executable available. No end-to-end success is claimed. XLSX support is limited to the first worksheet and relies on cached cell values; complex workbook features and date serial interpretation may require exporting to CSV. PDF creation depends on the browser's Print-to-PDF dialog. IndexedDB availability and quota vary by browser.

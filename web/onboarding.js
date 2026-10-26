@@ -6,6 +6,7 @@
   let restoreInProgress = false;
   let saveTimer;
   let savePending = false;
+  let autosaveStage = 'setup';
   let dbPromise;
   let persistenceMessageShown = false;
 
@@ -58,6 +59,7 @@
   function showSaved(record) {
     const card = document.getElementById('resume-card');
     card.hidden = !record;
+    if(record)setAutosave('saved','Saved work found on this device.');
     if (record) {
       document.getElementById('resume-description').textContent = record.result
         ? 'Your setup, last result and downloadable experiment are saved in this browser.'
@@ -66,36 +68,50 @@
           : 'Your saved setup is stored in this browser. Resume to review it and run the experiment again.';
     }
   }
-  async function saveWorkflow() {
-    if (restoreInProgress || busy || !datasetReady) return;
+  function setAutosave(state,message) {
+    const indicator=document.getElementById('autosave-indicator');
+    indicator.dataset.state=state;
+    document.getElementById('autosave-message').textContent=message;
+  }
+  async function saveWorkflow(allowRunning=false) {
+    if (restoreInProgress || (busy&&!allowRunning) || !datasetReady) return;
+    savePending=true;
+    setAutosave('saving','Saving this step on this device…');
     const dataset = document.getElementById('dataset').value;
     const configuration = document.getElementById('configuration').value;
     let csv = dataset === 'upload' ? (window.__restoredCsv || window.__uploadState?.normalizedCsv || '') : '';
     let uploadFile = dataset === 'upload' ? (window.__uploadState?.file || document.getElementById('observations').files[0] || null) : null;
     if (uploadFile && uploadFile.size > 10 * 1024 * 1024) {
       status('This file is larger than the browser upload limit, so it cannot be saved for resume. It remains available for this session.', true);
+      setAutosave('error','This file exceeds the local save limit. Download results before closing.');
+      savePending=false;
       return;
     }
     if (dataset === 'upload' && !csv && uploadFile?.name?.toLowerCase().endsWith('.csv')) csv = await uploadFile.text();
     const savedResult = currentResult?.report && currentResult?.archive ? currentResult : null;
-    const record = {id: 'current', dataset, configuration, csv, uploadFile, uploadName: uploadFile?.name || window.__uploadState?.fileName || '', mapping: window.__uploadState?.mapping || null, result: savedResult, savedAt: new Date().toISOString(), stage: savedResult ? 'results' : 'setup'};
+    const record = {id: 'current', dataset, configuration, csv, uploadFile, uploadName: uploadFile?.name || window.__uploadState?.fileName || '', mapping: window.__uploadState?.mapping || null, result: savedResult, savedAt: new Date().toISOString(), stage: savedResult ? 'results' : autosaveStage};
     try {
       await writeSaved(record);
       showSaved(record);
       persistenceMessageShown = false;
+      setAutosave('saved',`Saved on this device · ${new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}`);
     } catch (error) {
+      setAutosave('error','Could not save this step in the browser. Download your files before closing.');
       if (!persistenceMessageShown) {
         status('The browser could not save this work for later. You can continue now; keep the tab open and download the experiment when it finishes. ' + error.message, true);
         persistenceMessageShown = true;
       }
+    } finally {
+      savePending=false;
     }
   }
-  function scheduleSave() {
+  function scheduleSave(allowRunning=false) {
     clearTimeout(saveTimer);
     savePending = true;
+    setAutosave('saving','Saving your latest setup…');
     saveTimer = setTimeout(() => {
       saveTimer = null;
-      saveWorkflow().catch(() => {}).finally(() => { savePending = false; });
+      saveWorkflow(allowRunning).catch(() => {}).finally(() => { savePending = false; });
     }, 500);
   }
 
@@ -153,6 +169,7 @@
       window.__restoredCsv = record.csv || '';
       window.__uploadState = record.dataset === 'upload' ? {file:record.uploadFile||null,fileName:record.uploadName||record.uploadFile?.name||'',normalizedCsv:record.csv||'',mapping:record.mapping||null} : null;
       if (record.dataset === 'upload') {
+        autosaveStage=record.stage||'setup';
         document.dispatchEvent(new CustomEvent('amr:upload-ready'));
         if (!record.csv && record.uploadFile) {
           document.dispatchEvent(new CustomEvent('amr:resume-upload', {detail:{file:record.uploadFile}}));
@@ -169,7 +186,8 @@
         document.dispatchEvent(new CustomEvent('amr:result',{detail:record.result}));
         sync();
         document.getElementById('results').scrollIntoView({behavior: paused ? 'instant' : 'smooth'});
-        status('Saved result restored. You can review or download it now; run the experiment again in this tab before making a new research prediction.');
+          status('Saved result restored. You can review or download it now; run the experiment again in this tab before making a new research prediction.');
+          setAutosave('saved','Restored from this device · rerun before predicting');
       } else {
         sync();
         document.getElementById('experiment').scrollIntoView({behavior: paused ? 'instant' : 'smooth'});
@@ -179,7 +197,7 @@
         } else if (record.dataset === 'upload' && !record.csv) {
           status('Your saved file was restored. Review its column mapping to prepare the analysis copy.');
         } else {
-          status('Saved setup restored. Review the selected source and choose Check my data or Train & test. The model must be run again before prediction.');
+          status(record.stage==='check'||record.stage==='train'||record.stage==='test'?'The last run stopped during '+record.stage+'. Your setup was restored; restart the analysis to continue.':'Saved setup restored. Review the selected source and choose Check my data or Train & test. The model must be run again before prediction.');
         }
       }
     } catch (error) {
@@ -195,6 +213,7 @@
       window.__restoredCsv = '';
       window.__uploadState = null;
       showSaved(null);
+      setAutosave('idle','Local saved work cleared. The current workflow will save again as you go.');
       status('Saved workflow and its local CSV were cleared from this browser.');
     } catch (error) {
       status('Could not clear the saved workflow. ' + error.message, true);
@@ -203,10 +222,9 @@
 
   document.getElementById('dataset').addEventListener('change', () => { if(document.getElementById('dataset').value!=='upload'){window.__restoredCsv='';window.__uploadState=null;} scheduleSave(); });
   document.getElementById('configuration').addEventListener('change', scheduleSave);
-  document.addEventListener('amr:upload-ready', () => { saveWorkflow().catch(() => {}); });
-  document.addEventListener('amr:upload-selected', () => { saveWorkflow().catch(() => {}); });
+  document.addEventListener('amr:upload-ready', () => { autosaveStage='data-check'; saveWorkflow().catch(() => {}); });
+  document.addEventListener('amr:upload-selected', () => { autosaveStage='import'; saveWorkflow().catch(() => {}); });
   document.getElementById('configuration').addEventListener('input', scheduleSave);
-
   document.addEventListener('beforeunload', event => {
     if (busy || savePending) {
       event.preventDefault();
@@ -214,6 +232,11 @@
     }
   });
 
+  document.addEventListener('amr:progress', event => {
+    autosaveStage=event.detail?.stage||'running';
+    scheduleSave(true);
+  });
+  document.addEventListener('amr:save-complete',()=>{autosaveStage='results';scheduleSave();});
   document.addEventListener('amr:state', event => {
     const {busy: running, modelReady: ready, result} = event.detail;
     let message = 'Choose a path above. You can explore the demo without a laboratory file.';
@@ -232,11 +255,13 @@
       heading.setAttribute('tabindex', '-1');
       heading.focus({preventScroll: true});
     }
-    if (!running) scheduleSave();
+    if (running) { autosaveStage='running'; scheduleSave(true); }
+    else { if(result) autosaveStage=result.metrics?'results':'check'; scheduleSave(); }
   });
 
   readSaved().then(showSaved).catch(() => {
     document.getElementById('resume-card').hidden = true;
+    setAutosave('error','Automatic resume storage is unavailable in this browser.');
     if (!persistenceMessageShown) {
       document.getElementById('next-step').textContent = 'This browser cannot provide automatic resume storage. The demo and analysis still work; download the experiment when it finishes.';
       persistenceMessageShown = true;

@@ -8,4 +8,4 @@
 - Local visual browser preview: blocked by browser networking. Live visual inspection follows publication.
 - Five reels: retrieved via vidIQ; applicability and official verification in REEL_EVIDENCE.md.
 
-Scientific scope unchanged: these are research estimates. Existing native public-source result has 3 FN / 7 FP; browser RF has 15 FN / 4 FP. Neither establishes Pune or clinical accuracy. No newly supplied independent Pune cohort was available in this turn.
+Scientific scope unchanged: these are research estimates. Existing native public-source result has 3 FN / 7 FP; browser RF has 15 FN / 4 FP. Neither establishes performance for the intended laboratory or clinical use. No newly supplied independent Pune cohort was available in this turn.

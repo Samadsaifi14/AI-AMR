@@ -148,6 +148,9 @@ def execute(payload):
             answer['learning_version']=training_artifacts(folder,cfg,audit,result)
             LAST_PROFILE=json.loads((folder/'reference_profile.json').read_text())
             answer['metrics'] = result
+            curves = folder/'holdout_curves.png'
+            if curves.exists():
+                answer['curves_png'] = base64.b64encode(curves.read_bytes()).decode('ascii')
             answer['importance'] = json.loads(pd.read_csv(folder/'grouped_permutation_importance.csv').to_json(orient='records'))
             answer['selection'] = json.loads((folder/'feature_selection.json').read_text()) if (folder/'feature_selection.json').exists() else None
             answer['features'] = cfg['features']

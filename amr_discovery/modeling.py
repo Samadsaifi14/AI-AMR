@@ -17,7 +17,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (average_precision_score, brier_score_loss, log_loss,
                              roc_auc_score, confusion_matrix)
-from sklearn.model_selection import StratifiedGroupKFold, LeaveOneGroupOut
+from sklearn.model_selection import GroupShuffleSplit, StratifiedGroupKFold, LeaveOneGroupOut
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from threadpoolctl import threadpool_limits
@@ -267,6 +267,8 @@ class ResearchModel:
                 if not np.array_equal(np.isnan(bound), absent):
                     raise IntegrityError('MIC bound and missingness disagree; defer.')
         raw = self.estimator.predict_proba(frame[self.columns])[:, 1]
+        if self.calibrator is None:
+            return raw
         return self.calibrator.predict_proba(logit(raw))[:, 1]
 
     def decisions(self, probabilities):
@@ -282,6 +284,223 @@ class ResearchModel:
                         np.where(p >= self.high, "resistant_prediction", "defer"))
 
 
+def exploratory_group_split(cohort, seed=42, test_fraction=.30):
+    """Preserve every isolate/patient group and approximately stratify a fixed holdout."""
+    if cohort.empty:
+        raise IntegrityError("No eligible isolates; inspect target coverage before training.")
+    if not 0 < test_fraction < 1:
+        raise IntegrityError("Exploratory test fraction must be between zero and one.")
+    y = cohort.y.to_numpy(dtype=int)
+    groups = cohort.group_id.astype(str).to_numpy()
+    if not set(np.unique(y)) <= {0, 1}:
+        raise IntegrityError("Exploratory split requires binary measured target labels.")
+    if len(np.unique(y)) < 2:
+        raise IntegrityError("Training requires measured susceptible and resistant target labels.")
+
+    # Most AST cohorts have one row per isolate group. Allocate within each
+    # class so a lone minority label stays in training and remains learnable.
+    group_count_per_row = pd.Series(groups).map(pd.Series(groups).value_counts()).to_numpy()
+    if np.all(group_count_per_row == 1):
+        rng = np.random.default_rng(seed)
+        test_indices = []
+        for label in (0, 1):
+            members = np.flatnonzero(y == label)
+            if len(members) < 2:
+                n_test = 0
+            else:
+                n_test = max(1, min(len(members) - 1, int(np.floor(test_fraction * len(members) + .5))))
+            if n_test:
+                test_indices.extend(rng.choice(members, n_test, replace=False).tolist())
+        test_idx = np.asarray(sorted(test_indices), dtype=int)
+        train_idx = np.setdiff1d(np.arange(len(cohort)), test_idx)
+    else:
+        # For linked isolates, search deterministic grouped candidates. A class
+        # with one record stays in training; available classes are spread across
+        # the holdout when possible without crossing group boundaries.
+        splitter = GroupShuffleSplit(n_splits=400, test_size=test_fraction, random_state=seed)
+        best = None
+        for train_idx, test_idx in splitter.split(np.zeros(len(y)), y, groups):
+            train_counts = Counter(y[train_idx]); test_counts = Counter(y[test_idx])
+            if any(train_counts.get(label, 0) == 0 for label in (0, 1)):
+                continue
+            if any(np.sum(y == label) >= 2 and test_counts.get(label, 0) == 0 for label in (0, 1)):
+                continue
+            if any(np.sum(y == label) == 1 and test_counts.get(label, 0) != 0 for label in (0, 1)):
+                continue
+            score = abs(len(test_idx) / len(y) - test_fraction)
+            score += sum(abs(test_counts.get(label, 0) / np.sum(y == label) - test_fraction)
+                         for label in (0, 1) if np.sum(y == label) >= 2)
+            if best is None or score < best[0]:
+                best = (score, np.asarray(train_idx), np.asarray(test_idx))
+        if best is None:
+            raise IntegrityError("No grouped 70/30 split can keep measured target classes available in training.")
+        _, train_idx, test_idx = best
+    if not len(test_idx) or not len(train_idx):
+        raise IntegrityError("A non-empty grouped development and test partition could not be formed.")
+    if set(groups[train_idx]) & set(groups[test_idx]):
+        raise IntegrityError("An isolate/patient group crosses the exploratory holdout boundary.")
+    if len(np.unique(y[train_idx])) < 2:
+        raise IntegrityError("Training partition lacks one measured target class.")
+    return train_idx, test_idx
+
+
+def fit_exploratory_70_30(cohort, feature_columns, cfg, audit, out):
+    """Fit the fixed small-cohort model without CV, calibration or threshold search."""
+    from sklearn.dummy import DummyClassifier
+    from sklearn.impute import SimpleImputer
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.pipeline import Pipeline
+    from .uncertainty import exact_interval
+
+    folder = Path(out)
+    if cohort.empty:
+        raise IntegrityError(f"No eligible isolates with a measured {cfg['target']} outcome.")
+    train_idx, test_idx = exploratory_group_split(cohort, cfg.get("seed", 42), .30)
+    split = cohort.copy()
+    split["partition"] = "train"
+    split.iloc[test_idx, split.columns.get_loc("partition")] = "test"
+    split.to_csv(folder / "cohort_with_splits.csv", index=False)
+    split[["isolate_id", "group_id", "source_id", "lab_id", "country", "partition"]].to_csv(
+        folder / "split_manifest.csv", index=False)
+    train = split.loc[split.partition.eq("train")].copy()
+    test = split.loc[split.partition.eq("test")].copy()
+
+    # Keep only prespecified panel drugs actually observed in the training
+    # partition. An all-missing drug stays in the configuration/report but is
+    # not passed to the estimator.
+    selected_drugs = [drug for drug in cfg["features"]
+                      if drug + "__missing" in train and train[drug + "__missing"].eq(0).any()]
+    if not selected_drugs:
+        raise IntegrityError("No prespecified predictor antibiotic was measured in training isolates.")
+    model_columns = [column for drug in selected_drugs for column in feature_columns
+                     if column.startswith(drug + "__")]
+    model = Pipeline([
+        ("impute", SimpleImputer(strategy="constant", fill_value=0, keep_empty_features=True)),
+        ("model", LogisticRegression(C=.1, class_weight="balanced", max_iter=2000,
+                                      random_state=cfg.get("seed", 42))),
+    ])
+    estimator = model.fit(train[model_columns], train.y.astype(int))
+    threshold = .5
+    bundle = ResearchModel(estimator, None, model_columns, threshold, threshold, threshold,
+                           "logistic_C0.1_exploratory_70_30", audit.get("evidence_status", "EXPLORATORY_MEASURED_DATA"),
+                           sorted(train.species.unique()))
+    bundle.min_observed_features = cfg["min_observed_features"]
+    bundle.decision_policy = "research_binary"
+    bundle.interpretation_status = "EXPLORATORY_SMALL_SAMPLE"
+
+    probabilities = bundle.predict_proba(test)
+    result = metrics(test.y, probabilities, threshold)
+    result.update({
+        "selected_model": bundle.name,
+        "split_mode": "exploratory_70_30",
+        "evidence_status": audit.get("evidence_status", "EXPLORATORY_MEASURED_DATA"),
+        "interpretation_status": "EXPLORATORY_SMALL_SAMPLE",
+        "clinical_validation": False,
+        "independently_verified_external_validation": False,
+        "causal_discovery": False,
+        "calibration_note": "No probability calibration or threshold search was performed; raw logistic scores are exploratory.",
+        "small_sample_warning": bool(min(int(train.y.sum()), int((train.y == 0).sum()),
+                                          int(test.y.sum()), int((test.y == 0).sum())) < 20),
+        "all_eligible_isolates_used": len(split) == len(cohort),
+        "partition_counts": split.groupby("partition").size().to_dict(),
+        "selection_cv": "not_run_fixed_model_small_sample",
+        "india_test_isolates": int(test.country.astype(str).str.strip().str.casefold().eq("india").sum()),
+        "india_validation_status": "NOT_ESTABLISHED",
+        "development_sensitivity_target": cfg.get("sensitivity_target", .95),
+        "development_specificity_target": cfg.get("specificity_target", .5),
+        "holdout_sensitivity_target_met": bool(result["sensitivity"] is not None and result["sensitivity"] >= cfg.get("sensitivity_target", .95)),
+        "holdout_specificity_target_met": bool(result["specificity"] is not None and result["specificity"] >= cfg.get("specificity_target", .5)),
+        "holdout_operating_target_met": False,
+        "target": cfg["target"],
+        "task": cfg.get("task", "antibiotic_resistance"),
+        "selected_drugs": selected_drugs,
+        "prediction_species": bundle.species,
+        "threshold": threshold,
+        "threshold_policy": "fixed_unvalidated_0.5",
+        "decision_policy": "research_binary",
+        "deferral_note": "Binary exploratory research output only. No calibration, clinical accuracy or suitability is established.",
+        "identity_and_label_metadata_complete": False,
+        "sensitivity_exact_95": exact_interval(result["tp"], result["tp"] + result["fn"]),
+        "specificity_exact_95": exact_interval(result["tn"], result["tn"] + result["fp"]),
+        "uncertainty_note": "Small exploratory holdout. Exact intervals are descriptive and do not correct unknown patient clustering.",
+        "confidence_intervals": cluster_intervals(test.y, probabilities, test.group_id, threshold,
+                                                   cfg.get("seed", 42), cfg.get("bootstrap_repeats", 200)),
+    })
+
+    predictions = test[["isolate_id", "source_id", "lab_id", "country", "region", "species",
+                        "mechanism", "group_id", "y", "target_sir"]].copy()
+    predictions["p_resistant"] = probabilities
+    predictions["binary_prediction"] = (probabilities >= threshold).astype(int)
+    predictions["decision"] = bundle.decisions(probabilities)
+    predictions["evidence_status"] = result["evidence_status"]
+    predictions.to_csv(folder / "test_predictions.csv", index=False)
+    predictions.loc[predictions.y.ne(predictions.binary_prediction)].to_csv(folder / "error_review.csv", index=False)
+
+    feature_selection = {
+        "fit_partition": "train",
+        "selected_drugs": selected_drugs,
+        "training_coverage": {d: float((1 - train[d + "__missing"]).mean()) for d in cfg["features"]},
+        "dropped_drugs": {d: "no_training_observations" for d in cfg["features"] if d not in selected_drugs},
+        "selection_settings": "prespecified predictor panel; all-missing drugs omitted using training partition only",
+    }
+    (folder / "feature_selection.json").write_text(json.dumps(feature_selection, indent=2), encoding="utf-8")
+    pd.DataFrame([{"model": bundle.name, "phase": "fixed exploratory estimator; no CV",
+                   "log_loss": None, "auroc": None, "brier": None}]).to_csv(folder / "development_cv.csv", index=False)
+
+    dummy = DummyClassifier(strategy="prior").fit(train[model_columns], train.y.astype(int))
+    baseline_probability = dummy.predict_proba(test[model_columns])[:, 1]
+    pd.DataFrame([{"model": "training_prevalence", **metrics(test.y, baseline_probability, threshold)}]).to_csv(
+        folder / "holdout_baselines.csv", index=False)
+
+    rows = []
+    rng = np.random.default_rng(cfg.get("seed", 42))
+    baseline_loss = log_loss(test.y, probabilities, labels=[0, 1])
+    for drug in selected_drugs:
+        columns = [column for column in model_columns if column.startswith(drug + "__")]
+        differences = []
+        for _ in range(5):
+            altered = test.copy()
+            altered[columns] = test[columns].to_numpy()[rng.permutation(len(test))]
+            altered_probability = estimator.predict_proba(altered[model_columns])[:, 1]
+            differences.append(log_loss(test.y, altered_probability, labels=[0, 1]) - baseline_loss)
+        rows.append({"drug": drug, "mean_log_loss_increase": float(np.mean(differences)),
+                     "repeat_sd": float(np.std(differences)),
+                     "meaning": "exploratory test-set permutation reliance; not causal importance"})
+    pd.DataFrame(rows).sort_values("mean_log_loss_increase", ascending=False).to_csv(
+        folder / "grouped_permutation_importance.csv", index=False)
+    pd.DataFrame([{"grouping": "all_test_isolates", "group": "all", "interpretation": "exploratory; descriptive only",
+                   **result}]).to_csv(folder / "subgroup_metrics.csv", index=False)
+    pd.DataFrame([{"halfwidth": 0., "coverage": 1., "accepted_n": len(test), "accepted_error":
+                   float((predictions.y != predictions.binary_prediction).mean()),
+                   "resistant_called_nonresistant": result["fn"], "resistant_deferred": 0,
+                   "resistant_total": result["resistant"]}]).to_csv(folder / "coverage_error.csv", index=False)
+
+    lock = {
+        "selected_model": bundle.name,
+        "selection": "fixed regularized logistic estimator; no candidate search",
+        "selection_cv": "not_run_small_sample",
+        "threshold": threshold,
+        "threshold_policy": "fixed_unvalidated_0.5",
+        "decision_policy": "research_binary",
+        "feature_selection": feature_selection,
+        "task": cfg.get("task", "antibiotic_resistance"),
+        "target": cfg["target"],
+        "configuration": cfg,
+        "input_sha256": audit.get("input_sha256"),
+        "split_sha256": sha256(folder / "split_manifest.csv"),
+        "calibration": "none; raw exploratory scores",
+        "evidence_status": result["evidence_status"],
+        "clinical_validation": False,
+        "environment": {"python": platform.python_version(), "sklearn": sklearn.__version__,
+                        "numpy": np.__version__, "pandas": pd.__version__},
+    }
+    (folder / "experiment_snapshot.json").write_text(json.dumps(lock, indent=2), encoding="utf-8")
+    (folder / "model_lock.json").write_text(json.dumps(lock, indent=2), encoding="utf-8")
+    joblib.dump(bundle, folder / "research_model.joblib")
+    (folder / "metrics.json").write_text(json.dumps(result, indent=2, allow_nan=False), encoding="utf-8")
+    return result, predictions
+
+
 def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
     cfg = validate_config(cfg)
     expected = {f"{d}__{suffix}" for d in cfg["features"] for suffix in
@@ -289,6 +508,8 @@ def fit_and_evaluate(cohort, feature_columns, cfg, audit, out):
                  ["log2_bound", "left_censored", "right_censored", "strict_bound", "missing"])}
     if set(feature_columns) != expected or len(feature_columns) != len(expected):
         raise IntegrityError('Feature matrix differs from the reviewed antibiotic allowlist; possible leakage.')
+    if cfg.get("split", {}).get("mode") == "exploratory_70_30":
+        return fit_exploratory_70_30(cohort, feature_columns, cfg, audit, out)
     folder = Path(out)
     if cohort.empty:
         raise IntegrityError("No eligible isolates; inspect exclusions before training.")

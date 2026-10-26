@@ -84,3 +84,9 @@ def test_combination_requires_measured_inhibitor():
         validate_config(cfg)
     cfg['combination_reviews']={'ceftazidime-avibactam':{'reviewed':True,'citation':'fixture-reviewed-protocol','fixed_inhibitor_mg_l':4}}
     assert validate_config(cfg)['features']==['ceftazidime-avibactam']
+
+
+def test_reported_categorical_combination_does_not_require_mic_ratio_metadata():
+    cfg=configuration();cfg['features']=['piperacillin-tazobactam'];cfg['min_observed_features']=1
+    cfg['representation']='categorical_ast';cfg['label_mode']='reported'
+    assert validate_config(cfg)['features']==['piperacillin-tazobactam']

@@ -76,6 +76,16 @@ def validate_config(cfg):
     framework = cfg.get("task") == "antibiotic_resistance"
     if cfg.get("task") not in {None, "antibiotic_resistance"}:
         raise IntegrityError("This framework predicts antibiotic resistance; mechanisms are annotations only.")
+    split_config = cfg.get("split", {"mode": "internal"})
+    if not isinstance(split_config, dict):
+        raise IntegrityError("Split configuration must be an object.")
+    split_mode = split_config.get("mode")
+    if split_mode not in {"internal", "source", "country", "region", "lab", "temporal", "exploratory_70_30"}:
+        raise IntegrityError("Split mode must be internal, source, country, region, lab, temporal or exploratory_70_30.")
+    if split_mode == "exploratory_70_30" and not (
+        framework and cfg.get("representation") == "categorical_ast" and cfg.get("label_mode") == "reported"
+    ):
+        raise IntegrityError("Exploratory 70/30 mode requires reported categorical AST in the antibiotic-resistance framework.")
     cfg["target"] = drug_name(cfg.get("target", ""))
     if cfg["target"] not in (ANTIBIOTICS | COMBINATIONS if framework else {"meropenem", "imipenem"}):
         raise IntegrityError("Choose an explicitly supported antibiotic target.")
@@ -119,6 +129,10 @@ def validate_config(cfg):
     if cfg.get("include_species", False) and not framework:
         raise IntegrityError("Core models are phenotype-only; species is implemented as a separate baseline.")
     for name in set(drugs + [cfg["target"]]) & COMBINATIONS:
+        # Reported categorical outcomes are already interpreted labels. MIC
+        # combination measurements still require a reviewed fixed-inhibitor contract.
+        if cfg.get("representation") == "categorical_ast":
+            continue
         review = cfg.get("combination_reviews", {}).get(name, {})
         concentration = review.get("fixed_inhibitor_mg_l")
         if not review.get("citation") or review.get("reviewed") is not True or isinstance(concentration, bool) or not isinstance(concentration, (int, float)) or not math.isfinite(concentration) or concentration <= 0:

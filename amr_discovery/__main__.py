@@ -72,6 +72,8 @@ def main():
     p.add_argument("--data",required=True);p.add_argument("--mapping",required=True);p.add_argument("--out",required=True)
     p=sub.add_parser("prepare-batch",help="Combine new measured data with a prior batch; reject conflicts and save hashes")
     p.add_argument("--data",required=True);p.add_argument("--base");p.add_argument("--out",required=True)
+    p=sub.add_parser("import-asts-workbook",help="Normalize a user AST .xlsx file into private canonical observations")
+    p.add_argument("--data",required=True);p.add_argument("--out",required=True)
     p=sub.add_parser("fetch-ncbi");p.add_argument("--query",required=True);p.add_argument("--out",required=True)
     p.add_argument("--limit",type=int,default=200);p.add_argument("--email",default="");p.add_argument("--resume",action="store_true")
     p=sub.add_parser("demo");p.add_argument("--out",required=True);p.add_argument("--n",type=int,default=800)
@@ -114,6 +116,14 @@ def main():
             print(json.dumps(prepare_batch(args.data,args.out,args.base),indent=2));return 0
         except (IntegrityError, FileExistsError, OSError) as e:
             print(f"Batch not prepared: {e}",file=sys.stderr);return 2
+    if args.command=="import-asts-workbook":
+        from .workbook import import_asts_workbook
+        try:
+            result=import_asts_workbook(args.data,args.out)
+            print(json.dumps({k:v for k,v in result.items() if k not in {"issues","notes"}},indent=2))
+            return 0
+        except (IntegrityError, FileExistsError, OSError) as e:
+            print(f"Workbook import blocked: {e}",file=sys.stderr);return 2
     if args.command=="import-wide":
         from .importer import import_wide
         print(json.dumps(import_wide(args.data,args.mapping,args.out),indent=2));return 0

@@ -137,7 +137,8 @@ def execute(payload):
         answer['suite'] = validation_suite(cohort,columns,cfg,audit,folder/'validation')
     if action == 'train':
         try:
-            result,_ = fit_and_evaluate(cohort,columns,cfg,audit,folder)
+            from amr_discovery.modeling import metrics
+            result,predictions = fit_and_evaluate(cohort,columns,cfg,audit,folder)
             import joblib
             LAST_MODEL = joblib.load(folder/'research_model.joblib')  # Only the model generated here; no arbitrary uploads.
             LAST_CFG = cfg
@@ -152,6 +153,11 @@ def execute(payload):
             answer['features'] = cfg['features']
             answer['species'] = LAST_MODEL.species
             answer['comparison'] = json.loads(pd.read_csv(folder/'development_cv.csv').to_json(orient='records'))
+            subgroup_rows = []
+            for column in ('source_id','species'):
+                for group, part in predictions.groupby(column, dropna=False):
+                    subgroup_rows.append({'grouping':column,'group':group,**metrics(part.y,part.p_resistant,result.get('threshold',.5))})
+            answer['subgroups'] = json.loads(pd.DataFrame(subgroup_rows).to_json(orient='records')) if subgroup_rows else []
         except IntegrityError as e:
             blocked = str(e)
             answer['blocked'] = blocked

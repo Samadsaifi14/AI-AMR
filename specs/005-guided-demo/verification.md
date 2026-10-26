@@ -1,16 +1,18 @@
-# Verification: Guided first-run and stronger demo
+# Verification: Guided beginner workflow
 
 **Date**: 2026-10-26
 
-## Completed implementation review
+## Implementation review
 
-- Home now provides a single-action synthetic demo, own-data entry, and a conditional local-resume card.
-- The demo uses the existing `demo` dataset and canonical `train` operation; the Python workflow still creates the audit, model, held-out evaluation, and export.
-- Synthetic result counts are read from the run metrics and described as missed resistance and false alarms. No demo result counts are hard-coded.
-- Progress messages name analysis-engine setup and map runtime output to check/train/test stages. Runtime errors direct users to retry or use the local Python guide.
-- IndexedDB stores the selected source, configuration, selected upload CSV, and last completed result/export on this browser. The page discloses this, offers clear saved work, and warns before leaving during an active run. Resuming restores setup/input and the prior result/export; the model is not loaded for new predictions.
-- The first-run guide matches the new flow and correctly distinguishes saved setup from the in-memory model.
+- Home offers a synthetic one-action demo, guided import, and local resume/clear actions.
+- CSV and first-worksheet XLSX are read in the browser. Long/wide suggestions, editable mappings, antibiotic-column selection, a preview and change log precede creation of a separate canonical analysis CSV.
+- The original uploaded file and missing values are preserved. The browser does not send uploaded files to a service. Local IndexedDB stores the workflow and source when the browser permits it.
+- Recipe counts come from recorded reported S/R labels. MIC values alone do not create class labels. The engine performs the full audit again after preliminary counts.
+- Data-check status reflects engine audit output. Result badge reflects existing holdout and independent-evaluation gates. No accuracy headline is used.
+- Results include a summary, confusion counts, exact confidence intervals, model comparisons and subgroup metrics by source and species. The former advanced tools are under Lab bench.
+- Save my experiment downloads the ZIP and invokes the report's browser Print dialog for Save as PDF; the HTML report is also available separately.
+- Guide copy covers import, review, Recipe, result layers, local resume and export.
 
 ## Not run
 
-Automated browser, Python, build and runtime checks were not run in this change. No claim of successful end-to-end execution is made. The first-run CDN download and IndexedDB quota behavior remain dependent on the user's browser/network and need a browser run before release.
+Automated browser, Python, build, and runtime checks were not run for this implementation. No end-to-end success is claimed. XLSX support is limited to the first worksheet and relies on cached cell values; complex workbook features and date serial interpretation may require exporting to CSV. PDF creation depends on the browser's Print-to-PDF dialog. IndexedDB availability and quota vary by browser.

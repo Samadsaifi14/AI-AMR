@@ -4,7 +4,7 @@
 
 ## Summary
 
-Make the synthetic demo a one-action guided training flow, explain the real run outputs in plain language, name runtime setup stages, and save/resume the current browser workflow locally. Continue using the existing HTML/CSS/JavaScript shell and canonical Python worker for all scientific computation.
+Make the synthetic demo a one-action guided training flow; add browser-local long/wide CSV/XLSX import, data review, Recipe, layered results, trust badges, a Lab bench and local ZIP/PDF save. Continue using the existing HTML/CSS/JavaScript shell and canonical Python worker for all scientific computation.
 
 ## Technical Context
 
@@ -15,7 +15,7 @@ Make the synthetic demo a one-action guided training flow, explain the real run 
 **Target Platform**: Modern desktop browsers, responsive mobile presentation
 **Project Type**: Static browser research application
 **Constraints**: All uploaded content stays on-device; do not claim the local cache is encrypted or permanent; demo outputs remain synthetic; respect reduced motion
-**Scale/Scope**: Home, one demo journey, one local resume checkpoint
+**Scale/Scope**: Home, demo, local resume, in-browser mapping and data review, guided recipe/run/results, Lab bench and export
 
 ## Constitution Check
 
@@ -41,6 +41,9 @@ The demo starts the current synthetic source and invokes the existing `train` op
 
 ## Risks
 
-- Browser storage quotas vary and may reject a large CSV; keep the workflow usable and show a clear fallback.
+- Browser storage quotas vary and may reject a selected file or result archive; keep the workflow usable and show a clear fallback.
 - The Pyodide runtime downloads a sizable first-run package set; avoid a fixed short duration promise.
+- XLSX import reads only the first worksheet and does not interpret all workbook formatting/date metadata.
+- PDF export depends on the browser Print dialog.
 - The synthetic demo's model may report a failed operating target; explain this honestly as software demonstration behavior.
+- Browser and runtime verification remains pending.

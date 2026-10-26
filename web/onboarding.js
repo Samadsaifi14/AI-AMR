@@ -70,21 +70,15 @@
     if (restoreInProgress || busy || !datasetReady) return;
     const dataset = document.getElementById('dataset').value;
     const configuration = document.getElementById('configuration').value;
-    let csv = window.__restoredCsv || '';
-    if (dataset === 'upload') {
-      const file = document.getElementById('observations').files[0];
-      if (file) {
-        if (file.size > 10 * 1024 * 1024) {
-          status('This CSV is larger than the browser upload limit, so it cannot be saved for resume. It remains available for this session.', true);
-          return;
-        }
-        csv = await file.text();
-      }
-    } else {
-      csv = '';
+    let csv = dataset === 'upload' ? (window.__restoredCsv || window.__uploadState?.normalizedCsv || '') : '';
+    let uploadFile = dataset === 'upload' ? (window.__uploadState?.file || document.getElementById('observations').files[0] || null) : null;
+    if (uploadFile && uploadFile.size > 10 * 1024 * 1024) {
+      status('This file is larger than the browser upload limit, so it cannot be saved for resume. It remains available for this session.', true);
+      return;
     }
+    if (dataset === 'upload' && !csv && uploadFile?.name?.toLowerCase().endsWith('.csv')) csv = await uploadFile.text();
     const savedResult = currentResult?.report && currentResult?.archive ? currentResult : null;
-    const record = {id: 'current', dataset, configuration, csv, result: savedResult, savedAt: new Date().toISOString(), stage: savedResult ? 'results' : 'setup'};
+    const record = {id: 'current', dataset, configuration, csv, uploadFile, uploadName: uploadFile?.name || window.__uploadState?.fileName || '', mapping: window.__uploadState?.mapping || null, result: savedResult, savedAt: new Date().toISOString(), stage: savedResult ? 'results' : 'setup'};
     try {
       await writeSaved(record);
       showSaved(record);
@@ -157,6 +151,13 @@
       await setDataset();
       document.getElementById('configuration').value = record.configuration;
       window.__restoredCsv = record.csv || '';
+      window.__uploadState = record.dataset === 'upload' ? {file:record.uploadFile||null,fileName:record.uploadName||record.uploadFile?.name||'',normalizedCsv:record.csv||'',mapping:record.mapping||null} : null;
+      if (record.dataset === 'upload') {
+        document.dispatchEvent(new CustomEvent('amr:upload-ready'));
+        if (!record.csv && record.uploadFile) {
+          document.dispatchEvent(new CustomEvent('amr:resume-upload', {detail:{file:record.uploadFile}}));
+        }
+      }
       syncDesign();
       if (record.result) {
         currentResult = record.result;
@@ -164,15 +165,19 @@
         report = record.result.report;
         modelReady = false;
         render(record.result);
+        document.getElementById('lab-bench').hidden = false;
+        document.dispatchEvent(new CustomEvent('amr:result',{detail:record.result}));
         sync();
         document.getElementById('results').scrollIntoView({behavior: paused ? 'instant' : 'smooth'});
         status('Saved result restored. You can review or download it now; run the experiment again in this tab before making a new research prediction.');
       } else {
         sync();
         document.getElementById('experiment').scrollIntoView({behavior: paused ? 'instant' : 'smooth'});
-        if (record.dataset === 'upload' && !record.csv) {
+        if (record.dataset === 'upload' && !record.csv && !record.uploadFile) {
           status('Your saved setup was restored, but the CSV was not saved. Select the file again to continue.', true);
           document.getElementById('observations').focus({preventScroll: true});
+        } else if (record.dataset === 'upload' && !record.csv) {
+          status('Your saved file was restored. Review its column mapping to prepare the analysis copy.');
         } else {
           status('Saved setup restored. Review the selected source and choose Check my data or Train & test. The model must be run again before prediction.');
         }
@@ -188,6 +193,7 @@
     try {
       await deleteSaved();
       window.__restoredCsv = '';
+      window.__uploadState = null;
       showSaved(null);
       status('Saved workflow and its local CSV were cleared from this browser.');
     } catch (error) {
@@ -195,12 +201,10 @@
     }
   });
 
-  document.getElementById('dataset').addEventListener('change', () => { window.__restoredCsv = ''; scheduleSave(); });
+  document.getElementById('dataset').addEventListener('change', () => { if(document.getElementById('dataset').value!=='upload'){window.__restoredCsv='';window.__uploadState=null;} scheduleSave(); });
   document.getElementById('configuration').addEventListener('change', scheduleSave);
-  document.getElementById('observations').addEventListener('change', async () => {
-    window.__restoredCsv = '';
-    if (document.getElementById('observations').files[0]) await saveWorkflow();
-  });
+  document.addEventListener('amr:upload-ready', () => { saveWorkflow().catch(() => {}); });
+  document.addEventListener('amr:upload-selected', () => { saveWorkflow().catch(() => {}); });
   document.getElementById('configuration').addEventListener('input', scheduleSave);
 
   document.addEventListener('beforeunload', event => {

@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-26
 
-**Status**: In progress
+**Status**: Implemented; verification pending
 
 **Input**: Make the AMR app usable by people with no machine-learning background; proceed with M1 and make the demo stronger.
 
@@ -80,4 +80,4 @@ A user can return to the same browser and resume the last saved workflow state, 
 
 - The existing synthetic fixture and canonical training workflow remain the demo's source of truth.
 - Browser-local persistence is opt-in through clear disclosure and is user-clearable; nothing is uploaded to a server.
-- Initial scope is M1: Home, guided demo, progress/loading, and local resume. Spreadsheet import, recipes, layered results beyond the demo explainer, PDF, and Lab bench remain later milestones.
+- M1–M4 are implemented in the browser interface. Verification remains pending; see [verification.md](verification.md). XLSX support reads the first worksheet and PDF uses the browser print dialog.

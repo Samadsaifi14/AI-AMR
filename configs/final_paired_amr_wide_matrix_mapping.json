@@ -11,6 +11,7 @@
   },
   "constants": {
     "method": "reported AST",
+    "units": "mg/L",
     "evidence_class": "measured_public"
   },
   "drugs": {

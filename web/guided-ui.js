@@ -69,7 +69,7 @@
   function renderDrugControls(){
     const format=$('import-format').value;if(format!=='wide'){$('mapping-drugs').innerHTML='';return;}
     const headers=pendingSource.headers;
-    $('mapping-drugs').innerHTML='<h4>Which columns contain antibiotics?</h4><p class="hint">Keep only the columns that are antibiotic results. Unknown columns can be left unused.</p><div class="mapping-grid">'+headers.map((header,index)=>{
+    $('mapping-drugs').innerHTML='<h4>Which columns contain antibiotics?</h4><p class="hint">Keep only the columns that are antibiotic results. When a file has both a phenotype and MIC column for the same drug, keep both: they are combined into one isolate–drug observation.</p><div class="mapping-grid">'+headers.map((header,index)=>{
       const guess=pendingSource.drugColumns.find(x=>x.column===header)?.drug||'';const value=activeMapping?.drugColumns?.[header]??guess;
       return `<div class="mapping-control"><label for="drug-map-${index}">${display(header)}</label><select id="drug-map-${index}" data-drug-column="${display(header)}"><option value="">Do not use this column</option>${importer.DRUGS.map(drug=>`<option value="${drug}" ${drug===value?'selected':''}>${drug}</option>`).join('')}</select></div>`;
     }).join('')+'</div>';
@@ -80,10 +80,10 @@
     for(const select of $('mapping-fields').querySelectorAll('select[data-field]')){
       const field=select.dataset.field;if(select.value==='__constant'){const value=$(`constant-${field}`).value.trim();if(value)constants[field]=value;}else if(select.value)fields[field]=select.value;
     }
-    const drugMap={};for(const select of $('mapping-drugs').querySelectorAll('[data-drug-column]'))if(select.value)drugMap[select.dataset.drugColumn]=select.value;
+    const drugMap={};for(const select of $('mapping-drugs').querySelectorAll('[data-drug-column]'))if(select.value){const column=select.dataset.drugColumn,detected=pendingSource.drugColumns.find(item=>item.column===column),drug=select.value;const entry=drugMap[drug]||{drug};const kind=detected?.resultKind||(type==='mic'?'measurement':'reported_sir');if(kind==='measurement'){entry.measurementColumn=column;entry.measurementUnits=detected?.units||'';}else if(kind==='reported_sir')entry.phenotypeColumn=column;else entry.column=column;drugMap[drug]=entry;}
     if(format==='wide'){
       const units=constants.units||'';
-      return {format,valueType:type,fields,constants,drugs:Object.entries(drugMap).map(([column,drug])=>({column,drug})),units,evidenceClass:$('import-evidence').value,filename:pendingFile.name};
+      return {format,valueType:type,fields,constants,drugs:Object.values(drugMap),units,evidenceClass:$('import-evidence').value,filename:pendingFile.name};
     }
     if(type==='reported_sir'&&!fields.reported_sir&&fields.measurement){fields.reported_sir=fields.measurement;delete fields.measurement;delete fields.operator;}
     if(type==='mic'&&!fields.measurement&&fields.reported_sir){fields.measurement=fields.reported_sir;delete fields.reported_sir;}

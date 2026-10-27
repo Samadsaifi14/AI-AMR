@@ -7,7 +7,7 @@
     source_id:['source_id','source id','study id','study','bioproject','project id','batch id','cohort'],
     patient_id:['patient_id','patient id','patient code','subject id'],
     duplicate_group:['duplicate_group','duplicate group','replicate group'],
-    species:['species','organism','bacterial species','organism name'],
+    species:['species','organism','bacterial species','organism name','scientific name'],
     country:['country','country of origin'], collection_date:['collection_date','collection date','date collected'],
     host:['host','host species'], specimen:['specimen','sample type','isolation source'], drug:['drug','antibiotic','antimicrobial','antibiotic name'],
     measurement:['measurement','mic','mic value','mic (mg/l)','value','result'], operator:['operator','measurement sign','mic operator','sign'],
@@ -18,8 +18,8 @@
     lab_id:['lab_id','lab id','laboratory id'], panel_id:['panel_id','panel id'], tested_concentrations:['tested_concentrations','tested concentrations'],
     qc_reference:['qc_reference','qc reference'], fixed_inhibitor_mg_l:['fixed_inhibitor_mg_l','inhibitor concentration']
   };
-  const DRUG_ALIASES = {'mem':'meropenem','mero':'meropenem','ipm':'imipenem','imi':'imipenem','ert':'ertapenem','etp':'ertapenem','dor':'doripenem','fep':'cefepime','cpm':'cefepime','caz':'ceftazidime','ctx':'cefotaxime','cro':'ceftriaxone','cip':'ciprofloxacin','amk':'amikacin','gen':'gentamicin','tob':'tobramycin','atm':'aztreonam','lvx':'levofloxacin','col':'colistin','polymyxin b':'polymyxin-b','ceftazidime avibactam':'ceftazidime-avibactam','caz avi':'ceftazidime-avibactam','ceftazidime avibactam combo':'ceftazidime-avibactam','piperacillin tazobactam':'piperacillin-tazobactam','pip tazo':'piperacillin-tazobactam','piptazo':'piperacillin-tazobactam','amoxicillin clavulanate':'amoxicillin-clavulanate','amox clav':'amoxicillin-clavulanate','amox clavulanate':'amoxicillin-clavulanate'};
-  const norm = value => String(value ?? '').replace(/^\uFEFF/,'').trim().toLowerCase().replace(/[._-]+/g,' ').replace(/\s+/g,' ');
+  const DRUG_ALIASES = {'mem':'meropenem','mero':'meropenem','ipm':'imipenem','imi':'imipenem','ert':'ertapenem','etp':'ertapenem','dor':'doripenem','fep':'cefepime','cpm':'cefepime','caz':'ceftazidime','ctx':'cefotaxime','cro':'ceftriaxone','cip':'ciprofloxacin','amk':'amikacin','gen':'gentamicin','tob':'tobramycin','atm':'aztreonam','lvx':'levofloxacin','col':'colistin','polymyxin b':'polymyxin-b','ceftazidime avibactam':'ceftazidime-avibactam','caz avi':'ceftazidime-avibactam','ceftazidime avibactam combo':'ceftazidime-avibactam','piperacillin tazobactam':'piperacillin-tazobactam','pip tazo':'piperacillin-tazobactam','piptazo':'piperacillin-tazobactam','amoxicillin clavulanate':'amoxicillin-clavulanate','amoxicillin clavulanic acid':'amoxicillin-clavulanate','amox clav':'amoxicillin-clavulanate','amox clavulanate':'amoxicillin-clavulanate'};
+  const norm = value => String(value ?? '').replace(/^\uFEFF/,'').trim().toLowerCase().replace(/^[#\s]+/,'').replace(/[._-]+/g,' ').replace(/\s+/g,' ');
   function parseCSV(text) {
     const rows=[];let row=[],cell='',quoted=false;
     for(let i=0;i<text.length;i++){
@@ -76,11 +76,12 @@
     return {headers,records:rows.slice(1).map(row=>Object.fromEntries(headers.map((h,i)=>[h,String(row[i]??'').trim()]))) };
   }
   function matchField(header){const n=norm(header);for(const [field,aliases] of Object.entries(ALIASES))if(aliases.some(alias=>norm(alias)===n))return field;return null;}
-  function matchDrug(header){const n=norm(header);if(DRUG_ALIASES[n])return DRUG_ALIASES[n];const name=n.replace(/\s*\([^)]*\)\s*$/,'').replace(/\s+/g,'-');return DRUGS.includes(name)?name:null;}
+  function drugColumnKind(header){const n=norm(header);if(/(?:^|\s)phenotype$/.test(n)||/(?:^|\s)(sir|susceptibility|resistance phenotype)$/.test(n))return 'reported_sir';if(/(?:^|\s)mic(?:\s|$)/.test(n))return 'measurement';return '';}
+  function matchDrug(header){const raw=norm(header);const n=raw.replace(/(?:\s+(?:phenotype|sir|susceptibility|resistance phenotype)|\s+mic(?:\s+(?:mg\s*l|mgl))?)$/,'').trim();if(DRUG_ALIASES[n])return DRUG_ALIASES[n];const name=n.replace(/\s*\([^)]*\)\s*$/,'').replace(/\s+/g,'-');return DRUGS.includes(name)?name:null;}
   function inspect(rows){
     const data=objects(rows),{headers,records}=data;
     const drugHeader=headers.find(h=>matchField(h)==='drug');
-    const drugColumns=headers.map(h=>({column:h,drug:matchDrug(h)})).filter(x=>x.drug);
+    const drugColumns=headers.map(h=>({column:h,drug:matchDrug(h),resultKind:drugColumnKind(h),units:/\b(?:mg\s*l|mgl)\b/.test(norm(h))?'mg/L':''})).filter(x=>x.drug);
     const format=drugHeader?'long':drugColumns.length?'wide':'uncertain';
     const suggestions={};for(const h of headers){const f=matchField(h);if(f&&!suggestions[f])suggestions[f]=h;}
     return {...data,format,drugColumns,suggestions,preview:records.slice(0,8)};
@@ -113,8 +114,12 @@
         row.species=fields.species?record[fields.species]:constants.species||'';
         row.drug=drugInfo.drug;
         const raw=record[drugInfo.column]||'';
-        if(mapping.valueType==='mic'){const parsed=parseMic(raw);row.measurement=parsed.measurement;row.operator=parsed.operator;row.units=fields.units?record[fields.units]:mapping.units||constants.units||'';}
-        else row.reported_sir=raw;
+        const rawSir=drugInfo.phenotypeColumn?record[drugInfo.phenotypeColumn]||'':(drugInfo.resultKind==='reported_sir'?raw:'');
+        const rawMic=drugInfo.measurementColumn?record[drugInfo.measurementColumn]||'':(drugInfo.resultKind==='measurement'?raw:'');
+        if(rawSir)row.reported_sir=rawSir;
+        if(rawMic){const parsed=parseMic(rawMic);row.measurement=parsed.measurement;row.operator=parsed.operator;row.units=fields.units?record[fields.units]:drugInfo.measurementUnits||mapping.units||constants.units||'';}
+        else if(raw&&mapping.valueType==='mic'){const parsed=parseMic(raw);row.measurement=parsed.measurement;row.operator=parsed.operator;row.units=fields.units?record[fields.units]:mapping.units||constants.units||'';}
+        else if(raw&&mapping.valueType==='reported_sir')row.reported_sir=raw;
         row.evidence_class=fields.evidence_class?record[fields.evidence_class]:(constants.evidence_class||mapping.evidenceClass);
         output.push(FIELDS.map(field=>row[field]??''));
       }}
@@ -122,5 +127,5 @@
     const acceptedLog=log.filter(item=>mapping.accepted?.[item.item]!==false);
     return {csv:toCSV(output),log,acceptedLog,preview:output.slice(0,9).map(row=>Object.fromEntries(FIELDS.map((field,i)=>[field,row[i]])))};
   }
-  window.ASTImport={FIELDS,DRUGS,parseCSV,parseWorkbook,inspect,matchField,matchDrug,mappingControls,buildLong,toCSV,quote};
+  window.ASTImport={FIELDS,DRUGS,parseCSV,parseWorkbook,inspect,matchField,matchDrug,drugColumnKind,mappingControls,buildLong,toCSV,quote};
 })();

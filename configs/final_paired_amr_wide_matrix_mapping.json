@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "isolate_id": "#BioSample",
+    "source_id": "Location",
+    "source_row": "Isolate",
+    "species": "Scientific name",
+    "specimen": "Isolation source",
+    "platform": "Laboratory typing platform",
+    "lab_id": "Laboratory typing platform",
+    "standard": "Testing standard"
+  },
+  "constants": {
+    "method": "reported AST",
+    "evidence_class": "measured_public"
+  },
+  "drugs": {
+    "amoxicillin-clavulanate": {"measurement": "amoxicillin-clavulanic acid_MIC_mgL", "reported_sir": "amoxicillin-clavulanic acid_Phenotype"},
+    "cefepime": {"measurement": "cefepime_MIC_mgL", "reported_sir": "cefepime_Phenotype"},
+    "ceftazidime": {"measurement": "ceftazidime_MIC_mgL", "reported_sir": "ceftazidime_Phenotype"},
+    "ceftazidime-avibactam": {"measurement": "ceftazidime-avibactam_MIC_mgL", "reported_sir": "ceftazidime-avibactam_Phenotype"},
+    "ceftriaxone": {"measurement": "ceftriaxone_MIC_mgL", "reported_sir": "ceftriaxone_Phenotype"},
+    "ciprofloxacin": {"measurement": "ciprofloxacin_MIC_mgL", "reported_sir": "ciprofloxacin_Phenotype"},
+    "ertapenem": {"measurement": "ertapenem_MIC_mgL", "reported_sir": "ertapenem_Phenotype"},
+    "gentamicin": {"measurement": "gentamicin_MIC_mgL", "reported_sir": "gentamicin_Phenotype"},
+    "imipenem": {"measurement": "imipenem_MIC_mgL", "reported_sir": "imipenem_Phenotype"},
+    "meropenem": {"measurement": "meropenem_MIC_mgL", "reported_sir": "meropenem_Phenotype"},
+    "piperacillin-tazobactam": {"measurement": "piperacillin-tazobactam_MIC_mgL", "reported_sir": "piperacillin-tazobactam_Phenotype"}
+  }
+}

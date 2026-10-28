@@ -75,11 +75,24 @@ def _normalise_wide_observations(csv_text, cfg):
         'polymyxin b':'polymyxin-b'
     }
     def canonical_drug(label):
-        import re
         label = str(label).strip()
-        # Remove the complete result suffix, including separators, before mapping
-        # the drug name. Handles headers such as "meropenem_MIC_mgL".
-        label = re.sub(r'[_\\s-]*(?:phenotype|interpretation)
+        lower = label.lower()
+        # Remove complete suffixes without regex escaping ambiguity.
+        for suffix in ('_phenotype', ' phenotype', '-phenotype', '_interpretation',
+                       ' interpretation', '-interpretation'):
+            if lower.endswith(suffix):
+                label = label[:-len(suffix)].strip(' _-')
+                lower = label.lower()
+                break
+        for suffix in ('_mic_mgl', ' mic mgl', '-mic-mgl', '_mic_mg/l',
+                       ' mic mg/l', '_mic', ' mic', '-mic'):
+            if lower.endswith(suffix):
+                label = label[:-len(suffix)].strip(' _-')
+                break
+        key = label.lower().replace('_',' ').strip()
+        key = drug_aliases.get(key, key)
+        key = drug_name(key)
+        return key if key in supported else None
 
     # Group columns by drug and result type. A phenotype + MIC pair becomes one
     # observation, preserving both original fields when both are supplied.

@@ -14,7 +14,7 @@
     units:['units','unit','measurement units','measurement unit'], method:['method','testing method','laboratory typing method'],
     platform:['platform','instrument','testing platform','laboratory typing platform'], standard:['standard','testing standard','interpretation standard'],
     standard_version:['standard_version','standard version','breakpoint version','guideline version'], reported_sir:['reported_sir','sir','s/i/r','phenotype','resistance phenotype','susceptibility','interpretation'],
-    evidence_class:['evidence_class','evidence class'], region:['region','state','province'], hospital_id:['hospital_id','hospital id','site id'],
+    evidence_class:['evidence_class','evidence class'], region:['region','state','province','location','locality'], hospital_id:['hospital_id','hospital id','site id'],
     lab_id:['lab_id','lab id','laboratory id'], panel_id:['panel_id','panel id'], tested_concentrations:['tested_concentrations','tested concentrations'],
     qc_reference:['qc_reference','qc reference'], fixed_inhibitor_mg_l:['fixed_inhibitor_mg_l','inhibitor concentration']
   };

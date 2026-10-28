@@ -270,7 +270,13 @@ def execute(payload):
     data.write_text(input_csv)
     (folder/'input_observations.csv').write_text(input_csv)
     if was_normalized:
-        print('Recognized wide AST matrix and converted recorded values to long observations. Review provenance gaps in the audit; unknown fields were not inferred.', flush=True)
+        # Wide public matrices often lack a breakpoint release. Permit only the
+        # explicitly exploratory/non-strict path; strict comparability remains blocked.
+        if cfg.get('comparability_policy', 'exploratory') != 'strict' and not cfg.get('standard_version'):
+            cfg['allow_unversioned_reported'] = True
+            (folder/'configuration.json').write_text(json.dumps(cfg, indent=2))
+            print('Wide AST import: unversioned reported labels allowed for exploratory analysis only. Strict comparability is not established.', flush=True)
+        print('Recognized wide AST matrix and converted paired phenotype/MIC fields to long observations. Review unknown source/method/version provenance in the audit; no missing values were imputed.', flush=True)
     # Fail early with a usable import explanation instead of a Python traceback.
     # Never synthesize missing provenance or infer MICs from categorical AST.
     try:

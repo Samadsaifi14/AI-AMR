@@ -14,7 +14,7 @@ This cohort is a 360-isolate Excel workbook with one isolate per row and paired 
 
 The workbook has 360 unique BioSample IDs and 360 unique isolate IDs. It includes 107 rows from India, Pakistan, or Nepal, but only **2 are from India** (both *E. coli*). It therefore cannot support an India-only model or India-specific performance claim.
 
-Among South Asian *E. coli* and *K. pneumoniae* records, after requiring at least three of the six predictor-drug categories and keeping only reported resistant/susceptible target labels, there are 93 meropenem records (29 resistant, 64 susceptible) and 91 imipenem records (28 resistant, 63 susceptible). Intermediate results are excluded from these binary recipe counts. These counts are preliminary; the app may exclude more rows during data checks or its held-out split.
+Among South Asian *E. coli* and *K. pneumoniae* records, after requiring at least three of the seven predictor-drug categories and keeping only reported resistant/susceptible target labels, there are 93 meropenem records (29 resistant, 64 susceptible) and 91 imipenem records (28 resistant, 63 susceptible). Intermediate results are excluded from these binary recipe counts. These counts are preliminary; the app may exclude more rows during data checks or its held-out split.
 
 Colistin has only 24 matching resistant/susceptible labels in that species/geography subset (22 resistant, 2 susceptible), so the held-out workflow cannot assess both classes reliably. There are no matching South Asian ceftazidime-avibactam labels in the workbook.
 

@@ -4,6 +4,7 @@
   const importer=window.ASTImport;
   let pendingFile=null, pendingSource=null, activeMapping=null;
   const DEFAULT_PREDICTORS=['amoxicillin-clavulanate','cefotaxime','cefepime','ceftriaxone','ciprofloxacin','gentamicin','piperacillin-tazobactam'];
+  const RESERVED_TARGETS=['meropenem','imipenem','colistin','ceftazidime-avibactam'];
   const FIELD_LABELS={isolate_id:'Isolate identifier',source_id:'Study / batch source',species:'Species',patient_id:'Patient code',duplicate_group:'Duplicate group',country:'Country',collection_date:'Collection date',host:'Host',specimen:'Specimen',drug:'Antibiotic',measurement:'Measured MIC',operator:'MIC sign (≤, =, ≥)',units:'MIC units',method:'Test method',platform:'Instrument / platform',standard:'Interpretation standard',standard_version:'Standard version',reported_sir:'Reported category (S / I / R / SDD)',evidence_class:'Measurement source type',region:'Region',hospital_id:'Hospital code',lab_id:'Laboratory code',panel_id:'Test panel',tested_concentrations:'Tested concentrations',qc_reference:'Quality-control reference'};
   const LONG_FIELDS=Object.keys(FIELD_LABELS);
   const WIDE_FIELDS=['isolate_id','source_id','species','patient_id','duplicate_group','country','collection_date','host','specimen','method','platform','standard','standard_version','units','evidence_class','region','hospital_id','lab_id','panel_id','qc_reference'];
@@ -32,8 +33,9 @@
     select.replaceChildren();
     if(!counts.length){const option=document.createElement('option');option.value=prior||'';option.textContent=csvAvailable?'No target counts found in this file':'Select “Check target counts” to load measured examples';select.append(option);select.disabled=true;$('target-counts').textContent=csvAvailable?(document.getElementById('representation').value==='mic'?'MIC values alone do not identify resistant or susceptible labels without a reviewed breakpoint file. No category is inferred.':'No usable S/R target labels were detected. The full check may still explain the file.'):'Target counts have not been loaded yet. This step reads the selected source on this device.';return;}
     select.disabled=false;
-    for(const item of counts){const option=document.createElement('option');option.value=item.drug;const enough=item.R>=5&&item.S>=5;option.disabled=!enough;option.textContent=`${item.drug} — ${item.R} resistant / ${item.S} susceptible${item.I?` / ${item.I} intermediate`:''}${enough?'':' · too few for the minimum held-out class count'}`;select.append(option);}
-    if(prior&&!counts.some(x=>x.drug===prior)){const option=document.createElement('option');option.value=prior;option.disabled=true;option.textContent=`${prior} — no measured target labels in this file`;select.append(option);}
+    const targetOptions=RESERVED_TARGETS.map(drug=>counts.find(item=>item.drug===drug)||{drug,R:0,S:0,I:0});
+    for(const item of targetOptions){const option=document.createElement('option');option.value=item.drug;const enough=item.R>=5&&item.S>=5;const total=item.R+item.S+item.I;option.disabled=!enough;option.textContent=`${item.drug} — ${total?`${item.R} resistant / ${item.S} susceptible${item.I?` / ${item.I} intermediate`:''}`:'no measured labels'}${enough?'':' · too few for the minimum held-out class count'}`;select.append(option);}
+    if(prior&&!targetOptions.some(x=>x.drug===prior)){const option=document.createElement('option');option.value=prior;option.disabled=true;option.textContent=`${prior} — not in the reserved-target panel`;select.append(option);}
     const selected=select.querySelector(`option[value="${CSS.escape(prior)}"]`);
     if(selected)select.value=prior;else {const available=[...select.options].find(x=>!x.disabled);if(available)select.value=available.value;}
     showTargetCount();

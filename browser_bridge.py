@@ -7,7 +7,7 @@ import zipfile
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from amr_discovery.data import build_cohort, IntegrityError, parse_mic, encode_ast, validate_config, COMBINATIONS
+from amr_discovery.data import build_cohort, IntegrityError, parse_mic, encode_ast, validate_config, COMBINATIONS, REQUIRED
 from amr_discovery.modeling import fit_and_evaluate
 from amr_discovery.reporting import write_report
 from amr_discovery.topology import gene_network, spatial_edges
@@ -115,6 +115,32 @@ def execute(payload):
     data = Path('/input.csv')
     data.write_text(payload['csv'])
     (folder/'input_observations.csv').write_text(payload['csv'])
+    # Fail early with a usable import explanation instead of a Python traceback.
+    # Never synthesize missing provenance or infer MICs from categorical AST.
+    try:
+        input_columns = set(pd.read_csv(data, nrows=0, dtype=str).columns.str.strip())
+    except Exception as exc:
+        raise IntegrityError(f"Could not read the uploaded CSV header ({exc}). Export a UTF-8 CSV and retry.") from exc
+    missing_columns = sorted(REQUIRED - input_columns)
+    if missing_columns:
+        wide_hints = [c for c in input_columns if any(token in c.lower() for token in
+                       ('meropenem', 'imipenem', 'cefepime', 'ceftazidime', 'ciprofloxacin', 'amikacin'))]
+        if wide_hints or not {'drug', 'measurement'} <= input_columns:
+            raise IntegrityError(
+                "This file is not in the required long-format observation schema. "
+                f"Missing columns: {', '.join(missing_columns)}. "
+                "It may be a wide antibiotic matrix. Open Use my own data and complete the "
+                "column-mapping/preview step so the app creates a normalized analysis copy. "
+                "If the mapping step is unavailable for this file, use the local Python "
+                "import-wide workflow with an explicitly reviewed mapping file (see the Pune user guide). "
+                "Map source, species, method, units, interpretation standard/version and evidence from records; "
+                "do not invent missing metadata or convert S/I/R categories to MIC numbers."
+            )
+        raise IntegrityError(
+            "The uploaded file is missing required observation columns: "
+            + ", ".join(missing_columns)
+            + ". Use the downloadable MIC or categorical AST template and map the original source columns."
+        )
     breakpoints = None
     if payload.get('breakpoints','').strip():
         breakpoints = '/breakpoints.csv'

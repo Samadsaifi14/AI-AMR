@@ -7,8 +7,8 @@ This cohort is a 360-isolate Excel workbook with one isolate per row and paired 
 1. Choose **Use my own data** and upload `South_Asia_AMR_Wide_Matrix.xlsx`.
 2. Keep both result columns for each antibiotic. Check the suggested mappings, especially `#BioSample` as isolate ID, `Scientific name` as species, `Isolation source` as specimen, `Location` as the original location field, and `Testing standard` as standard.
 3. Run **Check my data** and review exclusions and target counts before training.
-4. For a South Asia analysis, include only rows whose location is India, Pakistan, or Nepal. The current browser flow does not filter rows by location, so make that subset in a local copy first or use the prepared local import workflow. Keep the original workbook unchanged.
-5. Select meropenem or imipenem and use the matching exploratory recipe in `configs/`. Do not select colistin or ceftazidime-avibactam as a South Asia target with this panel.
+4. Use the prepared `South_Asia_AMR_Paired_Wide_Matrix.csv` upload file for the South Asian subset; it contains the 97 *E. coli* and *K. pneumoniae* records from India, Pakistan, and Nepal. If starting from the original workbook, the browser does not filter rows by location, so prepare this subset locally first. Keep the original workbook unchanged.
+5. Select meropenem or imipenem. The guided recipe defaults to the seven requested predictor antibiotics, the two target species, a minimum of three observed predictors, and an exploratory grouped 70/30 split. Do not select colistin or ceftazidime-avibactam as a South Asia target with this panel.
 
 ## Cohort counts and limits
 

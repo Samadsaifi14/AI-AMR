@@ -3,6 +3,7 @@
   const $=id=>document.getElementById(id);
   const importer=window.ASTImport;
   let pendingFile=null, pendingSource=null, activeMapping=null;
+  const DEFAULT_PREDICTORS=['amoxicillin-clavulanate','cefotaxime','cefepime','ceftriaxone','ciprofloxacin','gentamicin','piperacillin-tazobactam'];
   const FIELD_LABELS={isolate_id:'Isolate identifier',source_id:'Study / batch source',species:'Species',patient_id:'Patient code',duplicate_group:'Duplicate group',country:'Country',collection_date:'Collection date',host:'Host',specimen:'Specimen',drug:'Antibiotic',measurement:'Measured MIC',operator:'MIC sign (≤, =, ≥)',units:'MIC units',method:'Test method',platform:'Instrument / platform',standard:'Interpretation standard',standard_version:'Standard version',reported_sir:'Reported category (S / I / R / SDD)',evidence_class:'Measurement source type',region:'Region',hospital_id:'Hospital code',lab_id:'Laboratory code',panel_id:'Test panel',tested_concentrations:'Tested concentrations',qc_reference:'Quality-control reference'};
   const LONG_FIELDS=Object.keys(FIELD_LABELS);
   const WIDE_FIELDS=['isolate_id','source_id','species','patient_id','duplicate_group','country','collection_date','host','specimen','method','platform','standard','standard_version','units','evidence_class','region','hospital_id','lab_id','panel_id','qc_reference'];
@@ -50,7 +51,7 @@
       else csv=await asset('data/'+kind+'.csv');
       window.__targetCounts=normalizedCounts(csv);renderTargets(window.__targetCounts,true);
       const available=window.__targetCounts.map(x=>x.drug).filter(Boolean);
-      if(kind==='upload'&&available.length){const cfg=JSON.parse($('configuration').value);cfg.features=available.filter(d=>d!==cfg.target);if(cfg.features.length)cfg.min_observed_features=Math.min(Number(cfg.min_observed_features||3),cfg.features.length);$('configuration').value=JSON.stringify(cfg,null,2);syncDesign();}
+      if(kind==='upload'&&available.length){const cfg=JSON.parse($('configuration').value);cfg.features=DEFAULT_PREDICTORS.filter(d=>available.includes(d)&&d!==cfg.target);if(cfg.features.length)cfg.min_observed_features=Math.min(Number(cfg.min_observed_features||3),cfg.features.length);$('configuration').value=JSON.stringify(cfg,null,2);syncDesign();}
     }catch(error){status('Could not read target counts from the selected file. '+error.message,true);}
   }
   function selectOptions(headers,current){return `<option value="">Do not use / leave unknown</option><option value="__constant" ${current==='__constant'?'selected':''}>Use one value entered for all rows</option>`+headers.map(h=>`<option value="${display(h)}" ${current===h?'selected':''}>Column: ${display(h)}</option>`).join('');}
@@ -139,7 +140,7 @@
       if(!mapping.fields.evidence_class&&!mapping.constants.evidence_class&&!['measured_authorized','measured_public'].includes(mapping.evidenceClass))throw new Error('Choose whether these are authorized laboratory measurements or documented public measurements.');
       const result=importer.buildLong({...pendingSource,format:mapping.format},mapping);
       window.__restoredCsv=result.csv;window.__uploadState={file:pendingFile,fileName:pendingFile.name,source:pendingSource,normalizedCsv:result.csv,mapping};preparedCsv=null;
-      const cfg=JSON.parse($('configuration').value);cfg.representation=mapping.valueType==='mic'?'mic':'categorical_ast';cfg.label_mode='reported';cfg.task='antibiotic_resistance';cfg.features=availableDrugs(result.csv);cfg.features=cfg.features.filter(d=>d!==cfg.target);if(cfg.features.length)cfg.min_observed_features=Math.min(Number(cfg.min_observed_features||3),cfg.features.length);cfg.split={mode:'internal'};$('configuration').value=JSON.stringify(cfg,null,2);syncDesign();
+      const cfg=JSON.parse($('configuration').value);cfg.representation=mapping.valueType==='mic'?'mic':'categorical_ast';cfg.label_mode='reported';cfg.task='antibiotic_resistance';cfg.features=DEFAULT_PREDICTORS.filter(d=>availableDrugs(result.csv).includes(d)&&d!==cfg.target);if(cfg.features.length)cfg.min_observed_features=Math.min(Number(cfg.min_observed_features||3),cfg.features.length);cfg.split={mode:'internal'};$('configuration').value=JSON.stringify(cfg,null,2);syncDesign();
       $('import-detection').textContent=`Mapping accepted. ${pendingSource.records.length} source rows were prepared without changing the original ${pendingFile.name}. Missing values remain missing; no MIC values or resistance labels were inferred.`;
       $('mapping-change-log').innerHTML='<h4>Accepted change log</h4><p>Source file preserved. The mapping shown below was accepted for this analysis copy.</p>'+table(result.log.map(x=>({mapping:x.item,status:'Accepted'})),['mapping','status']);
       $('mapping-fields').hidden=true;$('mapping-drugs').hidden=true;$('mapping-preview').innerHTML='<h4>Prepared preview</h4>'+table(result.preview.slice(0,8),importer.FIELDS);$('confirm-import').hidden=true;$('cancel-import').textContent='Choose a different file';
@@ -148,7 +149,7 @@
   }
   function updateRecipeConfig(){
     const target=$('target-drug').value;if(!target)return;
-    try{const cfg=JSON.parse($('configuration').value);cfg.target=target;const available=window.__uploadState?.normalizedCsv?availableDrugs(window.__uploadState.normalizedCsv):cfg.features;cfg.features=[...new Set(available)].filter(d=>d!==target&&!d.startsWith(target+'-')&&!target.startsWith(d+'-'));$('configuration').value=JSON.stringify(cfg,null,2);syncDesign();}catch(error){status('Could not update this recipe. '+error.message,true);}
+    try{const cfg=JSON.parse($('configuration').value);cfg.target=target;const available=window.__uploadState?.normalizedCsv?availableDrugs(window.__uploadState.normalizedCsv):cfg.features;cfg.features=DEFAULT_PREDICTORS.filter(d=>available.includes(d)&&d!==target&&!d.startsWith(target+'-')&&!target.startsWith(d+'-'));$('configuration').value=JSON.stringify(cfg,null,2);syncDesign();}catch(error){status('Could not update this recipe. '+error.message,true);}
   }
   function applyRecipeGoal(){
     try{const cfg=JSON.parse($('configuration').value);const goal=document.querySelector('input[name="recipe-goal"]:checked')?.value||'catch';cfg.sensitivity_target=goal==='catch'?(cfg.sensitivity_target??.95):.80;cfg.selection_objective='specificity_at_sensitivity';$('configuration').value=JSON.stringify(cfg,null,2);sync();}catch(error){status(error.message,true);}

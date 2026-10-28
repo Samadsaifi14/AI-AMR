@@ -27,6 +27,91 @@ def archive(folder):
     return base64.b64encode(stream.getvalue()).decode()
 
 
+def _normalise_wide_observations(csv_text, cfg):
+    """Conservatively convert common wide AST matrices to long observations."""
+    try:
+        raw = pd.read_csv(io.StringIO(csv_text), dtype=str, keep_default_na=False)
+    except Exception as exc:
+        raise IntegrityError(f"Could not parse the uploaded CSV: {exc}") from exc
+    raw.columns = [str(col).strip() for col in raw.columns]
+    raw = raw.apply(lambda col: col.str.strip())
+    if REQUIRED <= set(raw.columns):
+        return csv_text, False
+    def norm(value):
+        return ''.join(ch.lower() for ch in str(value) if ch.isalnum())
+    aliases = {
+        'isolate_id': {'isolateid','isolate','isolateidentifier','biosample','biosampleaccession','sampleid','strainid','accession','id'},
+        'source_id': {'sourceid','studyid','projectid','bioproject','source','dataset','study','publication'},
+        'species': {'species','organism','scientificname','taxon','bacterialspecies'},
+        'country': {'country','countryoforigin'}, 'region': {'region','geoclimaticzone','state'},
+        'patient_id': {'patientid','patient','subjectid','crescentid'},
+        'standard_version': {'standardversion','breakpointversion','guidelineversion','version'},
+        'standard': {'standard','interpretationstandard','guideline','breakpointstandard'},
+        'method': {'method','astmethod','testmethod','assay'},
+        'platform': {'platform','instrument','system','astplatform'},
+        'units': {'units','unit','micunits','measurementunits'},
+        'evidence_class': {'evidenceclass','evidencetype'},
+    }
+    by_norm = {norm(col): col for col in raw.columns}
+    mapped = {field: next((by_norm[n] for n in names if n in by_norm), None) for field,names in aliases.items()}
+    from amr_discovery.data import drug_name, ANTIBIOTICS, COMBINATIONS, ALIASES
+    known_drugs = set(ANTIBIOTICS) | set(COMBINATIONS)
+    alias_keys = {norm(k) for k in ALIASES}
+    drug_cols = {}
+    for col in raw.columns:
+        candidate = drug_name(col)
+        if candidate in known_drugs or norm(col) in alias_keys:
+            candidate = drug_name(col)
+            if candidate in known_drugs:
+                drug_cols[col] = candidate
+    if not drug_cols:
+        return csv_text, False
+    id_col = mapped.get('isolate_id') or next((by_norm[n] for n in ('isolateid','isolate','biosample','biosampleaccession','sampleid','strainid','accession','id') if n in by_norm), None)
+    species_col = mapped.get('species') or next((by_norm[n] for n in ('species','organism','scientificname','taxon') if n in by_norm), None)
+    if not id_col or not species_col:
+        raise IntegrityError("Wide AST matrix detected, but isolate ID and species could not be identified. Rename those source headers to isolate_id and species, then retry.")
+    evidence_col = mapped.get('evidence_class')
+    public_id = any(norm(col) in {'biosample','biosampleaccession','accession','bioproject','projectid'} for col in raw.columns)
+    if not evidence_col and not public_id:
+        raise IntegrityError("Wide AST matrix detected, but evidence class is not recorded. Add evidence_class with measured_public or measured_authorized based on source documentation; do not guess.")
+    source_col = mapped.get('source_id')
+    sir_values = {'s','susceptible','sensitive','r','resistant','i','intermediate','sdd','susceptibledosedependent'}
+    rows = []
+    import re
+    for _, source_row in raw.iterrows():
+        isolate = source_row.get(id_col, '').strip()
+        species = source_row.get(species_col, '').strip()
+        if not isolate or not species:
+            continue
+        source = source_row.get(source_col, '').strip() if source_col else ''
+        evidence = source_row.get(evidence_col, '').strip() if evidence_col else 'measured_public'
+        for drug_col, drug in drug_cols.items():
+            value = source_row.get(drug_col, '').strip()
+            if not value or value.lower() in {'na','n/a','nan','null','none','-'}:
+                continue
+            item = {field: '' for field in REQUIRED}
+            item.update(isolate_id=isolate, source_id=source or 'unknown_source_review_required',
+                        species=species, drug=drug, evidence_class=evidence,
+                        method=source_row.get(mapped['method'], '').strip() if mapped.get('method') else '',
+                        standard=source_row.get(mapped['standard'], '').strip() if mapped.get('standard') else '',
+                        standard_version=source_row.get(mapped['standard_version'], '').strip() if mapped.get('standard_version') else '',
+                        units=source_row.get(mapped['units'], '').strip() if mapped.get('units') else '',
+                        country=source_row.get(mapped['country'], '').strip() if mapped.get('country') else '',
+                        region=source_row.get(mapped['region'], '').strip() if mapped.get('region') else '',
+                        patient_id=source_row.get(mapped['patient_id'], '').strip() if mapped.get('patient_id') else '')
+            if norm(value) in sir_values:
+                item['reported_sir'] = value
+            else:
+                match = re.fullmatch(r'\s*(<=|>=|<|>|≤|≥|=)?\s*([0-9]+(?:\.[0-9]+)?)\s*', value)
+                if not match:
+                    continue
+                item['operator'] = (match.group(1) or '=').replace('≤','<=').replace('≥','>=')
+                item['measurement'] = match.group(2)
+            rows.append(item)
+    if not rows:
+        raise IntegrityError("Wide AST matrix detected, but no supported antibiotic result cells were found. Check drug headers and cell values.")
+    return pd.DataFrame(rows).to_csv(index=False), True
+
 def execute(payload):
     global LAST_MODEL, LAST_CFG, LAST_TRAIN_IDS, LAST_PROFILE
     action = payload['action']
@@ -112,9 +197,12 @@ def execute(payload):
     folder = Path('/run')
     shutil.rmtree(folder,ignore_errors=True)
     folder.mkdir()
+    input_csv, was_normalized = _normalise_wide_observations(payload['csv'], cfg)
     data = Path('/input.csv')
-    data.write_text(payload['csv'])
-    (folder/'input_observations.csv').write_text(payload['csv'])
+    data.write_text(input_csv)
+    (folder/'input_observations.csv').write_text(input_csv)
+    if was_normalized:
+        print('Recognized wide AST matrix and converted recorded values to long observations. Review provenance gaps in the audit; unknown fields were not inferred.', flush=True)
     # Fail early with a usable import explanation instead of a Python traceback.
     # Never synthesize missing provenance or infer MICs from categorical AST.
     try:

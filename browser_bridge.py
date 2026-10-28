@@ -37,47 +37,95 @@ def _normalise_wide_observations(csv_text, cfg):
     raw = raw.apply(lambda col: col.str.strip())
     if REQUIRED <= set(raw.columns):
         return csv_text, False
+
     def norm(value):
         return ''.join(ch.lower() for ch in str(value) if ch.isalnum())
-    aliases = {
-        'isolate_id': {'isolateid','isolate','isolateidentifier','biosample','biosampleaccession','sampleid','strainid','accession','id'},
-        'source_id': {'sourceid','studyid','projectid','bioproject','source','dataset','study','publication'},
-        'species': {'species','organism','scientificname','taxon','bacterialspecies'},
-        'country': {'country','countryoforigin'}, 'region': {'region','geoclimaticzone','state'},
-        'patient_id': {'patientid','patient','subjectid','crescentid'},
-        'standard_version': {'standardversion','breakpointversion','guidelineversion','version'},
-        'standard': {'standard','interpretationstandard','guideline','breakpointstandard'},
-        'method': {'method','astmethod','testmethod','assay'},
-        'platform': {'platform','instrument','system','astplatform'},
-        'units': {'units','unit','micunits','measurementunits'},
-        'evidence_class': {'evidenceclass','evidencetype'},
-    }
+
     by_norm = {norm(col): col for col in raw.columns}
-    mapped = {field: next((by_norm[n] for n in names if n in by_norm), None) for field,names in aliases.items()}
-    from amr_discovery.data import drug_name, ANTIBIOTICS, COMBINATIONS, ALIASES
-    known_drugs = set(ANTIBIOTICS) | set(COMBINATIONS)
-    alias_keys = {norm(k) for k in ALIASES}
-    drug_cols = {}
-    for col in raw.columns:
-        candidate = drug_name(col)
-        if candidate in known_drugs or norm(col) in alias_keys:
-            candidate = drug_name(col)
-            if candidate in known_drugs:
-                drug_cols[col] = candidate
-    if not drug_cols:
-        return csv_text, False
-    id_col = mapped.get('isolate_id') or next((by_norm[n] for n in ('isolateid','isolate','biosample','biosampleaccession','sampleid','strainid','accession','id') if n in by_norm), None)
-    species_col = mapped.get('species') or next((by_norm[n] for n in ('species','organism','scientificname','taxon') if n in by_norm), None)
+    def find(*names):
+        return next((by_norm[norm(name)] for name in names if norm(name) in by_norm), None)
+
+    id_col = find('isolate_id','isolate id','isolate','biosample','biosample accession',
+                  '#BioSample','sample id','strain id','accession','id')
+    species_col = find('species','organism','scientific name','taxon','bacterial species')
+    source_col = find('source_id','source id','study id','project id','BioProject','study','dataset')
+    evidence_col = find('evidence_class','evidence class','evidence type')
+    standard_col = find('standard','testing standard','interpretation standard','guideline')
+    version_col = find('standard_version','standard version','breakpoint version','guideline version')
+    method_col = find('method','AST method','test method','assay')
+    platform_col = find('platform','laboratory typing platform','instrument','system','AST platform')
+    units_col = find('units','unit','MIC units','measurement units')
+    country_col = find('country','country of origin')
+    location_col = find('location','geographic location')
+    region_col = find('region','geoclimatic zone','state')
+    patient_col = find('patient_id','patient id','patient','subject id')
     if not id_col or not species_col:
-        raise IntegrityError("Wide AST matrix detected, but isolate ID and species could not be identified. Rename those source headers to isolate_id and species, then retry.")
-    evidence_col = mapped.get('evidence_class')
-    public_id = any(norm(col) in {'biosample','biosampleaccession','accession','bioproject','projectid'} for col in raw.columns)
-    if not evidence_col and not public_id:
-        raise IntegrityError("Wide AST matrix detected, but evidence class is not recorded. Add evidence_class with measured_public or measured_authorized based on source documentation; do not guess.")
-    source_col = mapped.get('source_id')
-    sir_values = {'s','susceptible','sensitive','r','resistant','i','intermediate','sdd','susceptibledosedependent'}
-    rows = []
+        # If this is not recognisably a wide AST table, leave it for the canonical-schema validator.
+        return csv_text, False
+
+    from amr_discovery.data import drug_name, ANTIBIOTICS, COMBINATIONS
+    supported = set(ANTIBIOTICS) | set(COMBINATIONS)
+    drug_aliases = {
+        'amoxicillin-clavulanic acid':'amoxicillin-clavulanate',
+        'amoxicillin clavulanic acid':'amoxicillin-clavulanate',
+        'amoxicillin/clavulanate':'amoxicillin-clavulanate',
+        'piperacillin tazobactam':'piperacillin-tazobactam',
+        'ceftazidime avibactam':'ceftazidime-avibactam',
+        'trimethoprim sulfamethoxazole':'trimethoprim-sulfamethoxazole',
+        'polymyxin b':'polymyxin-b'
+    }
+    def canonical_drug(label):
+        label = str(label).strip()
+        label_norm = norm(label)
+        if label_norm.endswith('phenotype'):
+            label = label[:-len('phenotype')].rstrip(' _-')
+        elif label_norm.endswith('interpretation'):
+            label = label[:-len('interpretation')].rstrip(' _-')
+        elif label_norm.endswith('micmgl'):
+            label = label[:-len('micmgl')].rstrip(' _-')
+        elif label_norm.endswith('micmg l'):
+            label = label[:-len('micmg l')].rstrip(' _-')
+        elif label_norm.endswith('mic'):
+            label = label[:-len('mic')].rstrip(' _-')
+        key = label.lower().replace('_',' ').strip()
+        key = drug_aliases.get(key, key)
+        key = drug_name(key)
+        return key if key in supported else None
+
+    # Group columns by drug and result type. A phenotype + MIC pair becomes one
+    # observation, preserving both original fields when both are supplied.
+    drug_columns = {}
+    for col in raw.columns:
+        cn = norm(col)
+        kind = None
+        if cn.endswith('phenotype'):
+            kind = 'sir'
+        elif cn.endswith('interpretation'):
+            kind = 'sir'
+        elif 'mic' in cn and (cn.endswith('mgl') or cn.endswith('mic') or '_mic_' in col.lower()):
+            kind = 'mic'
+        if not kind:
+            continue
+        drug = canonical_drug(col)
+        if drug:
+            drug_columns.setdefault(drug, {})[kind] = col
+
+    if not drug_columns:
+        return csv_text, False
+
+    # A public accession supports public-source classification; otherwise evidence
+    # must be explicitly present in the uploaded file.
+    public_identifier = find('#BioSample','BioSample','BioSample accession','accession','NCBI accession')
+    if not evidence_col and not public_identifier:
+        raise IntegrityError(
+            "Wide AST matrix detected, but evidence class is not recorded. Add an evidence_class column "
+            "with measured_public or measured_authorized according to the source documentation."
+        )
+
+    sir_values = {'s','susceptible','sensitive','r','resistant','i','intermediate',
+                  'sdd','susceptibledosedependent'}
     import re
+    rows = []
     for _, source_row in raw.iterrows():
         isolate = source_row.get(id_col, '').strip()
         species = source_row.get(species_col, '').strip()
@@ -85,31 +133,51 @@ def _normalise_wide_observations(csv_text, cfg):
             continue
         source = source_row.get(source_col, '').strip() if source_col else ''
         evidence = source_row.get(evidence_col, '').strip() if evidence_col else 'measured_public'
-        for drug_col, drug in drug_cols.items():
-            value = source_row.get(drug_col, '').strip()
-            if not value or value.lower() in {'na','n/a','nan','null','none','-'}:
+        for drug, result_cols in drug_columns.items():
+            sir_raw = source_row.get(result_cols.get('sir',''), '').strip() if result_cols.get('sir') else ''
+            mic_raw = source_row.get(result_cols.get('mic',''), '').strip() if result_cols.get('mic') else ''
+            if not sir_raw and not mic_raw:
                 continue
             item = {field: '' for field in REQUIRED}
-            item.update(isolate_id=isolate, source_id=source or 'unknown_source_review_required',
-                        species=species, drug=drug, evidence_class=evidence,
-                        method=source_row.get(mapped['method'], '').strip() if mapped.get('method') else '',
-                        standard=source_row.get(mapped['standard'], '').strip() if mapped.get('standard') else '',
-                        standard_version=source_row.get(mapped['standard_version'], '').strip() if mapped.get('standard_version') else '',
-                        units=source_row.get(mapped['units'], '').strip() if mapped.get('units') else '',
-                        country=source_row.get(mapped['country'], '').strip() if mapped.get('country') else '',
-                        region=source_row.get(mapped['region'], '').strip() if mapped.get('region') else '',
-                        patient_id=source_row.get(mapped['patient_id'], '').strip() if mapped.get('patient_id') else '')
-            if norm(value) in sir_values:
-                item['reported_sir'] = value
-            else:
-                match = re.fullmatch(r'\s*(<=|>=|<|>|≤|≥|=)?\s*([0-9]+(?:\.[0-9]+)?)\s*', value)
-                if not match:
-                    continue
-                item['operator'] = (match.group(1) or '=').replace('≤','<=').replace('≥','>=')
-                item['measurement'] = match.group(2)
+            item.update(
+                isolate_id=isolate,
+                source_id=source or 'unknown_source_review_required',
+                species=species,
+                drug=drug,
+                evidence_class=evidence,
+                method=source_row.get(method_col, '').strip() if method_col else '',
+                standard=source_row.get(standard_col, '').strip() if standard_col else '',
+                standard_version=source_row.get(version_col, '').strip() if version_col else '',
+                units=source_row.get(units_col, '').strip() if units_col else '',
+                country=source_row.get(find('country','country of origin') or '', '').strip(),
+                region=source_row.get(region_col, '').strip() if region_col else '',
+                patient_id=source_row.get(patient_col, '').strip() if patient_col else '',
+                platform=source_row.get(platform_col, '').strip() if platform_col else '',
+                specimen=source_row.get(find('specimen','isolation source','isolation type') or '', '').strip(),
+                host=source_row.get(find('host') or '', '').strip(),
+                collection_date=source_row.get(find('collection date','collection_date','date collected') or '', '').strip(),
+                source_row=source_row.get(find('index','row id','source row') or '', '').strip()
+            )
+            if sir_raw and norm(sir_raw) in sir_values:
+                item['reported_sir'] = sir_raw
+            elif sir_raw:
+                # Preserve unrecognized phenotype text in the source export, but do not map it to S/I/R.
+                item['reported_sir'] = ''
+            if mic_raw:
+                match = re.fullmatch(r'\s*(<=|>=|<|>|≤|≥|=)?\s*([0-9]+(?:\.[0-9]+)?)\s*', mic_raw)
+                if match:
+                    item['operator'] = (match.group(1) or '=').replace('≤','<=').replace('≥','>=')
+                    item['measurement'] = match.group(2)
+                    # Units are assigned only when explicitly encoded in the MIC header or source units field.
+                    if not item['units'] and 'mgl' in norm(result_cols.get('mic','')):
+                        item['units'] = 'mg/L'
+                else:
+                    # If MIC is not parseable, retain any valid reported phenotype only.
+                    if not item['reported_sir']:
+                        continue
             rows.append(item)
     if not rows:
-        raise IntegrityError("Wide AST matrix detected, but no supported antibiotic result cells were found. Check drug headers and cell values.")
+        raise IntegrityError("Wide AST matrix detected, but no supported antibiotic phenotype/MIC results were found. Check drug column names and values.")
     return pd.DataFrame(rows).to_csv(index=False), True
 
 def execute(payload):

@@ -1,0 +1,39 @@
+{
+  "target": "meropenem",
+  "task": "antibiotic_resistance",
+  "species": [
+    "Escherichia coli",
+    "Klebsiella pneumoniae",
+    "Klebsiella pneumoniae subsp. pneumoniae"
+  ],
+  "features": [
+    "amoxicillin-clavulanate",
+    "cefepime",
+    "ceftriaxone",
+    "ciprofloxacin",
+    "gentamicin",
+    "piperacillin-tazobactam"
+  ],
+  "min_observed_features": 3,
+  "human_only": false,
+  "representation": "categorical_ast",
+  "label_mode": "reported",
+  "endpoint": "R_vs_S",
+  "allow_unversioned_reported": true,
+  "comparability_policy": "exploratory",
+  "seed": 42,
+  "split": {
+    "mode": "exploratory_70_30"
+  },
+  "include_species": true,
+  "model_families": [
+    "logistic"
+  ],
+  "decision_policy": "research_binary",
+  "threshold_policy": "calibration",
+  "sensitivity_target": 0.95,
+  "specificity_target": 0.5,
+  "bootstrap_repeats": 200,
+  "require_known_source": false,
+  "task_note": "South Asia feasibility recipe for the South_Asia_AMR_Wide_Matrix workbook. Use only South Asian rows before this run; it is not India-specific. Uses reported S/R labels and excludes intermediate labels for the binary endpoint. At least three of six predictor-drug categories are required. The workbook mixes CLSI and EUCAST results and provides no standard editions or test method details, so this is exploratory only."
+}

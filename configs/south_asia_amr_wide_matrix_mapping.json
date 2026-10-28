@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "isolate_id": "#BioSample",
+    "source_row": "Isolate",
+    "species": "Scientific name",
+    "specimen": "Isolation source",
+    "region": "Location",
+    "platform": "Laboratory typing platform",
+    "lab_id": "Laboratory typing platform",
+    "standard": "Testing standard"
+  },
+  "constants": {
+    "source_id": "South_Asia_AMR_Wide_Matrix",
+    "units": "mg/L",
+    "evidence_class": "measured_public"
+  },
+  "drugs": {
+    "amikacin": {
+      "measurement": "amikacin_MIC_mg_L",
+      "reported_sir": "amikacin_SIR"
+    },
+    "amoxicillin-clavulanate": {
+      "measurement": "amoxicillin-clavulanic acid_MIC_mg_L",
+      "reported_sir": "amoxicillin-clavulanic acid_SIR"
+    },
+    "cefepime": {
+      "measurement": "cefepime_MIC_mg_L",
+      "reported_sir": "cefepime_SIR"
+    },
+    "cefotaxime": {
+      "measurement": "cefotaxime_MIC_mg_L",
+      "reported_sir": "cefotaxime_SIR"
+    },
+    "ceftazidime": {
+      "measurement": "ceftazidime_MIC_mg_L",
+      "reported_sir": "ceftazidime_SIR"
+    },
+    "ceftazidime-avibactam": {
+      "measurement": "ceftazidime-avibactam_MIC_mg_L",
+      "reported_sir": "ceftazidime-avibactam_SIR"
+    },
+    "ceftriaxone": {
+      "measurement": "ceftriaxone_MIC_mg_L",
+      "reported_sir": "ceftriaxone_SIR"
+    },
+    "ciprofloxacin": {
+      "measurement": "ciprofloxacin_MIC_mg_L",
+      "reported_sir": "ciprofloxacin_SIR"
+    },
+    "colistin": {
+      "measurement": "colistin_MIC_mg_L",
+      "reported_sir": "colistin_SIR"
+    },
+    "ertapenem": {
+      "measurement": "ertapenem_MIC_mg_L",
+      "reported_sir": "ertapenem_SIR"
+    },
+    "gentamicin": {
+      "measurement": "gentamicin_MIC_mg_L",
+      "reported_sir": "gentamicin_SIR"
+    },
+    "imipenem": {
+      "measurement": "imipenem_MIC_mg_L",
+      "reported_sir": "imipenem_SIR"
+    },
+    "levofloxacin": {
+      "measurement": "levofloxacin_MIC_mg_L",
+      "reported_sir": "levofloxacin_SIR"
+    },
+    "meropenem": {
+      "measurement": "meropenem_MIC_mg_L",
+      "reported_sir": "meropenem_SIR"
+    },
+    "piperacillin-tazobactam": {
+      "measurement": "piperacillin-tazobactam_MIC_mg_L",
+      "reported_sir": "piperacillin-tazobactam_SIR"
+    },
+    "tigecycline": {
+      "measurement": "tigecycline_MIC_mg_L",
+      "reported_sir": "tigecycline_SIR"
+    }
+  }
+}
